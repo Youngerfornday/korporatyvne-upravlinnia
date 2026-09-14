@@ -1,0 +1,261 @@
+/* ============================================================
+   Корпоративне управління — дизайн-токени
+   НУ «Чернігівська політехніка». Світла тема на :root, темна —
+   через prefers-color-scheme (без [data-theme="light"]) і [data-theme="dark"].
+   Джерело кольорів бренду: офіційний брендбук університету (2021).
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* --- Бренд (брендбук) --- */
+  --brand-blue: #004f8f;        /* основний синій (сайт рендерить #005B9F) */
+  --brand-blue-deep: #002d5d;   /* темно-синій */
+  --brand-lavender: #a59fce;    /* лавандовий, лише для графіки на синьому/темному */
+  --brand-gray: #939597;
+  --brand-gray-light: #d1d2d4;
+  --brand-teal: #00796b;        /* бірюзовий акцент eln — «вірно/перевірено» */
+
+  /* --- Поверхні --- */
+  --bg: #fcfcfc;                /* фон сайту університету */
+  --bg-sunken: #f3f5f8;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-tint: #eef4fa;      /* легкий синій відтінок для виділених блоків */
+  --band: var(--brand-blue);    /* синя «шапка документа» */
+  --band-ink: #ffffff;
+  --band-ink-muted: #c9dcf0;
+  --band-line: rgba(255, 255, 255, 0.22);
+
+  /* --- Текст --- */
+  --ink: #0f1c2e;
+  --ink-2: #445570;             /* вторинний, 7:1 на білому */
+  --ink-3: #6b7a90;             /* підписи, 4.6:1 на білому */
+  --ink-on-tint: #1d3557;
+
+  /* --- Лінії --- */
+  --line: #e3e8ef;
+  --line-strong: #c9d2de;
+  --rule: #0f1c2e;              /* лінійка документа, 1px */
+
+  /* --- Інтерактив --- */
+  --accent: var(--brand-blue);
+  --accent-hover: #00437a;
+  --accent-active: #003762;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4eef8;
+  --link: var(--brand-blue);
+  --link-hover: var(--brand-blue-deep);
+  --focus: #1d7ad8;
+  --selection: #cfe2f5;
+  --lavender-ink: #5f579b;      /* лавандовий, придатний для тексту (5.6:1) */
+
+  /* --- Семантика --- */
+  --ok: #00796b;
+  --ok-soft: #e1f2ef;
+  --ok-ink: #075e53;
+  --err: #b42318;
+  --err-soft: #fbe9e7;
+  --err-ink: #8f1d14;
+  --warn: #8a5a00;
+  --warn-soft: #fbf1dc;
+  --info: var(--brand-blue);
+  --info-soft: var(--surface-tint);
+
+  /* --- Гейміфікація --- */
+  --xp: #b8860b;                /* XP — латунний, не «золото» */
+  --xp-soft: #f7efd6;
+  --level: var(--lavender-ink);
+  --badge-fill: var(--brand-lavender);
+  --badge-ink: var(--brand-blue-deep);
+  --badge-off: #e6e9ee;
+
+  /* --- Типографіка --- */
+  --font: "Open Sans", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* лише для коду прогресу */
+  --wdth-display: 88%;          /* дисплей — звужене накреслення тієї ж родини */
+  --wdth-text: 100%;
+
+  --text-xs: 0.8125rem;   /* 13 */
+  --text-sm: 0.9375rem;   /* 15 */
+  --text-md: 1.0625rem;   /* 17 — базовий UI */
+  --text-read: 1.125rem;  /* 18 — лонгрід */
+  --text-lg: 1.3125rem;   /* 21 */
+  --text-xl: 1.75rem;     /* 28 */
+  --text-2xl: 2.5rem;     /* 40 */
+  --text-3xl: 3.5rem;     /* 56 */
+  --text-4xl: 4.5rem;     /* 72 */
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-read: 1.65;
+
+  --tracking-display: -0.022em;
+  --tracking-title: -0.012em;
+  --tracking-caps: 0.06em;
+
+  --measure: 68ch;
+
+  /* --- Простір (4-крок) --- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+  --s-10: 8rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --container: 76rem;           /* 1216 px */
+  --container-read: 46rem;
+
+  /* --- Радіуси --- */
+  --r-1: 0.375rem;  /* контроли */
+  --r-2: 0.625rem;  /* картки */
+  --r-3: 1rem;      /* панелі */
+  --r-pill: 999px;
+
+  /* --- Тіні (зі зміщенням і м'яким розмиттям) --- */
+  --shadow-1: 0 1px 2px rgba(0, 45, 93, 0.06), 0 1px 1px rgba(0, 45, 93, 0.04);
+  --shadow-2: 0 1px 2px rgba(0, 45, 93, 0.06), 0 8px 24px -12px rgba(0, 45, 93, 0.22);
+  --shadow-3: 0 2px 4px rgba(0, 45, 93, 0.08), 0 24px 48px -24px rgba(0, 45, 93, 0.35);
+
+  /* --- Рух --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --dur-1: 140ms;
+  --dur-2: 260ms;
+  --dur-3: 480ms;
+
+  /* --- Шари --- */
+  --z-sticky: 20;
+  --z-popover: 40;
+  --z-toast: 60;
+
+  /* --- Логотип --- */
+  --logo-src: url("assets/logo-cpnu-uk.png");
+}
+
+/* Темна тема: похідні від темно-синього бренду, не інверсія. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b1424;
+    --bg-sunken: #08101d;
+    --surface: #121d31;
+    --surface-raised: #182540;
+    --surface-tint: #16274a;
+    --band: #0f2a52;
+    --band-ink: #f2f6fb;
+    --band-ink-muted: #a9bfdc;
+    --band-line: rgba(255, 255, 255, 0.16);
+
+    --ink: #e9eef6;
+    --ink-2: #b3c0d4;
+    --ink-3: #8b9bb3;
+    --ink-on-tint: #dbe7f7;
+
+    --line: #22314c;
+    --line-strong: #33466a;
+    --rule: #dbe4f0;
+
+    --accent: #3f8fd9;
+    --accent-hover: #5aa2e4;
+    --accent-active: #2f7cc4;
+    --accent-ink: #061225;
+    --accent-soft: #16304f;
+    --link: #79b4ec;
+    --link-hover: #a5cdf5;
+    --focus: #79b4ec;
+    --selection: #244a78;
+    --lavender-ink: #c4bfe6;
+
+    --ok: #3fb9a6;
+    --ok-soft: #10302c;
+    --ok-ink: #8fe0d1;
+    --err: #ef6b5d;
+    --err-soft: #3a1b18;
+    --err-ink: #ffb1a7;
+    --warn: #e0b45b;
+    --warn-soft: #34290f;
+
+    --xp: #e2b85c;
+    --xp-soft: #2d2510;
+    --level: #c4bfe6;
+    --badge-fill: #a59fce;
+    --badge-ink: #0b1424;
+    --badge-off: #22314c;
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -12px rgba(0, 0, 0, 0.7);
+    --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.5), 0 28px 56px -24px rgba(0, 0, 0, 0.8);
+
+    --logo-src: url("assets/logo-cpnu-uk-white.png");
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1424;
+  --bg-sunken: #08101d;
+  --surface: #121d31;
+  --surface-raised: #182540;
+  --surface-tint: #16274a;
+  --band: #0f2a52;
+  --band-ink: #f2f6fb;
+  --band-ink-muted: #a9bfdc;
+  --band-line: rgba(255, 255, 255, 0.16);
+
+  --ink: #e9eef6;
+  --ink-2: #b3c0d4;
+  --ink-3: #8b9bb3;
+  --ink-on-tint: #dbe7f7;
+
+  --line: #22314c;
+  --line-strong: #33466a;
+  --rule: #dbe4f0;
+
+  --accent: #3f8fd9;
+  --accent-hover: #5aa2e4;
+  --accent-active: #2f7cc4;
+  --accent-ink: #061225;
+  --accent-soft: #16304f;
+  --link: #79b4ec;
+  --link-hover: #a5cdf5;
+  --focus: #79b4ec;
+  --selection: #244a78;
+  --lavender-ink: #c4bfe6;
+
+  --ok: #3fb9a6;
+  --ok-soft: #10302c;
+  --ok-ink: #8fe0d1;
+  --err: #ef6b5d;
+  --err-soft: #3a1b18;
+  --err-ink: #ffb1a7;
+  --warn: #e0b45b;
+  --warn-soft: #34290f;
+
+  --xp: #e2b85c;
+  --xp-soft: #2d2510;
+  --level: #c4bfe6;
+  --badge-fill: #a59fce;
+  --badge-ink: #0b1424;
+  --badge-off: #22314c;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -12px rgba(0, 0, 0, 0.7);
+  --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.5), 0 28px 56px -24px rgba(0, 0, 0, 0.8);
+
+  --logo-src: url("assets/logo-cpnu-uk-white.png");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+  }
+}

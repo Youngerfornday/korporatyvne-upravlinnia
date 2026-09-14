@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Кабінет викладача — Корпоративне управління</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* ---- Кабінет викладача (Operate) ---- */
+  .cab-head { padding-block: var(--s-6) var(--s-5); display: grid; grid-template-columns: 1fr auto; gap: var(--s-5); align-items: end; border-bottom: 1px solid var(--rule); }
+  .cab-head .h1 { font-size: var(--text-2xl); }
+  .cab-head .sub { color: var(--ink-2); font-size: var(--text-sm); margin-top: var(--s-2); max-width: 64ch; }
+  .cab-head .sub .chip { vertical-align: middle; }
+  .cab-quick { display: flex; gap: var(--s-3); flex-wrap: wrap; }
+
+  .toolbar { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; padding-block: var(--s-5) var(--s-4); }
+  .toolbar .seg--sq button { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .toolbar .grow { flex: 1; min-width: 12rem; }
+  .toolbar .select { min-width: 9rem; }
+  .filters { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; padding-bottom: var(--s-4); }
+  .filters .caps { color: var(--ink-3); margin-right: var(--s-1); }
+  .fchip { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 2rem; padding: 0.2rem 0.7rem; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--surface); font-size: var(--text-xs); font-weight: 500; color: var(--ink-2); transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out); }
+  .fchip:hover { border-color: var(--ink-3); }
+  .fchip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .fchip .n { opacity: 0.7; font-variant-numeric: tabular-nums; }
+  .export-toggle { margin-left: auto; }
+  .export-toggle[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .results-line { display: flex; justify-content: space-between; gap: var(--s-3); align-items: baseline; font-size: var(--text-sm); color: var(--ink-2); padding-bottom: var(--s-3); font-variant-numeric: tabular-nums; }
+
+  /* Таблиця */
+  .view { display: none; }
+  .view[data-active] { display: block; }
+  .col-cb { width: 2.5rem; }
+  tbody td:nth-child(2) { min-width: 18rem; }
+  .mat-name { font-weight: 600; color: var(--ink); text-decoration: none; }
+  .mat-name:hover { text-decoration: underline; }
+  .mat-sub { display: block; color: var(--ink-3); font-size: var(--text-xs); margin-top: 1px; }
+  .fmt { display: inline-flex; gap: 0.3rem; }
+  .fmt span { display: inline-grid; place-items: center; min-width: 2.1rem; height: 1.4rem; padding: 0 0.35rem; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 0.6875rem; font-weight: 650; letter-spacing: 0.02em; color: var(--ink-2); background: var(--surface); }
+  .bloom { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .bloom i { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink-3); }
+  .bloom[data-level="1"] i { background: var(--line-strong); }
+  .bloom[data-level="2"] i { background: var(--ink-3); }
+  .bloom[data-level="3"] i { background: var(--accent); }
+  .bloom[data-level="4"] i { background: var(--lavender-ink); }
+  .type { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .type .icon { width: 1rem; height: 1rem; color: var(--ink-3); }
+  .col-hidden { display: none; }
+  .export-on .col-hidden { display: table-cell; }
+
+  /* Картки */
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+  .mcard { padding: var(--s-4) var(--s-5); display: grid; gap: var(--s-2); position: relative; }
+  .mcard .type { font-size: var(--text-xs); color: var(--ink-3); }
+  .mcard h3 { font-size: var(--text-md); font-weight: 650; line-height: 1.3; }
+  .mcard .row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); font-size: var(--text-xs); color: var(--ink-2); }
+  .mcard .cb { position: absolute; right: var(--s-4); top: var(--s-4); }
+
+  /* Матриця */
+  .matrix-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-2); background: var(--surface); }
+  .matrix { min-width: 52rem; }
+  .matrix th, .matrix td { text-align: center; padding: 0.55rem 0.4rem; }
+  .matrix th:first-child, .matrix td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); min-width: 15rem; z-index: 1; }
+  .matrix thead th:first-child { background: var(--bg-sunken); }
+  .matrix .cov { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; margin: 0 auto; }
+  .matrix .cov-full { background: var(--accent); color: var(--accent-ink); }
+  .matrix .cov-part { border: 2px solid var(--accent); color: var(--accent); }
+  .matrix .cov-none { border: 1px solid var(--line); }
+  .matrix .cov svg { width: 0.75rem; height: 0.75rem; stroke-width: 3; }
+  .matrix td.total { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .matrix tfoot td { background: var(--bg-sunken); font-weight: 600; color: var(--ink-2); font-size: var(--text-xs); border-top: 1px solid var(--line-strong); }
+  .matrix-legend { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--text-xs); color: var(--ink-2); margin-top: var(--s-3); }
+  .matrix-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .matrix-legend .cov { width: 1rem; height: 1rem; }
+
+  /* Панель вивантаження */
+  .export-panel { position: sticky; bottom: var(--s-4); margin-top: var(--s-6); display: none; grid-template-columns: 1fr auto; gap: var(--s-4); align-items: center; padding: var(--s-4) var(--s-5); background: var(--surface-raised); border: 1px solid var(--line-strong); border-radius: var(--r-3); box-shadow: var(--shadow-3); z-index: var(--z-sticky); }
+  .export-on .export-panel { display: grid; }
+  .export-panel .sel { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .export-panel .detail { color: var(--ink-2); font-size: var(--text-sm); margin-top: 2px; }
+  .export-panel .formats { display: flex; gap: var(--s-2); margin-top: var(--s-3); flex-wrap: wrap; }
+  .export-panel .btns { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .ready { margin-top: var(--s-6); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+  .ready a { display: grid; grid-template-columns: auto 1fr auto; gap: var(--s-3); align-items: center; padding: var(--s-4) var(--s-5); text-decoration: none; color: inherit; transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }
+  .ready a:hover { border-color: var(--line-strong); box-shadow: var(--shadow-2); }
+  .ready .icon-lg { color: var(--lavender-ink); }
+  .ready b { display: block; font-size: var(--text-sm); font-weight: 650; }
+  .ready small { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .ready .icon { color: var(--ink-3); }
+  .memo { margin-top: var(--s-7); padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--r-2); font-size: var(--text-sm); color: var(--ink-2); display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); }
+  .memo .icon-lg { color: var(--accent); }
+  .memo b { color: var(--ink); }
+
+  @media (max-width: 1024px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } .ready { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    .cab-head { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .export-panel { grid-template-columns: 1fr; }
+    .export-panel .btns { justify-content: stretch; }
+    .export-panel .btns .btn-primary { flex: 1; }
+    .export-toggle { margin-left: 0; width: 100%; justify-content: center; }
+    .toolbar .select { flex: 1; }
+    .memo { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<!--
+THESIS: кабінет — лічильна комісія курсу: таблиця з табличними цифрами, матриця ПРН × теми як реєстр покриття, режим
+вивантаження — липка панель із вибраним і одним «Зібрати ZIP». Без дашборд-плиток з великими цифрами.
+OWN-WORLD: щільніший Operate-регістр того самого світу: сегментовані перемикачі, фільтр-чипи, чорнильні стани, синій
+лише для дії й покриття.
+STORY: викладач перемикає вид, бачить покриття ПРН, позначає матеріали й отримує пакет; розуміє, що це режим перегляду.
+FIRST VIEWPORT: заголовок з перемикачем Студент/Викладач у шапці; панель інструментів: Картки/Таблиця/Матриця, пошук,
+модуль, Блум, перемикач «Режим вивантаження» увімкнено; таблиця з чекбоксами; внизу липка панель «Вибрано 7».
+FORM: «Протокол загальних зборів», кандидат 5 із 7; seed 2fce709f.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+<!-- view:teacher -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5Z"/><path d="M4 5.5v16M8 7h8"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 7h7M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01M8.5 15h.01M12 15h.01M15.5 15v2.5"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M4 19h16"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M3 15h18M9 5v14"/></symbol>
+  <symbol id="i-matrix" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V4h10v4M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3"/><rect x="7" y="14" width="10" height="6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5v14l11-7z"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4h11l-1.5 4L16 12H5"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M4 19h16"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M4 7h16M6 7l-3 7a3 3 0 0 0 6 0L6 7M18 7l-3 7a3 3 0 0 0 6 0l-3-7"/></symbol>
+  <symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-scorm" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4M10 9l3 2-3 2"/></symbol>
+  <symbol id="i-xml" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></symbol>
+  <symbol id="hex" viewBox="0 0 48 48"><path d="M24 2.5 43 13.25v21.5L24 45.5 5 34.75v-21.5Z"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Перейти до змісту</a>
+<header class="topbar">
+  <div class="container topbar-in">
+    <a class="brand" href="index.html" aria-label="Корпоративне управління — на головну">
+      <span class="brand-logo" role="img" aria-label="Національний університет «Чернігівська політехніка»"></span>
+      <span class="brand-text">
+        <span class="brand-title">Корпоративне управління</span>
+        <span class="brand-sub">Онлайн-курс для бакалаврів менеджменту</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Основна">
+      <a href="index.html" >Курс</a>
+      <a href="topic.html" >Теми</a>
+      <a href="quiz.html" >Тести</a>
+      <a href="#" >Тренажери</a>
+      <a href="#" >Картки</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="seg" role="group" aria-label="Вид">
+        <button type="button" aria-pressed="false" data-view="student">Студент</button>
+        <button type="button" aria-pressed="true" data-view="teacher" onclick="location.href='cabinet.html'">Викладач</button>
+      </div>
+      <button class="iconbtn" type="button" aria-label="Пошук по курсу"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="iconbtn" type="button" id="theme-toggle" aria-label="Перемкнути тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg>
+        <svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+      <a class="me" href="profile.html" aria-label="Профіль: рівень Міноритарій, 640 XP">
+        <svg class="hex me-hex" aria-hidden="true"><use href="#hex" fill="var(--badge-fill)"/></svg>
+        <span class="me-level">Міноритарій</span>
+        <span class="me-xp num">640 XP</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+
+<main id="main" class="container export-on">
+  <header class="cab-head">
+    <div>
+      <h1 class="h1">Кабінет викладача</h1>
+      <p class="sub">Режим перегляду всередині сайту, без входу. <span class="chip chip-tint">44 матеріали</span> <span class="chip chip-tint">12 тем</span> <span class="chip chip-tint">14 ПРН</span> Оновлено 12.09.2026.</p>
+    </div>
+    <div class="cab-quick">
+      <a class="btn btn-secondary" href="#"><svg class="icon"><use href="#i-file"/></svg>Силабус DOCX</a>
+      <a class="btn btn-secondary" href="#"><svg class="icon"><use href="#i-print"/></svg>Друк</a>
+    </div>
+  </header>
+
+  <div class="toolbar" role="toolbar" aria-label="Представлення і пошук">
+    <div class="seg seg--sq" role="group" aria-label="Представлення">
+      <button type="button" data-view="cards" aria-pressed="false"><svg class="icon icon-sm"><use href="#i-grid"/></svg>Картки</button>
+      <button type="button" data-view="table" aria-pressed="true"><svg class="icon icon-sm"><use href="#i-table"/></svg>Таблиця</button>
+      <button type="button" data-view="matrix" aria-pressed="false"><svg class="icon icon-sm"><use href="#i-matrix"/></svg>Матриця ПРН</button>
+    </div>
+    <div class="search grow"><svg class="icon"><use href="#i-search"/></svg><label class="visually-hidden" for="q">Пошук матеріалів</label><input class="input" id="q" type="search" placeholder="Пошук за назвою, терміном, номером ПРН"></div>
+    <label class="visually-hidden" for="f-module">Модуль</label>
+    <select class="select" id="f-module"><option>Усі модулі</option><option>М1. Основи</option><option selected>М2. Органи КУ</option><option>М3. Капітал і ринок</option><option>М4. Контроль</option></select>
+    <label class="visually-hidden" for="f-bloom">Рівень Блума</label>
+    <select class="select" id="f-bloom"><option>Будь-який рівень Блума</option><option>Пам’ятати</option><option>Розуміти</option><option>Застосовувати</option><option>Аналізувати</option></select>
+    <button class="btn btn-secondary export-toggle" type="button" id="export-toggle" aria-pressed="true"><svg class="icon"><use href="#i-archive"/></svg>Режим вивантаження</button>
+  </div>
+  <div class="filters" role="group" aria-label="Тип матеріалу">
+    <span class="caps">Тип</span>
+    <button class="fchip" type="button" aria-pressed="true">Лекція <span class="n">3</span></button>
+    <button class="fchip" type="button" aria-pressed="true">Практична <span class="n">2</span></button>
+    <button class="fchip" type="button" aria-pressed="true">Тест <span class="n">3</span></button>
+    <button class="fchip" type="button" aria-pressed="false">Тренажер <span class="n">2</span></button>
+    <button class="fchip" type="button" aria-pressed="false">Кейс <span class="n">3</span></button>
+    <button class="fchip" type="button" aria-pressed="false">Глосарій <span class="n">1</span></button>
+    <button class="fchip" type="button" aria-pressed="false">Схема <span class="n">6</span></button>
+  </div>
+  <div class="results-line"><span>Показано <b>8</b> із 44 матеріалів · Модуль 2 · Лекція, Практична, Тест</span><span>Сортування: за темою</span></div>
+
+  <!-- Таблиця -->
+  <section class="view" data-view="table" data-active aria-label="Таблиця матеріалів">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-cb col-hidden"><input class="cb" type="checkbox" aria-label="Вибрати всі показані" id="cb-all"></th>
+            <th><button type="button">Матеріал <svg class="icon icon-sm"><use href="#i-chev-d"/></svg></button></th>
+            <th>Тип</th>
+            <th>Тема</th>
+            <th>ПРН</th>
+            <th>Блум</th>
+            <th>Формати</th>
+            <th class="num">Розмір</th>
+            <th>Оновлено</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="topic.html">Лекція 4. Акціонери та загальні збори</a><span class="mat-sub">лонгрід, 2 схеми, норма, кейс «Зоря-113»</span></td><td><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція</span></td><td class="num">Т4</td><td class="num">3, 7, 9</td><td><span class="bloom" data-level="2"><i></i>Розуміти</span></td><td><span class="fmt"><span>PDF</span><span>HTML</span><span>SVG</span></span></td><td class="num">1,4 МБ</td><td class="num">09.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="#">Практична 3. Загальні збори: кворум і кумулятивне голосування</a><span class="mat-sub">рубрика, калькулятори кворуму й кумулятивного голосування</span></td><td><span class="type"><svg class="icon"><use href="#i-case"/></svg>Практична</span></td><td class="num">Т4</td><td class="num">7, 9, 11</td><td><span class="bloom" data-level="3"><i></i>Застосовувати</span></td><td><span class="fmt"><span>PDF</span><span>DOCX</span><span>SCORM</span></span></td><td class="num">2,1 МБ</td><td class="num">09.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="quiz.html">Тренувальний тест 4</a><span class="mat-sub">15 питань, пояснення до кожного варіанта</span></td><td><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест</span></td><td class="num">Т4</td><td class="num">3, 7</td><td><span class="bloom" data-level="2"><i></i>Розуміти</span></td><td><span class="fmt"><span>XML</span><span>HTML</span></span></td><td class="num">96 КБ</td><td class="num">11.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="#">Лекція 5. Наглядова рада і рада директорів</a><span class="mat-sub">одно- і дворівнева структура, комітети, корпоративний секретар</span></td><td><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція</span></td><td class="num">Т5</td><td class="num">3, 8, 12</td><td><span class="bloom" data-level="2"><i></i>Розуміти</span></td><td><span class="fmt"><span>PDF</span><span>HTML</span><span>SVG</span></span></td><td class="num">1,2 МБ</td><td class="num">10.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="#">Практична 4. Формування наглядової ради</a><span class="mat-sub">матриця компетенцій, перевірка незалежності</span></td><td><span class="type"><svg class="icon"><use href="#i-case"/></svg>Практична</span></td><td class="num">Т5</td><td class="num">8, 11</td><td><span class="bloom" data-level="4"><i></i>Аналізувати</span></td><td><span class="fmt"><span>PDF</span><span>DOCX</span></span></td><td class="num">640 КБ</td><td class="num">10.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="#">Тренувальний тест 5</a><span class="mat-sub">15 питань, 2 Cloze-кейси</span></td><td><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест</span></td><td class="num">Т5</td><td class="num">8, 12</td><td><span class="bloom" data-level="3"><i></i>Застосовувати</span></td><td><span class="fmt"><span>XML</span><span>HTML</span></span></td><td class="num">88 КБ</td><td class="num">11.09.2026</td></tr>
+          <tr aria-selected="true"><td class="col-cb col-hidden"><input class="cb" type="checkbox" checked aria-label="Вибрати"></td><td><a class="mat-name" href="#">Лекція 6. Виконавчий менеджмент</a><span class="mat-sub">фідуціарні обов’язки, значні правочини, правочини із заінтересованістю, KPI</span></td><td><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція</span></td><td class="num">Т6</td><td class="num">3, 9, 12</td><td><span class="bloom" data-level="2"><i></i>Розуміти</span></td><td><span class="fmt"><span>PDF</span><span>HTML</span><span>SVG</span></span></td><td class="num">1,1 МБ</td><td class="num">12.09.2026</td></tr>
+          <tr><td class="col-cb col-hidden"><input class="cb" type="checkbox" aria-label="Вибрати"></td><td><a class="mat-name" href="#">Тренувальний тест 6</a><span class="mat-sub">15 питань, 1 числове</span></td><td><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест</span></td><td class="num">Т6</td><td class="num">9, 12</td><td><span class="bloom" data-level="3"><i></i>Застосовувати</span></td><td><span class="fmt"><span>XML</span><span>HTML</span></span></td><td class="num">92 КБ</td><td class="num">12.09.2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Картки -->
+  <section class="view" data-view="cards" aria-label="Картки матеріалів">
+    <div class="cards-grid">
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція · Т4</span><h3>Акціонери та загальні збори</h3><div class="row"><span>ПРН 3, 7, 9 · Розуміти</span><span class="fmt"><span>PDF</span><span>HTML</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-case"/></svg>Практична · Т4</span><h3>Загальні збори: кворум і кумулятивне голосування</h3><div class="row"><span>ПРН 7, 9, 11 · Застосовувати</span><span class="fmt"><span>PDF</span><span>SCORM</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест · Т4</span><h3>Тренувальний тест 4</h3><div class="row"><span>ПРН 3, 7 · Розуміти</span><span class="fmt"><span>XML</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція · Т5</span><h3>Наглядова рада і рада директорів</h3><div class="row"><span>ПРН 3, 8, 12 · Розуміти</span><span class="fmt"><span>PDF</span><span>HTML</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-case"/></svg>Практична · Т5</span><h3>Формування наглядової ради</h3><div class="row"><span>ПРН 8, 11 · Аналізувати</span><span class="fmt"><span>PDF</span><span>DOCX</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест · Т5</span><h3>Тренувальний тест 5</h3><div class="row"><span>ПРН 8, 12 · Застосовувати</span><span class="fmt"><span>XML</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" checked aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-book"/></svg>Лекція · Т6</span><h3>Виконавчий менеджмент</h3><div class="row"><span>ПРН 3, 9, 12 · Розуміти</span><span class="fmt"><span>PDF</span><span>HTML</span></span></div></article>
+      <article class="card mcard"><input class="cb" type="checkbox" aria-label="Вибрати"><span class="type"><svg class="icon"><use href="#i-list"/></svg>Тест · Т6</span><h3>Тренувальний тест 6</h3><div class="row"><span>ПРН 9, 12 · Застосовувати</span><span class="fmt"><span>XML</span></span></div></article>
+    </div>
+  </section>
+
+  <!-- Матриця -->
+  <section class="view" data-view="matrix" aria-label="Матриця ПРН × теми">
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead><tr><th>Програмний результат навчання</th><th>Т1</th><th>Т2</th><th>Т3</th><th>Т4</th><th>Т5</th><th>Т6</th><th>Т7</th><th>Т8</th><th>Т9</th><th>Т10</th><th>Т11</th><th>Т12</th><th class="num">Тем</th></tr></thead>
+        <tbody>
+          <tr><td><b>ПРН 3</b> <span class="mat-sub">Демонструвати знання теорій і концепцій менеджменту</span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-part"></span></td><td class="total num">9</td></tr>
+          <tr><td><b>ПРН 7</b> <span class="mat-sub">Виявляти навички організаційного проєктування</span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td class="total num">5</td></tr>
+          <tr><td><b>ПРН 8</b> <span class="mat-sub">Застосовувати методи менеджменту для забезпечення ефективності</span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td class="total num">4</td></tr>
+          <tr><td><b>ПРН 9</b> <span class="mat-sub">Демонструвати навички взаємодії, лідерства, командної роботи</span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td class="total num">4</td></tr>
+          <tr><td><b>ПРН 11</b> <span class="mat-sub">Демонструвати навички аналізу ситуації та здійснення комунікації</span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-none"></span></td><td class="total num">5</td></tr>
+          <tr><td><b>ПРН 12</b> <span class="mat-sub">Оцінювати правові, соціальні та економічні наслідки функціонування організації</span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-none"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-part"></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td><span class="cov cov-full"><svg class="icon"><use href="#i-check"/></svg></span></td><td class="total num">10</td></tr>
+        </tbody>
+        <tfoot><tr><td>ПРН на тему</td><td>3</td><td>2</td><td>3</td><td>4</td><td>4</td><td>3</td><td>1</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="num">—</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="matrix-legend"><span><span class="cov cov-full"></span>повне покриття (лекція + оцінювання)</span><span><span class="cov cov-part"></span>часткове (лише згадка)</span><span><span class="cov cov-none"></span>не покрито</span><span class="faint">Показано 6 із 14 ПРН — фільтр за модулем 2</span></div>
+  </section>
+
+  <!-- Панель вивантаження -->
+  <div class="export-panel" role="region" aria-label="Вивантаження вибраних матеріалів" aria-live="polite">
+    <div>
+      <div class="sel">Вибрано 7 матеріалів · 6,6 МБ</div>
+      <div class="detail">3 лекції, 2 практичні, 2 тести. Кожен матеріал додається в усіх позначених форматах; питання тестів — як Moodle XML.</div>
+      <div class="formats" role="group" aria-label="Формати в архіві">
+        <button class="fchip" type="button" aria-pressed="true">PDF</button>
+        <button class="fchip" type="button" aria-pressed="true">HTML + SVG</button>
+        <button class="fchip" type="button" aria-pressed="true">Moodle XML</button>
+        <button class="fchip" type="button" aria-pressed="false">DOCX</button>
+        <button class="fchip" type="button" aria-pressed="false">SCORM 1.2</button>
+      </div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-ghost" type="button">Зняти вибір</button>
+      <button class="btn btn-primary btn-lg" type="button" onclick="window.toast && window.toast('Збираємо ZIP у браузері: 7 матеріалів')"><svg class="icon"><use href="#i-download"/></svg>Зібрати ZIP</button>
+    </div>
+  </div>
+
+  <section aria-labelledby="ready-title" style="margin-top: var(--s-8);">
+    <h2 class="h3" id="ready-title">Готові пакети</h2>
+    <div class="ready">
+      <a class="card" href="#"><svg class="icon icon-lg"><use href="#i-archive"/></svg><span><b>Модуль 2 — усі матеріали</b><small>ZIP · 18,4 МБ · зібрано 12.09.2026</small></span><svg class="icon"><use href="#i-download"/></svg></a>
+      <a class="card" href="#"><svg class="icon icon-lg"><use href="#i-archive"/></svg><span><b>Курс повністю</b><small>ZIP · 71,2 МБ · зібрано 12.09.2026</small></span><svg class="icon"><use href="#i-download"/></svg></a>
+      <a class="card" href="#"><svg class="icon icon-lg"><use href="#i-scorm"/></svg><span><b>Резервна копія Moodle 5.2</b><small>.mbz · 24,9 МБ · тренувальні тести</small></span><svg class="icon"><use href="#i-download"/></svg></a>
+    </div>
+  </section>
+
+  <aside class="memo" aria-labelledby="memo-title">
+    <svg class="icon icon-lg"><use href="#i-info"/></svg>
+    <div>
+      <b id="memo-title">Пам’ятка після запуску тесту в Moodle.</b> Через тиждень відкрийте статистику тесту: легкість питання має бути в межах 30–80 %, індекс дискримінації — не нижче 0,3. Питання поза межами позначте в банку тегом «переглянути»; контрольні банки оновлюються у приватному репозиторії.
+    </div>
+  </aside>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-in">
+      <div>
+        <span class="brand-logo" role="img" aria-label="Національний університет «Чернігівська політехніка»"></span>
+        <p style="margin-top: var(--s-4); max-width: 38ch;">Навчальна дисципліна кафедри менеджменту. Освітня програма «Менеджмент», перший (бакалаврський) рівень, 4&nbsp;кредити ЄКТС.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Курс</h3>
+        <ul>
+          <li><a href="index.html">Порядок денний курсу</a></li>
+          <li><a href="#">Практикуми й тренажери</a></li>
+          <li><a href="quiz.html">Тренувальні тести</a></li>
+          <li><a href="#">Флеш-картки й глосарій</a></li>
+          <li><a href="#">Силабус і робоча програма</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Викладачам</h3>
+        <ul>
+          <li><a href="cabinet.html">Кабінет викладача</a></li>
+          <li><a href="#">Як завантажити курс у Moodle</a></li>
+          <li><a href="#">Пакети для eln.stu.cn.ua</a></li>
+          <li><a href="#">Матриця ПРН × теми</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-note">
+      <span>Код — MIT; зміст — CC BY-NC-SA 4.0. Логотип університету — поза ліцензією.</span>
+      <span>Норми права звірені з реєстром legal-baseline; дата перевірки вказана біля кожної.</span>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+  (function () {
+    var root = document.documentElement;
+    var key = 'ku:v1:theme';
+    try { var saved = localStorage.getItem(key); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+    var btn = document.getElementById('theme-toggle');
+    if (btn) btn.addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = dark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem(key, next); } catch (e) {}
+    });
+    window.toast = function (html) {
+      var t = document.getElementById('toast'); if (!t) return;
+      t.innerHTML = html; t.setAttribute('data-show', '');
+      clearTimeout(t._h); t._h = setTimeout(function () { t.removeAttribute('data-show'); }, 3200);
+    };
+  })();
+</script>
+
+<script>
+  (function () {
+    var main = document.getElementById('main');
+    document.querySelectorAll('.seg--sq [data-view]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('.seg--sq [data-view]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        document.querySelectorAll('.view').forEach(function (v) { v.toggleAttribute('data-active', v.dataset.view === b.dataset.view); });
+      });
+    });
+    var tg = document.getElementById('export-toggle');
+    tg.addEventListener('click', function () {
+      var on = tg.getAttribute('aria-pressed') !== 'true';
+      tg.setAttribute('aria-pressed', String(on));
+      main.classList.toggle('export-on', on);
+    });
+    document.querySelectorAll('.fchip').forEach(function (c) {
+      c.addEventListener('click', function () { c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true')); });
+    });
+    var all = document.getElementById('cb-all');
+    var rows = document.querySelectorAll('tbody .cb');
+    function sync() {
+      var n = 0; rows.forEach(function (r) { r.closest('tr').setAttribute('aria-selected', String(r.checked)); if (r.checked) n++; });
+      all.checked = n === rows.length; all.indeterminate = n > 0 && n < rows.length;
+      var sel = document.querySelector('.export-panel .sel'); if (sel) sel.textContent = 'Вибрано ' + n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? 'матеріал' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'матеріали' : 'матеріалів') + ' · ' + (n * 0.94).toFixed(1).replace('.', ',') + ' МБ';
+    }
+    rows.forEach(function (r) { r.addEventListener('change', sync); });
+    all.addEventListener('change', function () { rows.forEach(function (r) { r.checked = all.checked; }); sync(); });
+    sync();
+  })();
+</script>
+</body>
+</html>
