@@ -1,0 +1,28 @@
+# dependencies and builds
+node_modules/
+dist/
+.astro/
+coverage/
+build/
+out/
+
+# Playwright / test artifacts (may contain page snapshots with sensitive data)
+.playwright-mcp/
+playwright-report/
+test-results/
+blob-report/
+
+# local environment
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# private control banks must never live in this public repo
+**/banks/control/
+*.control.yaml
+
+# Moodle docker runtime data
+tools/moodle/.data/
+tools/moodle/out/
