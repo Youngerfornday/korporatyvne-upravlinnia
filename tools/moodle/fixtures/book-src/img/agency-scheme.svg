@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="240" viewBox="0 0 480 240" role="img" aria-labelledby="t d">
+  <title id="t">Ланцюг делегування в корпорації</title>
+  <desc id="d">Акціонери обирають наглядову раду, яка призначає і контролює менеджмент.</desc>
+  <rect x="0" y="0" width="480" height="240" fill="#FCFCFC"/>
+  <rect x="20" y="90" width="120" height="60" rx="8" fill="#005B9F"/>
+  <text x="80" y="125" font-size="14" fill="#FFFFFF" text-anchor="middle">Акціонери</text>
+  <rect x="180" y="90" width="120" height="60" rx="8" fill="#867EB4"/>
+  <text x="240" y="125" font-size="14" fill="#FFFFFF" text-anchor="middle">Наглядова рада</text>
+  <rect x="340" y="90" width="120" height="60" rx="8" fill="#00305F"/>
+  <text x="400" y="125" font-size="14" fill="#FFFFFF" text-anchor="middle">Менеджмент</text>
+  <path d="M140 120 H180 M300 120 H340" stroke="#00305F" stroke-width="3"/>
+</svg>

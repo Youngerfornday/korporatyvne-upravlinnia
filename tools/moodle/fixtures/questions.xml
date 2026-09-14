@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Фікстура спайку: по одному-два питання кожного потрібного типу Moodle XML.
+  Категорії задані шляхом від top без префікса $course$ (у Moodle 5.x банк питань живе
+  в контексті модуля mod_qbank; контекст задає скрипт імпорту).
+  Рівень Блума - тег bloom-<рівень>. Числові значення у XML завжди з крапкою.
+-->
+<quiz>
+
+  <question type="category">
+    <category><text>top/SPIKE М1/SPIKE Т01</text></category>
+    <info format="html"><text>Тема 1 спайку</text></info>
+    <idnumber>SPIKE-M1-T01</idnumber>
+  </question>
+
+  <!-- 1. Одиночний вибір (remember) -->
+  <question type="multichoice">
+    <name><text>Т01 single: агентська проблема</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Яке визначення найточніше описує агентську проблему в корпорації?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Агентська проблема виникає через розбіжність інтересів власників і найманих менеджерів.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q01</idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html"><text>Правильно.</text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text>Частково правильно.</text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text>Неправильно.</text></incorrectfeedback>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<p>Конфлікт інтересів між власниками та менеджерами, яким делеговано контроль</p>]]></text>
+      <feedback format="html"><text>Так, це класичне визначення.</text></feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>Конфлікт між двома конкурентами на ринку</p>]]></text>
+      <feedback format="html"><text>Це конкуренція, а не агентська проблема.</text></feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>Спір між державою та платником податків</p>]]></text>
+      <feedback format="html"><text>Це податкові відносини.</text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-remember</text></tag>
+    </tags>
+  </question>
+
+  <!-- 2. Так/ні (remember) -->
+  <question type="truefalse">
+    <name><text>Т01 truefalse: наглядова рада</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Наглядова рада акціонерного товариства здійснює захист прав акціонерів і контролює виконавчий орган.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q02</idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text>Правильно.</text></feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text>Неправильно.</text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-remember</text></tag>
+    </tags>
+  </question>
+
+  <!-- 3. Множинний вибір з частковими балами (understand) -->
+  <question type="multichoice">
+    <name><text>Т01 multi: ознаки корпорації</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Оберіть дві ознаки, що притаманні публічній корпорації.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q03</idnumber>
+    <single>false</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html"><text>Правильно.</text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text>Частково правильно.</text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text>Неправильно.</text></incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="50" format="html">
+      <text><![CDATA[<p>Відокремлення власності від управління</p>]]></text>
+      <feedback format="html"><text></text></feedback>
+    </answer>
+    <answer fraction="50" format="html">
+      <text><![CDATA[<p>Обмежена відповідальність акціонерів</p>]]></text>
+      <feedback format="html"><text></text></feedback>
+    </answer>
+    <answer fraction="-50" format="html">
+      <text><![CDATA[<p>Необмежена відповідальність власників за борги</p>]]></text>
+      <feedback format="html"><text></text></feedback>
+    </answer>
+    <answer fraction="-50" format="html">
+      <text><![CDATA[<p>Заборона продажу часток третім особам</p>]]></text>
+      <feedback format="html"><text></text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-understand</text></tag>
+    </tags>
+  </question>
+
+  <!-- 4. Відповідність (understand) -->
+  <question type="matching">
+    <name><text>Т01 matching: моделі КУ</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Встановіть відповідність між моделлю корпоративного управління та її ознакою.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q04</idnumber>
+    <shuffleanswers>true</shuffleanswers>
+    <correctfeedback format="html"><text>Правильно.</text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text>Частково правильно.</text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text>Неправильно.</text></incorrectfeedback>
+    <shownumcorrect/>
+    <subquestion format="html">
+      <text><![CDATA[<p>Англо-американська</p>]]></text>
+      <answer><text>Розпорошена власність і розвинений фондовий ринок</text></answer>
+    </subquestion>
+    <subquestion format="html">
+      <text><![CDATA[<p>Німецька</p>]]></text>
+      <answer><text>Дворівнева рада з участю працівників</text></answer>
+    </subquestion>
+    <subquestion format="html">
+      <text><![CDATA[<p>Японська</p>]]></text>
+      <answer><text>Перехресне володіння в групах кейрецу</text></answer>
+    </subquestion>
+    <tags>
+      <tag><text>bloom-understand</text></tag>
+    </tags>
+  </question>
+
+  <!-- 5. Числова з допуском (apply). У мові uk студент вводить 1,5 -->
+  <question type="numerical">
+    <name><text>Т01 numerical: частка голосів</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Акціонер володіє 15 акціями з 1000 голосуючих. Яку частку голосів (у відсотках) він має? Відповідь дайте числом, наприклад 2,5.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>15 / 1000 × 100 = 1,5 %.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q05</idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>1.5</text>
+      <feedback format="html"><text>Правильно.</text></feedback>
+      <tolerance>0.01</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+    <tags>
+      <tag><text>bloom-apply</text></tag>
+    </tags>
+  </question>
+
+  <!-- 6. Обчислювальна Calculated з допуском 1% (apply) -->
+  <question type="calculated">
+    <name><text>Т01 calculated: дивіденд на акцію</text></name>
+    <questiontext format="html"><text><![CDATA[<p>На виплату дивідендів спрямовано {a} тис. грн, кількість акцій {b} тис. шт. Обчисліть дивіденд на одну акцію, грн.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Дивіденд на акцію = {a} / {b}.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q06</idnumber>
+    <synchronize>0</synchronize>
+    <single>0</single>
+    <answernumbering>abc</answernumbering>
+    <shuffleanswers>0</shuffleanswers>
+    <correctfeedback format="html"><text></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text></text></incorrectfeedback>
+    <answer fraction="100">
+      <text>{a}/{b}</text>
+      <tolerance>0.01</tolerance>
+      <tolerancetype>1</tolerancetype>
+      <correctanswerformat>1</correctanswerformat>
+      <correctanswerlength>2</correctanswerlength>
+      <feedback format="html"><text></text></feedback>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+    <dataset_definitions>
+      <dataset_definition>
+        <status><text>private</text></status>
+        <name><text>a</text></name>
+        <type>calculated</type>
+        <distribution><text>uniform</text></distribution>
+        <minimum><text>100</text></minimum>
+        <maximum><text>900</text></maximum>
+        <decimals><text>0</text></decimals>
+        <itemcount>3</itemcount>
+        <dataset_items>
+          <dataset_item><number>1</number><value>300</value></dataset_item>
+          <dataset_item><number>2</number><value>450</value></dataset_item>
+          <dataset_item><number>3</number><value>720</value></dataset_item>
+        </dataset_items>
+        <number_of_items>3</number_of_items>
+      </dataset_definition>
+      <dataset_definition>
+        <status><text>private</text></status>
+        <name><text>b</text></name>
+        <type>calculated</type>
+        <distribution><text>uniform</text></distribution>
+        <minimum><text>100</text></minimum>
+        <maximum><text>400</text></maximum>
+        <decimals><text>0</text></decimals>
+        <itemcount>3</itemcount>
+        <dataset_items>
+          <dataset_item><number>1</number><value>200</value></dataset_item>
+          <dataset_item><number>2</number><value>300</value></dataset_item>
+          <dataset_item><number>3</number><value>400</value></dataset_item>
+        </dataset_items>
+        <number_of_items>3</number_of_items>
+      </dataset_definition>
+    </dataset_definitions>
+    <tags>
+      <tag><text>bloom-apply</text></tag>
+    </tags>
+  </question>
+
+  <!-- 7. Перетягування в текст ddwtos (analyze) -->
+  <question type="ddwtos">
+    <name><text>Т01 ddwtos: органи товариства</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Вищим органом акціонерного товариства є [[1]], а контроль за виконавчим органом здійснює [[2]].</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q07</idnumber>
+    <shuffleanswers>1</shuffleanswers>
+    <correctfeedback format="html"><text>Правильно.</text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text>Частково правильно.</text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text>Неправильно.</text></incorrectfeedback>
+    <shownumcorrect/>
+    <dragbox><text>загальні збори</text><group>1</group></dragbox>
+    <dragbox><text>наглядова рада</text><group>1</group></dragbox>
+    <dragbox><text>ревізор</text><group>1</group></dragbox>
+    <tags>
+      <tag><text>bloom-analyze</text></tag>
+    </tags>
+  </question>
+
+  <!-- 8. Вкладені відповіді Cloze (analyze) -->
+  <question type="cloze">
+    <name><text>Т01 cloze: кейс кворуму</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Кейс. На збори зареєструвалися акціонери з 60,5 % голосів. Кворум {1:MULTICHOICE:=є~немає} (поріг понад 50 %). Перевищення порогу становить {1:NUMERICAL:=10.5:0.05} процентного пункту (дробова частина через кому). Орган, що скликає збори: {1:SHORTANSWER:=наглядова рада}.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T01-Q08</idnumber>
+    <tags>
+      <tag><text>bloom-analyze</text></tag>
+    </tags>
+  </question>
+
+  <question type="category">
+    <category><text>top/SPIKE М1/SPIKE Т02</text></category>
+    <info format="html"><text>Тема 2 спайку: контрольна категорія для перевірки фільтра</text></info>
+    <idnumber>SPIKE-M1-T02</idnumber>
+  </question>
+
+  <!-- 9-10. Питання тієї самої мітки remember в іншій категорії: випадковий слот
+       з фільтром «Т01 + bloom-remember» НЕ має їх брати. -->
+  <question type="truefalse">
+    <name><text>Т02 truefalse: емісія акцій</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Рішення про емісію акцій приймає загальні збори акціонерів.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T02-Q01</idnumber>
+    <answer fraction="100" format="moodle_auto_format"><text>true</text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="moodle_auto_format"><text>false</text><feedback format="html"><text></text></feedback></answer>
+    <tags><tag><text>bloom-remember</text></tag></tags>
+  </question>
+
+  <question type="multichoice">
+    <name><text>Т02 single: дивідендна політика</text></name>
+    <questiontext format="html"><text><![CDATA[<p>Який документ визначає порядок виплати дивідендів?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>SPIKE-T02-Q02</idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html"><text></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text></text></incorrectfeedback>
+    <answer fraction="100" format="html"><text>Статут і положення про дивідендну політику</text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text>Штатний розпис</text><feedback format="html"><text></text></feedback></answer>
+    <tags><tag><text>bloom-remember</text></tag></tags>
+  </question>
+
+</quiz>

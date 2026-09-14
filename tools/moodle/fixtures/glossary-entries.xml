@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GLOSSARY>
+  <INFO>
+    <NAME>Глосарій SPIKE</NAME>
+    <INTRO></INTRO>
+    <INTROFORMAT>1</INTROFORMAT>
+    <ALLOWDUPLICATEDENTRIES>0</ALLOWDUPLICATEDENTRIES>
+    <DISPLAYFORMAT>dictionary</DISPLAYFORMAT>
+    <SHOWSPECIAL>1</SHOWSPECIAL>
+    <SHOWALPHABET>1</SHOWALPHABET>
+    <SHOWALL>1</SHOWALL>
+    <ALLOWCOMMENTS>0</ALLOWCOMMENTS>
+    <USEDYNALINK>0</USEDYNALINK>
+    <DEFAULTAPPROVAL>1</DEFAULTAPPROVAL>
+    <GLOBALGLOSSARY>0</GLOBALGLOSSARY>
+    <ENTBYPAGE>10</ENTBYPAGE>
+    <ENTRIES>
+      <ENTRY>
+        <CONCEPT>Агентська проблема</CONCEPT>
+        <DEFINITION>&lt;p&gt;Конфлікт інтересів між власниками корпорації та найманими менеджерами, яким делеговано контроль.&lt;/p&gt;</DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+        <ALIASES>
+          <ALIAS><NAME>принципал-агент</NAME></ALIAS>
+        </ALIASES>
+        <CATEGORIES>
+          <CATEGORY><NAME>SPIKE М1</NAME><USEDYNALINK>0</USEDYNALINK></CATEGORY>
+        </CATEGORIES>
+      </ENTRY>
+      <ENTRY>
+        <CONCEPT>Кворум</CONCEPT>
+        <DEFINITION>&lt;p&gt;Мінімальна кількість голосів, за наявності якої загальні збори правомочні приймати рішення.&lt;/p&gt;</DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+        <CATEGORIES>
+          <CATEGORY><NAME>SPIKE М2</NAME><USEDYNALINK>0</USEDYNALINK></CATEGORY>
+        </CATEGORIES>
+      </ENTRY>
+      <ENTRY>
+        <CONCEPT>Наглядова рада</CONCEPT>
+        <DEFINITION>&lt;p&gt;Колегіальний орган товариства, що захищає права акціонерів і контролює виконавчий орган.&lt;/p&gt;</DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+      </ENTRY>
+    </ENTRIES>
+  </INFO>
+</GLOSSARY>

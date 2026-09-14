@@ -29,3 +29,6 @@ tools/moodle/out/
 
 # design review screenshots (local only)
 design/screens/
+
+# local Moodle credentials (generated from env/*.env.example)
+tools/moodle/env/*.env

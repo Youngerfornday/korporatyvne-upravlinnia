@@ -1,0 +1,72 @@
+# Локальний Moodle 5.2.2 для спайку й збирання .mbz.
+# Один файл описує обидва інстанси; різняться лише змінні з env/<інстанс>.env
+# і compose project name (див. up.sh). Порти прив'язані лише до 127.0.0.1.
+name: ${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME is required}
+
+services:
+  postgres:
+    image: postgres:16
+    restart: "no"
+    environment:
+      POSTGRES_USER: moodle
+      POSTGRES_PASSWORD: ${DB_PASS:?DB_PASS is required}
+      POSTGRES_DB: moodle
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./.data/${MOODLE_INSTANCE}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moodle -d moodle"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  moodle:
+    # Базовий образ erseco/alpine-moodle:v5.2.2 з вшитим vendor/ (див. docker/Dockerfile).
+    image: ku-moodle:5.2.2
+    build:
+      context: ./docker
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SITE_URL: http://localhost:${MOODLE_PORT}
+      DB_TYPE: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: moodle
+      DB_USER: moodle
+      DB_PASS: ${DB_PASS}
+      MOODLE_USERNAME: ${MOODLE_ADMIN_USER}
+      MOODLE_PASSWORD: ${MOODLE_ADMIN_PASS}
+      MOODLE_EMAIL: admin@example.com
+      MOODLE_SITENAME: KU_${MOODLE_INSTANCE}
+      MOODLE_LANGUAGE: en
+      DEBUG: "false"
+      memory_limit: 1024M
+      max_input_vars: "10000"
+      post_max_size: 256M
+      upload_max_filesize: 256M
+      client_max_body_size: 256M
+      SMTP_HOST: ""
+      # nginx в образі слухає 8080, а Moodle порівнює порт запиту (SERVER_PORT) з портом wwwroot
+      # і при розбіжності нескінченно перенаправляє на wwwroot. Тому nginx слухає той самий порт,
+      # що й опублікований на хості.
+      PRE_CONFIGURE_COMMANDS: "sed -i 's/listen [0-9]* default_server/listen ${MOODLE_PORT} default_server/' /etc/nginx/nginx.conf"
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+    ports:
+      - "127.0.0.1:${MOODLE_PORT}:${MOODLE_PORT}"
+    volumes:
+      - ./.data/${MOODLE_INSTANCE}/moodledata:/var/www/moodledata
+      - ./spike:/work/spike:ro
+      - ./fixtures:/work/fixtures:ro
+      - ./out:/work/out
+    healthcheck:
+      # Moodle перенаправляє запити з чужим Host на wwwroot (303), тому редиректи не слідуємо:
+      # достатньо, що nginx+php відповідають кодом < 500 (під час інсталяції nginx ще не запущено).
+      test: ["CMD-SHELL", "code=$$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${MOODLE_PORT}/login/index.php); [ \"$$code\" -ge 200 ] && [ \"$$code\" -lt 500 ]"]
+      interval: 10s
+      timeout: 10s
+      retries: 90
+      start_period: 60s

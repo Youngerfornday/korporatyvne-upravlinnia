@@ -1,0 +1,13 @@
+{
+  "name": "ku-moodle-spike-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Скриптові перевірки Playwright для спайку Moodle 5.2.2 (відновлення від викладача і перевірка курсу)",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
