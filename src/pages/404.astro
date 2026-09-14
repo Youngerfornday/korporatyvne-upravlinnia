@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/url';
+---
+
+<BaseLayout
+  title="Сторінку не знайдено — Корпоративне управління"
+  description="Такої сторінки курсу немає."
+  noindex
+>
+  <h1>Сторінку не знайдено</h1>
+  <p>Можливо, в адресі помилка або цю сторінку ще не створено: курс у розробці.</p>
+  <p><a href={url()}>Перейти на головну сторінку курсу</a></p>
+</BaseLayout>

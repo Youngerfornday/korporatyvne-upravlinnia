@@ -1,0 +1,59 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pluralUk } from '../lib/plural';
+import { url } from '../lib/url';
+
+const courseEntry = await getEntry('course', 'course');
+if (!courseEntry) throw new Error('Не знайдено content/course.yaml');
+const course = courseEntry.data;
+
+const modules = course.modules.map((module, index) => ({
+  ...module,
+  number: index + 1,
+  topics: course.topics.filter((topic) => topic.module === module.id),
+}));
+
+const credits = pluralUk(course.credits, { one: 'кредит', few: 'кредити', many: 'кредитів', other: 'кредиту' });
+const moduleCount = pluralUk(modules.length, { one: 'модуль', few: 'модулі', many: 'модулів', other: 'модуля' });
+const hours = pluralUk(course.hours.total, { one: 'година', few: 'години', many: 'годин', other: 'години' });
+---
+
+<BaseLayout
+  title={`${course.title} — ${course.institutionShort}`}
+  description={`Навчальний курс «${course.title}» для бакалаврату: ${credits} ЄКТС, ${moduleCount}.`}
+>
+  <h1>{course.title}</h1>
+  <p>{course.institution}</p>
+  <p><strong>Курс у розробці.</strong> Матеріали з’являтимуться тут поступово.</p>
+
+  <section aria-labelledby="modules-heading">
+    <h2 id="modules-heading">Модулі курсу</h2>
+    <ol>
+      {
+        modules.map((module) => (
+          <li>
+            <h3>
+              <a href={url(`moduli/${module.id}/`)}>
+                Модуль {module.number}. {module.title}
+              </a>
+            </h3>
+            <ol>
+              {module.topics.map((topic) => (
+                <li>{topic.title}</li>
+              ))}
+            </ol>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section aria-labelledby="volume-heading">
+    <h2 id="volume-heading">Обсяг</h2>
+    <p>
+      {credits} ЄКТС, {hours}: лекції — {course.hours.lectures}, практичні заняття — {course.hours.practicals},
+      самостійна робота — {course.hours.selfStudy}.
+    </p>
+  </section>
+</BaseLayout>
