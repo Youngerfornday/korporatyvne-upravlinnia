@@ -1,0 +1,67 @@
+import { z } from 'zod';
+import { ModuleIdSchema, findDuplicates } from './primitives';
+import {
+  DdwtosQuestionSchema,
+  MatchingQuestionSchema,
+  MultichoiceQuestionSchema,
+  TrueFalseQuestionSchema,
+} from './question-types/choice';
+import { MultianswerQuestionSchema } from './question-types/cloze';
+import { CalculatedQuestionSchema, NumericalQuestionSchema } from './question-types/numeric';
+
+export { BloomLevelSchema, MOODLE_GRADE_PERCENTS, type BloomLevel } from './question-types/shared';
+
+/**
+ * Префікс canary-рядка контрольних банків. Склеюється під час виконання, щоб жоден файл
+ * публічного репозиторію (і зібраний JS) не містив цей рядок цілком: його шукає check:dist.
+ */
+export const CONTROL_CANARY_PREFIX = ['KU', 'CONTROL', 'CANARY', ''].join('-');
+
+/** Питання банку — дзеркало типів Moodle XML. Схема однакова для тренувальних і контрольних банків. */
+export const QuestionSchema = z.discriminatedUnion('type', [
+  MultichoiceQuestionSchema,
+  TrueFalseQuestionSchema,
+  MatchingQuestionSchema,
+  NumericalQuestionSchema,
+  CalculatedQuestionSchema,
+  DdwtosQuestionSchema,
+  MultianswerQuestionSchema,
+]);
+
+export type Question = z.infer<typeof QuestionSchema>;
+export type QuestionType = Question['type'];
+
+const CANARY_SUFFIX = /^[A-Za-z0-9][A-Za-z0-9-]*$/;
+
+/**
+ * Файл банку: `content/banks/training/mN.yaml` (публічний) або `banks/control/mN.yaml` (лише приватний репозиторій).
+ * Контрольний банк обов’язково має canary; тренувальний — ні.
+ */
+export const BankFileSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    kind: z.enum(['training', 'control']),
+    module: ModuleIdSchema,
+    canary: z.string().optional(),
+    questions: z.array(QuestionSchema).min(1),
+  })
+  .superRefine((bank, ctx) => {
+    if (bank.kind === 'control') {
+      const suffix = bank.canary?.startsWith(CONTROL_CANARY_PREFIX) ? bank.canary.slice(CONTROL_CANARY_PREFIX.length) : null;
+      if (suffix === null || !CANARY_SUFFIX.test(suffix)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Контрольний банк має містити поле canary: префікс контрольного canary і непорожній суфікс',
+          path: ['canary'],
+        });
+      }
+    }
+    if (bank.kind === 'training' && bank.canary !== undefined) {
+      ctx.addIssue({ code: 'custom', message: 'Тренувальний банк не повинен мати поле canary', path: ['canary'] });
+    }
+    for (const id of findDuplicates(bank.questions.map((q) => q.id))) {
+      ctx.addIssue({ code: 'custom', message: `Дублікат ID питання «${id}»`, path: ['questions'] });
+    }
+  });
+
+export type BankFile = z.infer<typeof BankFileSchema>;

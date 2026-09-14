@@ -1,0 +1,159 @@
+# Єдине джерело правди про курс. Схема: src/content/schemas/course.ts
+# Помилка валідації або дублікат ID зупиняє збірку.
+
+schemaVersion: 1
+status: draft
+title: Корпоративне управління
+institution: Національний університет «Чернігівська політехніка»
+institutionShort: НУ «Чернігівська політехніка»
+educationLevel: перший (бакалаврський) рівень
+language: uk
+
+# TODO(фаза 2): спеціальність (073 «Менеджмент» чи D3) і освітня програма — після звірки зі Стандартом.
+program: {}
+
+credits: 4
+hours:
+  total: 120
+  lectures: 32
+  practicals: 16
+  selfStudy: 72
+
+# Плейсхолдер: персональні дані викладача на сайт не переносимо без окремої згоди.
+teacher:
+  isPlaceholder: true
+  name: Викладач курсу
+
+modules:
+  - id: m1
+    title: Основи корпоративного управління
+  - id: m2
+    title: Органи корпоративного управління
+  - id: m3
+    title: Капітал, ринок і прозорість
+  - id: m4
+    title: Контроль, відповідальність, ефективність
+
+topics:
+  - id: t01
+    module: m1
+    slug: korporatsiia-i-korporatyvne-upravlinnia
+    title: Корпорація і корпоративне управління
+    summary: Відокремлення власності від контролю, агентська проблема, стейкхолдери, корпоративне управління і вартість.
+  - id: t02
+    module: m1
+    slug: modeli-ku-ta-mizhnarodni-standarty
+    title: Моделі корпоративного управління та міжнародні стандарти
+    summary: Англо-американська, німецька, японська і сімейна моделі; Принципи G20/ОЕСР 2023; таймлайн КУ в Україні.
+  - id: t03
+    module: m1
+    slug: pravove-pole-korporatyvnoho-biznesu
+    title: Правове поле корпоративного бізнесу
+    summary: ТОВ і ТДВ, ПАТ і ПрАТ за Законом № 2465-IX, наслідки скасування Господарського кодексу, статут і корпоративний договір.
+  - id: t04
+    module: m2
+    slug: aktsionery-ta-zahalni-zbory
+    title: Акціонери та загальні збори
+    summary: Права й захист міноритаріїв, форми зборів, кворум, кумулятивне голосування, squeeze-out і sell-out.
+  - id: t05
+    module: m2
+    slug: nahliadova-rada-i-rada-dyrektoriv
+    title: Наглядова рада і рада директорів
+    summary: Одно- та дворівнева структура, незалежні директори, комітети, оцінювання ради, корпоративний секретар.
+  - id: t06
+    module: m2
+    slug: vykonavchyi-menedzhment
+    title: Виконавчий менеджмент
+    summary: Фідуціарні обов’язки, конфлікт інтересів, значні правочини й правочини із заінтересованістю, винагорода і KPI.
+  - id: t07
+    module: m3
+    slug: korporatyvnyi-kapital-i-dyvidendna-polityka
+    title: Корпоративний капітал і дивідендна політика
+    summary: Акції, емісія, статутний капітал, чисті активи, викуп акцій, розрахунок дивідендів.
+  - id: t08
+    module: m3
+    slug: rynok-kapitalu-i-nktspfr
+    title: Ринок капіталу і НКЦПФР
+    summary: IPO, лістинг, депозитарна система, ринок корпоративного контролю, злиття й поглинання.
+  - id: t09
+    module: m3
+    slug: rozkryttia-informatsii-ta-zvitnist
+    title: Розкриття інформації та звітність
+    summary: Звіт про управління, Кодекс корпоративного управління НКЦПФР («дотримуйся або пояснюй»), ESG-звітність.
+  - id: t10
+    module: m4
+    slug: vnutrishnii-kontrol-ryzyky-audyt-i-komplaiens
+    title: Внутрішній контроль, ризики, аудит і комплаєнс
+    summary: Модель трьох ліній, COSO, аудиторський комітет, антикорупційна програма.
+  - id: t11
+    module: m4
+    slug: ksv-kultura-etyka-ta-ku-derzhpidpryiemstv
+    title: КСВ, корпоративна культура й етика, КУ державних підприємств
+    summary: Корпоративна соціальна відповідальність, культура й етика, особливості управління державними підприємствами.
+  - id: t12
+    module: m4
+    slug: otsiniuvannia-efektyvnosti-ku
+    title: Оцінювання ефективності корпоративного управління
+    summary: Рейтинги й індекси, показники для кредиторів, TSR, EVA, MVA, Q Тобіна, самооцінювання ради.
+
+# TODO(фаза 2): коди ПРН зі Стандарту вищої освіти і ОП університету, формулювання, прив’язка до тем.
+# Поля code, statement і topics опціональні, доки фаза 2 їх не заповнить.
+learningOutcomes:
+  - id: prn01
+  - id: prn02
+  - id: prn03
+  - id: prn04
+
+# Реєстр термінів глосарію: ID унікальні в межах усього курсу. Визначення — у modules/mN/tNN/glossary.yaml.
+glossaryTerms:
+  - id: corporation
+    topic: t01
+  - id: corporate-governance
+    topic: t01
+  - id: agency-problem
+    topic: t01
+
+grading:
+  split:
+    current: 60
+    final: 40
+  categories:
+    - id: practicals
+      stage: current
+      title: Практичні роботи
+      items: 8
+      pointsPerItem: 3
+    - id: module-tests
+      stage: current
+      title: Модульні тести
+      items: 4
+      pointsPerItem: 6
+    - id: case-project
+      stage: current
+      title: Кейс-проєкт «Аудит корпоративного управління компанії»
+      items: 1
+      pointsPerItem: 12
+    - id: final-test
+      stage: final
+      title: Підсумковий тест
+      items: 1
+      pointsPerItem: 40
+
+# TODO(фаза 2): звірити межі й формулювання з робочою програмою університету.
+scale:
+  - { min: 90, max: 100, ects: A, national: відмінно }
+  - { min: 82, max: 89, ects: B, national: добре }
+  - { min: 74, max: 81, ects: C, national: добре }
+  - { min: 64, max: 73, ects: D, national: задовільно }
+  - { min: 60, max: 63, ects: E, national: задовільно }
+  - { min: 35, max: 59, ects: FX, national: незадовільно з можливістю повторного складання }
+  - { min: 0, max: 34, ects: F, national: незадовільно з обов’язковим повторним вивченням дисципліни }
+
+# TODO(фаза 2): остаточні формулювання політик.
+policies:
+  attendance: Бали за відвідування не нараховуються.
+  deadlines: Роботи, подані після терміну без поважної причини, оцінюються з пониженням, визначеним у силабусі.
+  academicIntegrity: Роботи мають бути самостійними; виявлений плагіат або списування означає повторне виконання завдання.
+  ai: Інструменти штучного інтелекту дозволені для пошуку ідей і перевірки мови з обов’язковим зазначенням; видавати згенерований текст за власний заборонено.
+  bonusPoints: Додаткові бали можливі за участь у кейс-конкурсах і наукових заходах; сума балів не перевищує 100.
+  retakes: Повторне складання підсумкового тесту — у терміни, визначені розкладом ліквідації академічної заборгованості.
