@@ -42,6 +42,14 @@ describe('findUnbasedReferences', () => {
     ]);
   });
 
+  it('reports unquoted href and src attributes without the base', () => {
+    const html = `<a href=/moduli/m1/>М1</a><img src=/logo.svg alt=""><a href=${BASE}ok/>ok</a><a href=#top>top</a>`;
+    expect(findUnbasedReferences(html, BASE)).toEqual([
+      { attribute: 'href', value: '/moduli/m1/' },
+      { attribute: 'src', value: '/logo.svg' },
+    ]);
+  });
+
   it('reports protocol-relative URLs, srcset entries and CSS url() without the base', () => {
     const content = [
       '<script src="//cdn.example.com/x.js"></script>',

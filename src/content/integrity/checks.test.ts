@@ -18,7 +18,7 @@ const topicEntry = (filePath: string, data: Record<string, unknown>) => ({
   data: TopicFrontmatterSchema.parse({ description: 'Опис теми для пошуку.', updatedAt: '2026-09-14', ...data }),
 });
 
-const glossaryEntry = (filePath: string, topic: string, terms: Array<{ id: string; term: string }>) => ({
+const glossaryEntry = (filePath: string, topic: string, terms: Array<{ id: string; term: string; seeAlso?: string[] }>) => ({
   filePath,
   data: GlossaryFileSchema.parse({ topic, terms: terms.map((t) => ({ ...t, definition: `Визначення: ${t.term}.` })) }),
 });
@@ -77,6 +77,16 @@ describe('checkGlossaries', () => {
       glossaryEntry('content/modules/m1/t01/extra/glossary.yaml', 't01', [{ id: 'corporate-governance', term: 'корпорація' }]),
     ];
     expect(checkGlossaries(entries, registry).map((i) => i.message).join('\n')).toMatch(/Корпорація/i);
+  });
+
+  it('reports seeAlso references to terms that are not registered', () => {
+    const entries = [
+      glossaryEntry('content/modules/m1/t01/glossary.yaml', 't01', [
+        { id: 'agency-problem', term: 'Агентська проблема', seeAlso: ['corporation', 'ghost-term'] },
+      ]),
+    ];
+    const messages = checkGlossaries(entries, registry).map((issue) => issue.message);
+    expect(messages).toEqual([expect.stringMatching(/ghost-term/)]);
   });
 
   it('reports unregistered terms, terms from another topic and a topic that does not match the folder', () => {

@@ -80,6 +80,11 @@ export function checkGlossaries(entries: ReadonlyArray<ContentEntry<GlossaryFile
         if (registeredTopic !== data.topic) return [`Термін «${term.id}» зареєстровано за темою ${registeredTopic}, а визначено в ${data.topic}`];
         return [];
       }),
+      ...data.terms.flatMap((term) =>
+        term.seeAlso
+          .filter((target) => !registry.termTopic.has(target))
+          .map((target) => `Термін «${term.id}» посилається в seeAlso на незареєстрований термін «${target}»`),
+      ),
     ];
     return messages.map((message) => ({ file: filePath, message }));
   });

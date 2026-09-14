@@ -54,7 +54,8 @@ export const MatchingQuestionSchema = z
     type: z.literal('matching'),
     shuffleAnswers: z.boolean().default(true),
     pairs: z
-      .array(z.object({ prompt: NonEmptyTextSchema, answer: NonEmptyTextSchema, feedback: FeedbackSchema }))
+      // Moodle matching не має відгуку на пару: пояснення — у generalFeedback.
+      .array(z.object({ prompt: NonEmptyTextSchema, answer: NonEmptyTextSchema, feedback: FeedbackSchema.optional() }))
       .min(MIN_CHOICES),
     distractors: z.array(NonEmptyTextSchema).default([]),
   })

@@ -103,6 +103,12 @@ describe('QuestionSchema: multichoice', () => {
 });
 
 describe('QuestionSchema: matching, numerical, calculated', () => {
+  it('accepts matching pairs without per-pair feedback, which Moodle does not support', () => {
+    const question = matching();
+    const pairs = question.pairs.map(({ prompt, answer }) => ({ prompt, answer }));
+    expect(issuesOf({ ...question, pairs })).toEqual([]);
+  });
+
   it('requires at least three answers in total for matching', () => {
     expect(issuesOf({ ...matching(), distractors: [] })).toContainEqual(expect.stringMatching(/три/));
   });

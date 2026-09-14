@@ -8,6 +8,7 @@ import { join } from 'node:path';
 export const CANARY_MARKER = ['KU', 'CONTROL', 'CANARY'].join('-');
 
 const URL_ATTRIBUTE = /\s(href|src|srcset|action|formaction|poster|xlink:href)\s*=\s*(["'])(.*?)\2/gis;
+const UNQUOTED_URL_ATTRIBUTE = /\s(href|src|action|formaction|poster|xlink:href)\s*=\s*([^\s"'`=<>]+)/gi;
 const CSS_URL = /url\(\s*(["']?)(\/[^"')\s]*)\1\s*\)/gi;
 
 /** '/korporatyvne-upravlinnia' → '/korporatyvne-upravlinnia/'; відсутній base → '/'. */
@@ -35,6 +36,9 @@ export function findUnbasedReferences(content, base) {
     for (const candidate of candidates) {
       if (isUnbased(candidate, base)) findings.push({ attribute: name, value: candidate });
     }
+  }
+  for (const [, attribute, value] of content.matchAll(UNQUOTED_URL_ATTRIBUTE)) {
+    if (isUnbased(value, base)) findings.push({ attribute: attribute.toLowerCase(), value });
   }
   for (const [, , value] of content.matchAll(CSS_URL)) {
     if (isUnbased(value, base)) findings.push({ attribute: 'url()', value });
