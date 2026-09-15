@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { createFakeStorage, quotaExceededError } from './__fixtures__/fake-storage';
 import { FIXED_NOW, LATER_NOW, sampleProgress } from './__fixtures__/sample-state';
 import {
+  MAX_BACKUP_PREFIX_LENGTH,
   PROGRESS_BACKUP_KEY,
   PROGRESS_STORAGE_KEY,
   PROGRESS_STORAGE_PREFIX,
   createLocalStorageProgressStore,
 } from './local-storage-store';
-import { serializeProgress } from './codec';
+import { MAX_SERIALIZED_PROGRESS_LENGTH, serializeProgress } from './codec';
 import { createEmptyProgress } from './state';
 
 const now = () => FIXED_NOW;
@@ -63,11 +64,11 @@ describe('createLocalStorageProgressStore: normal operation', () => {
 
   it('reports migrated data', () => {
     // Arrange
-    const storage = createFakeStorage({ [PROGRESS_STORAGE_KEY]: '{"schemaVersion":0,"points":7}' });
+    const storage = createFakeStorage({ [PROGRESS_STORAGE_KEY]: '{"schemaVersion":1,"points":7}' });
     const store = createLocalStorageProgressStore({
       getStorage: () => storage,
       now,
-      migrations: { 0: (input) => ({ ...createEmptyProgress(FIXED_NOW), xp: input['points'] }) },
+      migrations: { 1: (input) => ({ ...createEmptyProgress(FIXED_NOW), xp: input['points'] }) },
     });
 
     // Act
@@ -141,6 +142,26 @@ describe('createLocalStorageProgressStore: damaged or foreign data', () => {
     expect(storage.entries().get(PROGRESS_BACKUP_KEY)).toBe(future);
   });
 
+  it('does not copy an oversized payload into the backup, only a bounded marker', () => {
+    // Arrange
+    const huge = `{"pad":"${'x'.repeat(MAX_SERIALIZED_PROGRESS_LENGTH)}"}`;
+    const storage = createFakeStorage({ [PROGRESS_STORAGE_KEY]: huge });
+    const store = createLocalStorageProgressStore({ getStorage: () => storage, now });
+
+    // Act
+    const result = store.load();
+    const backup = storage.entries().get(PROGRESS_BACKUP_KEY) ?? '';
+
+    // Assert
+    expect(result).toMatchObject({ status: 'recovered', issue: 'too-large', backupSaved: true });
+    expect(backup.length).toBeLessThan(MAX_BACKUP_PREFIX_LENGTH + 200);
+    expect(JSON.parse(backup)).toEqual({
+      truncated: true,
+      originalLength: huge.length,
+      prefix: huge.slice(0, MAX_BACKUP_PREFIX_LENGTH),
+    });
+  });
+
   it('reports when the backup itself cannot be written', () => {
     // Arrange
     const storage = createFakeStorage({ [PROGRESS_STORAGE_KEY]: '{broken' });
@@ -167,7 +188,7 @@ describe('createLocalStorageProgressStore: storage unavailable', () => {
     // Assert
     expect(saved).toMatchObject({ status: 'memory-only', reason: 'unavailable' });
     expect(loaded.status).toBe('memory-only');
-    expect(loaded.state.xp).toBe(120);
+    expect(loaded.state.xp).toBe(sampleProgress().xp);
     expect(store.isPersistent()).toBe(false);
     expect(store.clear()).toEqual({ status: 'memory-only' });
     expect(store.load().status).toBe('empty');
@@ -214,7 +235,7 @@ describe('createLocalStorageProgressStore: storage unavailable', () => {
     // Assert
     expect(failed).toMatchObject({ status: 'memory-only', reason: 'write-failed' });
     expect(whileFailing).toMatchObject({ status: 'memory-only' });
-    expect(whileFailing.state.xp).toBe(120);
+    expect(whileFailing.state.xp).toBe(sampleProgress().xp);
     expect(store.isPersistent()).toBe(true);
     expect(recovered.status).toBe('saved');
     expect(store.load().status).toBe('loaded');

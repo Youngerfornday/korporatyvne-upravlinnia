@@ -44,10 +44,12 @@ describe('createMemoryProgressStore', () => {
     const loaded = store.load().state;
 
     // Act
-    loaded.badges.push('mutated');
+    loaded.badges['mutated'] = { awardedAt: loaded.updatedAt };
+    loaded.recentEventIds.push('mutated');
 
     // Assert
-    expect(store.load().state.badges).toEqual(['kvorum-zibrano']);
+    expect(store.load().state.badges).toEqual(sampleProgress().badges);
+    expect(store.load().state.recentEventIds).toEqual(sampleProgress().recentEventIds);
   });
 
   it('rejects an invalid state and keeps the previous one', () => {
@@ -59,7 +61,7 @@ describe('createMemoryProgressStore', () => {
 
     // Assert
     expect(result).toEqual({ status: 'rejected', reason: 'invalid-state' });
-    expect(store.load().state.xp).toBe(120);
+    expect(store.load().state.xp).toBe(sampleProgress().xp);
   });
 
   it('rejects a state that exceeds the configured size limit', () => {

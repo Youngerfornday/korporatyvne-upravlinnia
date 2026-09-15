@@ -10,6 +10,9 @@ export const PROGRESS_STORAGE_KEY = `${PROGRESS_STORAGE_PREFIX}progress`;
 export const PROGRESS_BACKUP_KEY = `${PROGRESS_STORAGE_PREFIX}progress-backup`;
 const PROBE_KEY = `${PROGRESS_STORAGE_PREFIX}probe`;
 
+/** Скільки символів завеликого запису зберігається в резервній копії (для діагностики). */
+export const MAX_BACKUP_PREFIX_LENGTH = 1000;
+
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export interface LocalStorageProgressStoreOptions extends ProgressStoreOptions {
@@ -55,7 +58,12 @@ export function createLocalStorageProgressStore(options: LocalStorageProgressSto
   }
 
   function recover(target: StorageLike, raw: string, issue: DecodeError): ProgressLoadResult {
-    const backup = attempt(() => target.setItem(PROGRESS_BACKUP_KEY, raw));
+    // Завеликий запис не копіюємо цілком: резервна копія сама могла б вичерпати квоту сховища.
+    const backupValue =
+      raw.length > maxLength
+        ? JSON.stringify({ truncated: true, originalLength: raw.length, prefix: raw.slice(0, MAX_BACKUP_PREFIX_LENGTH) })
+        : raw;
+    const backup = attempt(() => target.setItem(PROGRESS_BACKUP_KEY, backupValue));
     return { status: 'recovered', issue, backupSaved: backup.ok, state: createEmptyProgress(now()) };
   }
 

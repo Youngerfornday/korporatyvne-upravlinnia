@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { sampleProgress } from './__fixtures__/sample-state';
+import { FIXED_NOW, sampleProgress } from './__fixtures__/sample-state';
 import {
+  MAX_PROGRESS_CODE_INPUT_LENGTH,
   MAX_PROGRESS_CODE_LENGTH,
   PROGRESS_CODE_ERROR_MESSAGES,
+  PROGRESS_CODE_EXPORT_ERROR_MESSAGES,
   PROGRESS_CODE_PREFIX,
   exportProgressCode,
   importProgressCode,
@@ -15,14 +17,42 @@ function encodeRaw(json: string): string {
   return PROGRESS_CODE_PREFIX + btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
+function exportCode(state = sampleProgress()): string {
+  const result = exportProgressCode(state);
+  if (!result.ok) throw new Error(result.error);
+  return result.code;
+}
+
 describe('exportProgressCode', () => {
   it('produces a prefixed URL-safe code', () => {
     // Act
-    const code = exportProgressCode(sampleProgress());
+    const code = exportCode();
 
     // Assert
     expect(code.startsWith(PROGRESS_CODE_PREFIX)).toBe(true);
     expect(code.slice(PROGRESS_CODE_PREFIX.length)).toMatch(/^[A-Za-z0-9_-]+$/);
+  });
+
+  it('refuses a valid state that its own importer could not accept because of size', () => {
+    // Arrange
+    const flashcards = Object.fromEntries(
+      Array.from({ length: 1000 }, (_, index) => [`term-with-a-long-identifier-${index}`, { box: 1, reviewedAt: FIXED_NOW.toISOString() }]),
+    );
+
+    // Act
+    const result = exportProgressCode({ ...sampleProgress(), flashcards });
+
+    // Assert
+    expect(result).toEqual({ ok: false, error: 'too-large' });
+  });
+
+  it('reports an invalid state as a typed error instead of throwing', () => {
+    expect(exportProgressCode({ ...sampleProgress(), xp: -1 })).toEqual({ ok: false, error: 'invalid-state' });
+  });
+
+  it('has a Ukrainian message for every export error', () => {
+    expect(PROGRESS_CODE_EXPORT_ERROR_MESSAGES['too-large']).toMatch(/[а-яіїєґ]/i);
+    expect(PROGRESS_CODE_EXPORT_ERROR_MESSAGES['invalid-state']).toMatch(/[а-яіїєґ]/i);
   });
 });
 
@@ -32,7 +62,7 @@ describe('importProgressCode', () => {
     const state = sampleProgress();
 
     // Act
-    const result = importProgressCode(exportProgressCode(state));
+    const result = importProgressCode(exportCode(state));
 
     // Assert
     expect(result).toEqual({ ok: true, migrated: false, state });
@@ -40,7 +70,7 @@ describe('importProgressCode', () => {
 
   it('tolerates whitespace and line breaks added while copying', () => {
     // Arrange
-    const code = exportProgressCode(sampleProgress());
+    const code = exportCode();
     const pasted = `  ${code.slice(0, 20)}\n${code.slice(20, 40)} \t${code.slice(40)}\n`;
 
     // Act
@@ -52,6 +82,15 @@ describe('importProgressCode', () => {
 
   it('rejects an empty code', () => {
     expect(importProgressCode('   ')).toEqual({ ok: false, error: 'empty' });
+  });
+
+  it('rejects oversized raw input before stripping whitespace from it', () => {
+    // Arrange
+    const padded = ' '.repeat(MAX_PROGRESS_CODE_INPUT_LENGTH) + exportCode();
+
+    // Act and Assert
+    expect(importProgressCode(padded)).toEqual({ ok: false, error: 'too-large' });
+    expect(MAX_PROGRESS_CODE_INPUT_LENGTH).toBe(2 * MAX_PROGRESS_CODE_LENGTH);
   });
 
   it('rejects a code longer than the limit without decoding it', () => {
@@ -73,7 +112,7 @@ describe('importProgressCode', () => {
   });
 
   it('rejects well-formed JSON that is not a valid progress state', () => {
-    expect(importProgressCode(encodeRaw('{"schemaVersion":1,"xp":"lots"}'))).toEqual({
+    expect(importProgressCode(encodeRaw('{"schemaVersion":2,"xp":"lots"}'))).toEqual({
       ok: false,
       error: 'invalid-data',
     });

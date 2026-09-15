@@ -15,7 +15,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/engines', 'src/lib', 'src/content/schemas', 'src/content/integrity', 'tools/checks'],
-      exclude: ['**/*.test.ts', '**/*.test.mjs', '**/__fixtures__/**', 'tools/checks/check-dist.mjs'],
+      exclude: ['**/*.test.ts', '**/*.test.mjs', '**/*.md', '**/__fixtures__/**', 'tools/checks/check-dist.mjs'],
       reporter: ['text', 'html'],
       thresholds: {
         ...thresholds,

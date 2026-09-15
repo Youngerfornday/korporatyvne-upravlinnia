@@ -1,3 +1,4 @@
+import { migrateV1ToV2 } from './migrate-v1-to-v2';
 import { PROGRESS_SCHEMA_VERSION, ProgressStateSchema, type ProgressState } from './state';
 
 /** Перетворює дані версії N на дані версії N + 1. Не повинна мутувати вхід. */
@@ -7,10 +8,10 @@ export type Migration = (input: Readonly<Record<string, unknown>>) => Record<str
 export type MigrationTable = Readonly<Record<number, Migration>>;
 
 /**
- * Міграції збережених даних прогресу. Версія 1 — перша опублікована, тож таблиця поки порожня.
- * Додаючи версію 2: підняти PROGRESS_SCHEMA_VERSION, описати нову схему і додати сюди `1: (v1) => v2`.
+ * Міграції збережених даних прогресу. Додаючи версію N + 1: підняти PROGRESS_SCHEMA_VERSION,
+ * заморозити схему версії N окремим файлом і додати сюди `N: (vN) => vN+1`.
  */
-export const PROGRESS_MIGRATIONS: MigrationTable = {};
+export const PROGRESS_MIGRATIONS: MigrationTable = { 1: migrateV1ToV2 };
 
 export type MigrationError = 'not-object' | 'missing-version' | 'future-version' | 'missing-migration' | 'invalid-data';
 
