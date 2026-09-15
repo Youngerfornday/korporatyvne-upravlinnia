@@ -3,6 +3,7 @@
    НУ «Чернігівська політехніка». Світла тема на :root, темна —
    через prefers-color-scheme (без [data-theme="light"]) і [data-theme="dark"].
    Джерело кольорів бренду: офіційний брендбук університету (2021).
+   Джерело: design/tokens.css (затверджено). Логотип — img-елемент у шапці, тому --logo-src тут немає.
    ============================================================ */
 
 :root {
@@ -30,7 +31,7 @@
   /* --- Текст --- */
   --ink: #0f1c2e;
   --ink-2: #445570;             /* вторинний, 7:1 на білому */
-  --ink-3: #5f6f88;             /* підписи, 4,77:1 на --bg (AA) */
+  --ink-3: #5f6f88;             /* підписи; у design/tokens.css #6b7a90 дає лише 4,08:1 — затемнено до 4,77:1 на --bg і 4,68:1 на --bg-sunken (AA) */
   --ink-on-tint: #1d3557;
 
   /* --- Лінії --- */
@@ -65,7 +66,7 @@
   /* --- Гейміфікація --- */
   --xp: #b8860b;                /* XP — латунний, не «золото» */
   --xp-soft: #f7efd6;
-  --xp-ink: #7a5600;            /* текст XP на --xp-soft, 5,7:1 */
+  --xp-ink: #7a5600;            /* текст XP на --xp-soft, 5,7:1 (сам --xp дає 2,8:1) */
   --level: var(--lavender-ink);
   --badge-fill: var(--brand-lavender);
   --badge-ink: var(--brand-blue-deep);
@@ -137,7 +138,6 @@
   --z-toast: 60;
 
   /* --- Логотип --- */
-  --logo-src: url("assets/logo-cpnu-uk.png");
 }
 
 /* Темна тема: похідні від темно-синього бренду, не інверсія. */
@@ -185,7 +185,6 @@
 
     --xp: #e2b85c;
     --xp-soft: #2d2510;
-  --xp-ink: #f0cd7a;
     --xp-ink: #f0cd7a;
     --level: #c4bfe6;
     --badge-fill: #a59fce;
@@ -196,7 +195,6 @@
     --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -12px rgba(0, 0, 0, 0.7);
     --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.5), 0 28px 56px -24px rgba(0, 0, 0, 0.8);
 
-    --logo-src: url("assets/logo-cpnu-uk-white.png");
   }
 }
 
@@ -243,6 +241,7 @@
 
   --xp: #e2b85c;
   --xp-soft: #2d2510;
+  --xp-ink: #f0cd7a;
   --level: #c4bfe6;
   --badge-fill: #a59fce;
   --badge-ink: #0b1424;
@@ -252,7 +251,6 @@
   --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -12px rgba(0, 0, 0, 0.7);
   --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.5), 0 28px 56px -24px rgba(0, 0, 0, 0.8);
 
-  --logo-src: url("assets/logo-cpnu-uk-white.png");
 }
 
 @media (prefers-reduced-motion: reduce) {

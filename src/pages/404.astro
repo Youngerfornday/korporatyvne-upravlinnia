@@ -1,14 +1,24 @@
 ---
+import Icon from '../components/site/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { url } from '../lib/url';
 ---
 
-<BaseLayout
-  title="Сторінку не знайдено — Корпоративне управління"
-  description="Такої сторінки курсу немає."
-  noindex
->
-  <h1>Сторінку не знайдено</h1>
-  <p>Можливо, в адресі помилка або цю сторінку ще не створено: курс у розробці.</p>
-  <p><a href={url()}>Перейти на головну сторінку курсу</a></p>
+<BaseLayout title="Сторінку не знайдено — Корпоративне управління" description="Такої сторінки курсу немає." noindex>
+  <div class="container notfound">
+    <p class="kicker num">404</p>
+    <h1 class="h1">Сторінку не знайдено</h1>
+    <p class="lede">Можливо, в адресі помилка, або цю сторінку ще не створено: курс у розробці й розділи з’являються поступово.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href={url()}>Перейти на головну сторінку курсу</a>
+      <a class="btn btn-secondary" href={url('temy/')}>Усі теми <Icon name="arrow-r" /></a>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .notfound { padding-block: var(--s-9) var(--s-8); max-width: var(--container-read); }
+  .kicker { font-size: var(--text-sm); font-weight: 650; letter-spacing: var(--tracking-caps); color: var(--ink-3); margin-bottom: var(--s-3); }
+  .lede { margin-top: var(--s-4); }
+  .actions { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
+</style>

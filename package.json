@@ -15,20 +15,26 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:live": "playwright test --config playwright.live.config.ts",
-    "check:dist": "node tools/checks/check-dist.mjs"
+    "check:dist": "node tools/checks/check-dist.mjs",
+    "lint:typography": "node tools/checks/typography-lint.mjs",
+    "test:e2e": "playwright test --config e2e/site/playwright.config.ts",
+    "screens": "node e2e/site/screens.mjs"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.1",
     "@astrojs/mdx": "8.0.1",
     "@astrojs/react": "6.0.5",
     "@astrojs/sitemap": "3.7.4",
     "astro": "7.3.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "satteri": "0.10.5",
     "yaml": "2.9.1",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.63.0",
     "@types/node": "24.13.4",
     "@types/react": "19.3.0",

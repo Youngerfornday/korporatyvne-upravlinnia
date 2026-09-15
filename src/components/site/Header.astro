@@ -1,0 +1,109 @@
+---
+import { CABINET_PATH, NAV_ITEMS, type NavId } from '../../lib/site-nav';
+import { url } from '../../lib/url';
+import Icon from './Icon.astro';
+import PlayerChip from './PlayerChip.astro';
+
+interface Props {
+  current?: NavId | undefined;
+  courseTitle: string;
+  institution: string;
+}
+
+const { current, courseTitle, institution } = Astro.props;
+const logoLight = url('brand/logo-cpnu-uk.png');
+const logoDark = url('brand/logo-cpnu-uk-white.png');
+---
+
+<header class="topbar">
+  <div class="container topbar-in">
+    <a class="brand" href={url()} aria-label={`${courseTitle} — на головну`}>
+      <img class="brand-logo is-light" src={logoLight} width="760" height="459" alt={institution} />
+      <img class="brand-logo is-dark" src={logoDark} width="760" height="459" alt={institution} />
+      <span class="brand-text" aria-hidden="true">
+        <span class="brand-title">{courseTitle}</span>
+        <span class="brand-sub">Онлайн-курс для бакалаврів менеджменту</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Основна">
+      {
+        NAV_ITEMS.map((item) =>
+          item.path !== undefined ? (
+            <a href={url(item.path)} aria-current={item.id === current ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ) : (
+            <span class="nav-soon" title="Розділ готується">
+              {item.label}
+              <small>незабаром</small>
+            </span>
+          ),
+        )
+      }
+    </nav>
+
+    <div class="topbar-actions">
+      <div class="seg" role="group" aria-label="Вид">
+        <a href={url()} aria-current="true">Студент</a>
+        <a href={url(CABINET_PATH)}>Викладач</a>
+      </div>
+      <button class="iconbtn search-btn" type="button" aria-label="Пошук по курсу" data-search-placeholder>
+        <Icon name="search" />
+      </button>
+      <button class="iconbtn" type="button" aria-label="Перемкнути тему" data-theme-toggle>
+        <Icon name="sun" class="sun" />
+        <Icon name="moon" class="moon" />
+      </button>
+      <PlayerChip />
+      <button
+        class="iconbtn menu-btn"
+        type="button"
+        aria-label="Меню"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-open
+      >
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+
+  <dialog id="site-menu" class="menu" aria-labelledby="site-menu-title">
+    <div class="menu-head">
+      <h2 id="site-menu-title">Меню</h2>
+      <button class="iconbtn" type="button" aria-label="Закрити меню" data-menu-close>
+        <Icon name="x" />
+      </button>
+    </div>
+    <nav class="menu-nav" aria-label="Основна, меню">
+      {
+        NAV_ITEMS.map((item) =>
+          item.path !== undefined ? (
+            <a href={url(item.path)} aria-current={item.id === current ? 'page' : undefined}>
+              {item.label}
+              <Icon name="chev-r" size="sm" />
+            </a>
+          ) : (
+            <span class="nav-soon">
+              {item.label}
+              <small>незабаром</small>
+            </span>
+          ),
+        )
+      }
+    </nav>
+    <div class="menu-section">
+      <h3>Вид</h3>
+      <div class="seg" role="group" aria-label="Вид, меню">
+        <a href={url()} aria-current="true">Студент</a>
+        <a href={url(CABINET_PATH)}>Викладач</a>
+      </div>
+    </div>
+    <div class="menu-section">
+      <h3>Ваш рівень</h3>
+      <p class="small" data-player-summary>Акціонер · 0 XP. Прогрес зберігається у вашому браузері.</p>
+    </div>
+    <p class="menu-foot">{institution}</p>
+  </dialog>
+</header>

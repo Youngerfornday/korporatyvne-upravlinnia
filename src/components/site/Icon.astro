@@ -1,0 +1,24 @@
+---
+/** Іконка зі спрайта Icons.astro. Декоративна за замовчуванням; з `label` — доступна картинка. */
+interface Props {
+  name: string;
+  size?: 'sm' | 'md' | 'lg';
+  label?: string;
+  class?: string;
+}
+
+const { name, size = 'md', label, class: className } = Astro.props;
+const sizeClass = size === 'md' ? '' : `icon-${size}`;
+---
+
+{
+  label ? (
+    <svg class:list={['icon', sizeClass, className]} role="img" aria-label={label}>
+      <use href={`#i-${name}`} />
+    </svg>
+  ) : (
+    <svg class:list={['icon', sizeClass, className]} aria-hidden="true" focusable="false">
+      <use href={`#i-${name}`} />
+    </svg>
+  )
+}

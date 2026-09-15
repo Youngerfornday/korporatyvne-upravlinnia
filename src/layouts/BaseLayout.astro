@@ -1,18 +1,34 @@
 ---
 import { getEntry } from 'astro:content';
+import Footer from '../components/site/Footer.astro';
+import Header from '../components/site/Header.astro';
+import Icons from '../components/site/Icons.astro';
+import { PRELOAD_FONT_FILE, fontFaceCss } from '../lib/fonts';
+import { pluralUk } from '../lib/plural';
+import { THEME_STORAGE_KEY, type NavId } from '../lib/site-nav';
 import { url } from '../lib/url';
+import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  current?: NavId | undefined;
+  /** Шлях до OG-зображення відносно base; типово — статичне зображення курсу. */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, current, ogImage = 'brand/og-course.png', ogType = 'website' } = Astro.props;
 const courseEntry = await getEntry('course', 'course');
 if (!courseEntry) throw new Error('Не знайдено content/course.yaml');
 const course = courseEntry.data;
+
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImageUrl = Astro.site ? new URL(url(ogImage), Astro.site).href : url(ogImage);
+const credits = pluralUk(course.credits, { one: 'кредит', few: 'кредити', many: 'кредитів', other: 'кредиту' });
+const fontCss = fontFaceCss(url);
+const themeScript = `(function(){try{var t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`;
 ---
 
 <!doctype html>
@@ -22,22 +38,39 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#004f8f" />
     {noindex ? <meta name="robots" content="noindex" /> : canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={url('brand/favicon.svg')} type="image/svg+xml" />
     <link rel="sitemap" href={url('sitemap-index.xml')} />
+    <link rel="preload" href={url(PRELOAD_FONT_FILE)} as="font" type="font/woff2" crossorigin />
+    <meta property="og:site_name" content={`${course.title} — ${course.institutionShort}`} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${course.title}: онлайн-курс ${course.institutionShort}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline set:html={themeScript} />
+    <style is:inline set:html={fontCss}></style>
+    <slot name="head" />
   </head>
   <body>
-    <a href="#main">Перейти до основного вмісту</a>
-    <header>
-      <p><a href={url()}>{course.title}</a> · {course.institutionShort}</p>
-    </header>
+    <Icons />
+    <a class="skip" href="#main">Перейти до змісту</a>
+    <Header current={current} courseTitle={course.title} institution={course.institution} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <footer>
-      <p>
-        Код — ліцензія MIT. Навчальні матеріали — CC BY-NC-SA 4.0. Назва й логотип університету не підпадають під ці
-        ліцензії.
-      </p>
-    </footer>
+    <Footer institution={course.institution} credits={credits} />
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+      import { initSiteChrome } from '../components/site/chrome';
+      initSiteChrome();
+    </script>
   </body>
 </html>

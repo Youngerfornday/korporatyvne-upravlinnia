@@ -1,0 +1,52 @@
+---
+import type { ModuleView } from '../../lib/course-data';
+import { minutesLabel } from '../../lib/course-data-pure';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+
+/**
+ * Порядок денний: 4 колонки модулів, теми — нумеровані рядки зі знаком стану.
+ * Початковий стан — усе «не розпочато»; рушій прогресу гідрує за data-topic / data-state
+ * (todo | doing | done) і підставляє результат у [data-topic-progress].
+ */
+interface Props {
+  modules: readonly ModuleView[];
+}
+
+const { modules } = Astro.props;
+---
+
+<div class="agenda" data-agenda>
+  {
+    modules.map((module) => (
+      <section class="module" aria-labelledby={`module-${module.id}`} data-module={module.id}>
+        <div class="module-head">
+          <h3 class="module-name" id={`module-${module.id}`}>
+            <a href={url(`moduli/${module.id}/`)}>
+              <span class="n">М{module.number}</span>
+              {typo(module.title)}
+            </a>
+          </h3>
+          <span class="module-meta num" data-module-progress={module.id}>
+            0 із {module.topics.length}
+          </span>
+        </div>
+        {module.topics.map((topic) => (
+          <a class="topic" href={url(`temy/${topic.slug}/`)} data-topic={topic.id} data-state="todo">
+            <span class="mark mark-todo" data-topic-mark role="img" aria-label="Не розпочато" />
+            <span>
+              <span class="topic-title">
+                <span class="n">{topic.number}.</span>
+                {typo(topic.title)}
+              </span>
+              <span class="topic-meta">
+                <span>{topic.readingMinutes ? minutesLabel(topic.readingMinutes) : 'готується'}</span>
+                <span data-topic-progress={topic.id} />
+              </span>
+            </span>
+          </a>
+        ))}
+      </section>
+    ))
+  }
+</div>

@@ -1,0 +1,15 @@
+---
+/** Формула або розрахунок: слот не проходить через типографіку (плагін пропускає компонент Formula). */
+interface Props {
+  label?: string;
+  note?: string;
+}
+
+const { label, note } = Astro.props;
+---
+
+<div class="formula" role="figure" aria-label={label ? `Формула: ${label}` : 'Формула'} data-typography="off">
+  {label && <span class="formula-label">{label}</span>}
+  <span class="formula-body num"><slot /></span>
+  {note && <span class="formula-note">{note}</span>}
+</div>

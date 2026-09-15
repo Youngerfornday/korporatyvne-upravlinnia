@@ -1,0 +1,50 @@
+---
+import { CABINET_PATH } from '../../lib/site-nav';
+import { url } from '../../lib/url';
+
+interface Props {
+  institution: string;
+  credits: string;
+}
+
+const { institution, credits } = Astro.props;
+const logoLight = url('brand/logo-cpnu-uk.png');
+const logoDark = url('brand/logo-cpnu-uk-white.png');
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-in">
+      <div>
+        <img class="brand-logo is-light" src={logoLight} width="760" height="459" alt={institution} loading="lazy" />
+        <img class="brand-logo is-dark" src={logoDark} width="760" height="459" alt={institution} loading="lazy" />
+        <p class="footer-about">
+          Навчальна дисципліна кафедри менеджменту. Перший (бакалаврський) рівень, {credits} ЄКТС.
+        </p>
+      </div>
+      <nav class="footer-col" aria-labelledby="footer-course">
+        <h3 id="footer-course">Курс</h3>
+        <ul>
+          <li><a href={url('#agenda')}>Порядок денний курсу</a></li>
+          <li><a href={url('temy/')}>Усі теми</a></li>
+          <li><span class="soon">Практикуми й тренажери</span></li>
+          <li><span class="soon">Тренувальні тести</span></li>
+          <li><span class="soon">Флеш-картки й глосарій</span></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-teachers">
+        <h3 id="footer-teachers">Викладачам</h3>
+        <ul>
+          <li><a href={url(CABINET_PATH)}>Кабінет викладача</a></li>
+          <li><span class="soon">Як завантажити курс у Moodle</span></li>
+          <li><span class="soon">Пакети для eln.stu.cn.ua</span></li>
+          <li><span class="soon">Силабус і робоча програма</span></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-note">
+      <span>Код — MIT; зміст — CC BY-NC-SA 4.0. Назва й логотип університету — поза ліцензією.</span>
+      <span>Норми права звірені з реєстром legal-baseline; дата перевірки вказана біля кожної.</span>
+    </div>
+  </div>
+</footer>

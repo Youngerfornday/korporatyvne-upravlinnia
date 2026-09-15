@@ -1,0 +1,20 @@
+---
+import Icon from '../site/Icon.astro';
+
+/** Виноска: note (синя), warn (увага), ok (перевірено). Стан — знак і колір разом. */
+interface Props {
+  kind?: 'note' | 'warn' | 'ok';
+  title?: string;
+}
+
+const { kind = 'note', title } = Astro.props;
+const icons = { note: 'info', warn: 'alert', ok: 'check' } as const;
+---
+
+<aside class:list={['callout', `callout-${kind}`]} role="note">
+  <Icon name={icons[kind]} />
+  <div>
+    {title && <strong class="callout-title">{title}</strong>}
+    <div class="callout-body"><slot /></div>
+  </div>
+</aside>

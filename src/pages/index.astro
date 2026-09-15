@@ -1,59 +1,250 @@
 ---
-import { getEntry } from 'astro:content';
+import Agenda from '../components/site/Agenda.astro';
+import Icon from '../components/site/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadCourseData } from '../lib/course-data';
+import { INITIAL_LEVEL, PLAYER_LEVELS, formatXp } from '../lib/player-levels';
 import { pluralUk } from '../lib/plural';
+import { CABINET_PATH } from '../lib/site-nav';
+import { typo } from '../lib/typography';
 import { url } from '../lib/url';
 
-const courseEntry = await getEntry('course', 'course');
-if (!courseEntry) throw new Error('Не знайдено content/course.yaml');
-const course = courseEntry.data;
-
-const modules = course.modules.map((module, index) => ({
-  ...module,
-  number: index + 1,
-  topics: course.topics.filter((topic) => topic.module === module.id),
-}));
-
+const { course, modules, topics } = await loadCourseData();
+const practicals = course.grading.categories.find((category) => category.id === 'practicals')?.items ?? 0;
 const credits = pluralUk(course.credits, { one: 'кредит', few: 'кредити', many: 'кредитів', other: 'кредиту' });
-const moduleCount = pluralUk(modules.length, { one: 'модуль', few: 'модулі', many: 'модулів', other: 'модуля' });
-const hours = pluralUk(course.hours.total, { one: 'година', few: 'години', many: 'годин', other: 'години' });
+const description = `Онлайн-курс «${course.title}» для бакалаврів менеджменту: ${topics.length} тем, ${practicals} практикумів, тренажери з розрахунками й тести з розбором кожної відповіді. ${course.institutionShort}.`;
+
+/** Початковий стан без прогресу: наступна тема — перша. Рушій прогресу гідрує [data-quorum] і [data-continue]. */
+const nextTopic = topics[0];
+const facts = [
+  { value: modules.length, label: pluralUk(modules.length, { one: 'модуль', few: 'модулі', many: 'модулів', other: 'модуля' }).replace(/^\S+\s/, '') },
+  { value: topics.length, label: pluralUk(topics.length, { one: 'тема', few: 'теми', many: 'тем', other: 'теми' }).replace(/^\S+\s/, '') },
+  { value: practicals, label: pluralUk(practicals, { one: 'практикум', few: 'практикуми', many: 'практикумів', other: 'практикуму' }).replace(/^\S+\s/, '') },
+  { value: course.hours.total, label: pluralUk(course.hours.total, { one: 'година', few: 'години', many: 'годин', other: 'години' }).replace(/^\S+\s/, '') },
+];
+
+const trainers = [
+  {
+    id: 'quorum',
+    icon: 'scale',
+    title: 'Кворум і голосування',
+    text: 'Чи відбудуться збори, якщо зареєструвалося 48,7 % голосуючих акцій, і скільки треба для рішення про зміну статуту.',
+    formula: 'Кворум: понад 50 % голосуючих акцій',
+  },
+  {
+    id: 'cumulative',
+    icon: 'target',
+    title: 'Кумулятивне голосування',
+    text: 'Мінімальний пакет, щоб гарантовано провести k своїх кандидатів у раду з N місць.',
+    formula: 'S·k / (N + 1) + 1 акція',
+  },
+  {
+    id: 'dividends',
+    icon: 'calc',
+    title: 'Дивіденди й чисті активи',
+    text: 'Розподіл прибутку між привілейованими і простими акціями та перевірка, чи дозволяє виплату розмір чистих активів.',
+    formula: 'ЧА > СК після виплати',
+  },
+];
 ---
 
-<BaseLayout
-  title={`${course.title} — ${course.institutionShort}`}
-  description={`Навчальний курс «${course.title}» для бакалаврату: ${credits} ЄКТС, ${moduleCount}.`}
->
-  <h1>{course.title}</h1>
-  <p>{course.institution}</p>
-  <p><strong>Курс у розробці.</strong> Матеріали з’являтимуться тут поступово.</p>
+<BaseLayout title={`${course.title} — онлайн-курс ${course.institutionShort}`} description={description} current="course">
+  <section class="band hero" aria-labelledby="hero-title">
+    <svg class="orbits" viewBox="0 0 400 400" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1">
+      <circle cx="200" cy="200" r="60"></circle>
+      <circle cx="200" cy="200" r="110" stroke-dasharray="520 170"></circle>
+      <circle cx="200" cy="200" r="160" stroke-dasharray="380 620"></circle>
+      <circle cx="200" cy="200" r="198" stroke-dasharray="900 340"></circle>
+      <circle cx="260" cy="200" r="4" fill="currentColor" stroke="none"></circle>
+      <circle cx="200" cy="90" r="5" fill="currentColor" stroke="none"></circle>
+      <circle cx="87" cy="130" r="3.5" fill="currentColor" stroke="none"></circle>
+      <circle cx="340" cy="270" r="6" fill="currentColor" stroke="none"></circle>
+      <circle cx="200" cy="200" r="7" fill="currentColor" stroke="none"></circle>
+    </svg>
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <h1 class="display" id="hero-title">{course.title}</h1>
+          <p class="lede">
+            {typo(`Як власники, наглядова рада і менеджмент ділять владу та відповідальність у компанії, і що робити, коли їхні інтереси розходяться. ${topics.length} тем, ${practicals} практикумів, тренажери з розрахунками й тести з розбором кожної відповіді.`)}
+          </p>
+          <div class="hero-cta">
+            {
+              nextTopic && (
+                <a class="btn btn-primary btn-lg" href={url(`temy/${nextTopic.slug}/`)} data-continue data-topic={nextTopic.id}>
+                  <span data-continue-label>Почати: Тема {nextTopic.number}</span>
+                  <Icon name="arrow-r" />
+                </a>
+              )
+            }
+            <a class="btn btn-secondary btn-lg" href="#agenda">Порядок денний</a>
+          </div>
+          <dl class="facts" aria-label="Обсяг курсу">
+            {
+              facts.map((fact) => (
+                <div class="fact">
+                  <dd class="num">{fact.value}</dd>
+                  <dt>{fact.label}</dt>
+                </div>
+              ))
+            }
+          </dl>
+          <p class="hero-kicker-row">
+            <span>{course.educationLevel.charAt(0).toLocaleUpperCase('uk-UA') + course.educationLevel.slice(1)}</span>
+            <span>{credits} ЄКТС</span>
+            {course.program.specialtyTitle && <span>{typo(course.program.specialtyTitle)}</span>}
+          </p>
+        </div>
+        <aside class="quorum-panel" aria-labelledby="quorum-title" data-quorum data-total={topics.length}>
+          <h2 id="quorum-title">
+            Ваш кворум <span class="num" data-quorum-label>0 із {topics.length} тем</span>
+          </h2>
+          <div class="quorum" role="img" aria-label={`Пройдено 0 тем із ${topics.length}`} data-quorum-cells>
+            {topics.map((topic) => <i data-topic={topic.id} data-state="todo"></i>)}
+          </div>
+          <div class="quorum-label">
+            <span data-quorum-position>Початок курсу</span>
+            <span>Кворум для заліку: {topics.length} із {topics.length}</span>
+          </div>
+          {
+            nextTopic && (
+              <div class="next" data-quorum-next>
+                <div>
+                  <div class="next-label">Наступне питання порядку денного</div>
+                  <div class="next-title" data-quorum-next-title>
+                    {nextTopic.number}. {typo(nextTopic.title)}
+                  </div>
+                </div>
+                <a class="btn btn-ghost btn-sm" href={url(`temy/${nextTopic.slug}/`)} aria-label={`Відкрити тему ${nextTopic.number}`} data-quorum-next-link>
+                  <Icon name="arrow-r" />
+                </a>
+              </div>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </section>
 
-  <section aria-labelledby="modules-heading">
-    <h2 id="modules-heading">Модулі курсу</h2>
-    <ol>
+  <section class="section container" id="agenda" aria-labelledby="agenda-title">
+    <div class="section-head">
+      <h2 class="h2" id="agenda-title">Порядок денний</h2>
+      <p class="muted">
+        {typo(`Чотири модулі по три теми. Кожна тема — лонгрід зі схемою, нормою права, кейсом і самоперевіркою; за нею тренувальний тест.`)}
+      </p>
+    </div>
+    <Agenda modules={modules} />
+  </section>
+
+  <section class="section container" aria-labelledby="tools-title">
+    <div class="section-head">
+      <h2 class="h2" id="tools-title">Тренажери</h2>
+      <p class="muted">{typo('Кожне число в кейсі можна перерахувати самому. Формули відкриті. Тренажери з’являться разом із практикумами.')}</p>
+    </div>
+    <div class="tools" data-trainers>
       {
-        modules.map((module) => (
-          <li>
-            <h3>
-              <a href={url(`moduli/${module.id}/`)}>
-                Модуль {module.number}. {module.title}
-              </a>
-            </h3>
-            <ol>
-              {module.topics.map((topic) => (
-                <li>{topic.title}</li>
-              ))}
-            </ol>
-          </li>
+        trainers.map((trainer) => (
+          <article class="card tool" data-trainer={trainer.id} data-status="planned">
+            <Icon name={trainer.icon} size="lg" />
+            <div>
+              <h3>{trainer.title}</h3>
+              <p>{typo(trainer.text)}</p>
+              <div class="formula-line" data-typography="off">{trainer.formula}</div>
+              <span class="soon">незабаром</span>
+            </div>
+          </article>
         ))
       }
-    </ol>
+    </div>
   </section>
 
-  <section aria-labelledby="volume-heading">
-    <h2 id="volume-heading">Обсяг</h2>
-    <p>
-      {credits} ЄКТС, {hours}: лекції — {course.hours.lectures}, практичні заняття — {course.hours.practicals},
-      самостійна робота — {course.hours.selfStudy}.
-    </p>
+  <section class="section container" aria-labelledby="how-title">
+    <div class="how">
+      <div>
+        <h2 class="h2" id="how-title">Як росте ваш голос у курсі</h2>
+        <p class="muted how-text">
+          {typo('За прочитані теми, картки, тести й кейси нараховуються бали досвіду. Вони відкривають симуляції та наступні кар’єрні рівні — від акціонера з однією акцією до голови ради. Серій днів і таймерів немає: курс не підганяє.')}
+        </p>
+        <p class="muted how-text small">{typo('Прогрес зберігається у вашому браузері; його можна експортувати кодом і перенести на інший пристрій.')}</p>
+      </div>
+      <ol class="ladder" aria-label="Кар’єрні рівні" data-ladder>
+        {
+          PLAYER_LEVELS.map((level) => (
+            <li class="rung" data-level-id={level.id} data-now={level.id === INITIAL_LEVEL.id ? '' : undefined} aria-current={level.id === INITIAL_LEVEL.id ? 'step' : undefined}>
+              <Icon name="hex" class:list={['hex', { 'is-off': level.id !== INITIAL_LEVEL.id }]} />
+              <b>
+                {level.title}
+                {level.id === INITIAL_LEVEL.id && <span class="faint rung-now">— ви тут</span>}
+              </b>
+              <span class="num">{formatXp(level.minXp)}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="teachers-title">
+    <div class="teacher-strip">
+      <div>
+        <h2 class="h3" id="teachers-title">Викладачам</h2>
+        <p>
+          {typo('Кабінет показує курс як таблицю чи матрицю ПРН × теми, а режим вивантаження збирає ZIP із позначених матеріалів. Пакети для Moodle 5.2 — .mbz, Moodle XML, SCORM 1.2 — готові до імпорту на eln.stu.cn.ua.')}
+        </p>
+      </div>
+      <div class="btns">
+        <a class="btn btn-primary" href={url(CABINET_PATH)}>Відкрити кабінет</a>
+        <span class="soon">Інструкція для Moodle — незабаром</span>
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .hero { padding-block: var(--s-8) var(--s-7); }
+  .hero-grid { display: grid; grid-template-columns: 1.25fr 0.85fr; gap: var(--s-8); align-items: end; position: relative; }
+  .hero-kicker-row { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--text-sm); color: var(--band-ink-muted); margin-top: var(--s-4); }
+  .hero-kicker-row span + span::before { content: "·"; margin-right: var(--s-4); }
+  .hero .lede { color: var(--band-ink-muted); margin-top: var(--s-5); max-width: 48ch; }
+  .hero-cta { display: flex; gap: var(--s-3); margin-top: var(--s-6); flex-wrap: wrap; }
+  .quorum-panel { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--band-line); border-radius: var(--r-3); padding: var(--s-5); backdrop-filter: blur(6px); }
+  .quorum-panel h2 { font-size: var(--text-md); font-weight: 650; margin-bottom: var(--s-4); display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); flex-wrap: wrap; }
+  .quorum-panel h2 .num { font-weight: 500; color: var(--band-ink-muted); font-size: var(--text-sm); }
+  .next { display: grid; grid-template-columns: 1fr auto; gap: var(--s-3); align-items: center; margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--band-line); }
+  .next-label { font-size: var(--text-xs); color: var(--band-ink-muted); }
+  .next-title { font-weight: 600; font-size: var(--text-sm); margin-top: 2px; text-wrap: balance; }
+  .orbits { right: -6rem; top: -8rem; width: 34rem; height: 34rem; }
+  .facts { display: grid; grid-template-columns: repeat(4, auto); gap: var(--s-7); margin: var(--s-7) 0 0; padding-top: var(--s-5); border-top: 1px solid var(--band-line); justify-content: start; }
+  .fact dd { display: block; margin: 0; font-size: var(--text-xl); font-weight: 700; font-variation-settings: "wdth" 90; letter-spacing: var(--tracking-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .fact dt { font-size: var(--text-xs); color: var(--band-ink-muted); }
+
+  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+  .tool { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); padding: var(--s-5); color: inherit; }
+  .tool :global(.icon-lg) { color: var(--lavender-ink); margin-top: 0.1rem; }
+  .tool h3 { font-size: var(--text-md); font-weight: 650; }
+  .tool p { color: var(--ink-2); font-size: var(--text-sm); margin-top: var(--s-1); line-height: 1.45; text-wrap: pretty; }
+  .tool .formula-line { margin-top: var(--s-3); font-size: var(--text-xs); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .tool .soon { margin-top: var(--s-2); }
+
+  .how { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-8); align-items: start; }
+  .how-text { margin-top: var(--s-4); max-width: 52ch; text-wrap: pretty; }
+  .how-text.small { margin-top: var(--s-3); }
+  .rung-now { font-weight: 500; margin-left: 0.3rem; }
+
+  .teacher-strip { display: grid; grid-template-columns: 1fr auto; gap: var(--s-5); align-items: center; padding: var(--s-5) var(--s-6); background: var(--surface-tint); border-radius: var(--r-3); color: var(--ink-on-tint); }
+  .teacher-strip p { color: var(--ink-2); font-size: var(--text-sm); margin-top: var(--s-1); max-width: 60ch; text-wrap: pretty; }
+  .teacher-strip .btns { display: flex; gap: var(--s-4); flex-wrap: wrap; align-items: center; }
+
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .facts { grid-template-columns: repeat(2, auto); gap: var(--s-5) var(--s-7); }
+    .tools { grid-template-columns: 1fr; }
+    .how { grid-template-columns: 1fr; gap: var(--s-6); }
+    .orbits { right: -12rem; top: -12rem; opacity: 0.35; }
+  }
+  @media (max-width: 640px) {
+    .hero { padding-block: var(--s-6); }
+    .teacher-strip { grid-template-columns: 1fr; }
+    .orbits { width: 26rem; height: 26rem; right: -14rem; top: -10rem; }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+import Agenda from '../../components/site/Agenda.astro';
+import Crumbs from '../../components/site/Crumbs.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData } from '../../lib/course-data';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+
+const { course, modules, topics } = await loadCourseData();
+const published = topics.filter((topic) => topic.lecture).length;
+---
+
+<BaseLayout
+  title={`Теми курсу — ${course.title}`}
+  description={`Усі ${topics.length} тем курсу «${course.title}» за модулями: назви, анотації, час читання.`}
+  current="topics"
+>
+  <div class="container">
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Теми' }]} />
+    <header class="topic-head">
+      <h1 class="h1">Теми курсу</h1>
+      <p class="lede">
+        {typo(`${topics.length} тем у ${modules.length} модулях. Опубліковано лекцій: ${published} із ${topics.length}; решта тем показують анотацію й з’являться поступово.`)}
+      </p>
+    </header>
+    <section class="section" aria-label="Порядок денний">
+      <Agenda modules={modules} />
+    </section>
+  </div>
+</BaseLayout>

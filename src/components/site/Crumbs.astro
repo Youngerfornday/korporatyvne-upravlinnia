@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+
+/** Крихти «Ви тут»: усі елементи, крім останнього, — посилання. */
+interface Props {
+  items: { label: string; href?: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Ви тут">
+  {
+    items.map((item, index) => (
+      <>
+        {index > 0 && <Icon name="chev-r" size="sm" />}
+        {item.href && index < items.length - 1 ? <a href={item.href}>{item.label}</a> : <span aria-current="page">{item.label}</span>}
+      </>
+    ))
+  }
+</nav>

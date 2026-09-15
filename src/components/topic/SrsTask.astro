@@ -1,0 +1,13 @@
+---
+/** Завдання самостійної роботи: чип «СРС 1.1» і текст у слоті. */
+interface Props {
+  n: string;
+}
+
+const { n } = Astro.props;
+---
+
+<div class="srs-task" data-srs-task={n}>
+  <span class="chip chip-tint">СРС {n}</span>
+  <div><slot /></div>
+</div>

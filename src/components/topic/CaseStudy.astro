@@ -1,0 +1,31 @@
+---
+import Icon from '../site/Icon.astro';
+
+/** Навчальний кейс: текст у слоті, питання, розбір у слоті `analysis` за <details>. */
+interface Props {
+  title: string;
+  question: string;
+  tag?: string;
+  id?: string;
+}
+
+const { title, question, tag = 'Навчальний кейс за мотивами реальних ситуацій; назви змінено', id } = Astro.props;
+const headingId = id ?? `case-${title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '')}`;
+---
+
+<article class="case" aria-labelledby={headingId} data-case-study>
+  <div class="case-head">
+    <h3 id={headingId}>Кейс. {title}</h3>
+    <span class="case-tag">{tag}</span>
+  </div>
+  <div class="case-body">
+    <slot />
+  </div>
+  <p class="q">{question}</p>
+  <details>
+    <summary>Показати розбір <Icon name="chev-d" size="sm" /></summary>
+    <div class="case-analysis">
+      <slot name="analysis" />
+    </div>
+  </details>
+</article>

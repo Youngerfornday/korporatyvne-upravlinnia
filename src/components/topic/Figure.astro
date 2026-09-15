@@ -1,0 +1,50 @@
+---
+/**
+ * Рисунок-схема: SVG у слоті з нумерованими виносками, підписом і легендою.
+ * SVG має містити <title id={titleId}> і <desc id={descId}> (ідентифікатори передаються в слот через props нижче);
+ * простіше — задати `alt`: тоді текстову альтернативу рендерить сам компонент у <details>.
+ */
+interface LegendItem {
+  n: number | string;
+  text: string;
+  /** Елемент «під розглядом» — карміновий. */
+  exam?: boolean;
+}
+
+interface Props {
+  /** Номер рисунка в темі. */
+  n: number | string;
+  caption: string;
+  legend?: LegendItem[];
+  /** Повний текстовий опис для тих, хто не бачить схему; показується під рисунком у розкривному блоці. */
+  alt?: string;
+  id?: string;
+}
+
+const { n, caption, legend = [], alt, id = `fig-${n}` } = Astro.props;
+---
+
+<figure class="figure" id={id} aria-labelledby={`${id}-cap`}>
+  <slot />
+  <figcaption id={`${id}-cap`}><b>Рисунок {n}.</b> {caption}</figcaption>
+  {
+    legend.length > 0 && (
+      <ul class="legend" aria-label={`Виноски до рисунка ${n}`}>
+        {legend.map((item) => (
+          <li>
+            <span class:list={['ref', { 'is-exam': item.exam }]}>{item.n}</span>
+            <span>{item.text}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    alt && (
+      <details class="figure-alt">
+        <summary>Текстовий опис схеми</summary>
+        <p>{alt}</p>
+      </details>
+    )
+  }
+</figure>

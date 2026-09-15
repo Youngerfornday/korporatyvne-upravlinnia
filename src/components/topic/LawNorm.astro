@@ -1,0 +1,43 @@
+---
+import { formatDate } from '../../lib/course-data-pure';
+import Icon from '../site/Icon.astro';
+
+/** Норма права: акт, стаття, переказ або цитата в слоті, посилання на zakon.rada.gov.ua і дата перевірки. */
+interface Props {
+  title: string;
+  act: string;
+  article: string;
+  url: string;
+  /** РРРР-ММ-ДД, дата звірки з legal-baseline. */
+  checkedAt: string;
+  /** Слот — цитата (quote) або переказ (retelling, курсивом без лапок). */
+  kind?: 'quote' | 'retelling';
+  id?: string;
+}
+
+const { title, act, article, url: lawUrl, checkedAt, kind = 'retelling', id } = Astro.props;
+const host = new URL(lawUrl).hostname.replace(/^www\./, '');
+---
+
+<div class="norm" role="note" aria-labelledby={id} data-law-norm>
+  <Icon name="scale" size="lg" />
+  <div>
+    <div class="norm-title" id={id}>Норма: {title}</div>
+    {
+      kind === 'quote' ? (
+        <blockquote cite={lawUrl}>
+          <slot />
+        </blockquote>
+      ) : (
+        <div class="norm-body">
+          <slot />
+        </div>
+      )
+    }
+    <div class="norm-src">
+      <span>{act}, {article}</span>
+      <a href={lawUrl} target="_blank" rel="noopener">{host} <Icon name="external" size="sm" /></a>
+      <span class="verified"><Icon name="check" size="sm" />перевірено {formatDate(checkedAt)}</span>
+    </div>
+  </div>
+</div>

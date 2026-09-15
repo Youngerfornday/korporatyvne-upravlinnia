@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import { formatDate } from '../../lib/course-data-pure';
+import { typo } from '../../lib/typography';
+import Icon from '../site/Icon.astro';
+
+/** Список джерел теми з sources.yaml: автори, назва, видавець і рік, посилання, дата перевірки. */
+interface Props {
+  topic: string;
+  /** Показати лише вибрані джерела (за id). */
+  ids?: string[];
+  heading?: boolean;
+}
+
+const { topic, ids, heading = true } = Astro.props;
+const file = (await getCollection('sources')).find((entry) => entry.data.topic === topic);
+const sources = (file?.data.sources ?? []).filter((source) => !ids || ids.includes(source.id));
+---
+
+{
+  sources.length > 0 && (
+    <section aria-labelledby="sources-title" data-sources>
+      {heading && (
+        <h2 class="h2-plain" id="sources-title">
+          Джерела
+        </h2>
+      )}
+      <ol class="sources">
+        {sources.map((source) => (
+          <li id={`src-${source.id}`}>
+            {source.authors.length > 0 && <span>{source.authors.join(', ')}. </span>}
+            <span>{typo(source.title)}</span>
+            {(source.publisher || source.year) && <span>. {[source.publisher, source.year].filter(Boolean).join(', ')}</span>}
+            {source.note && <span>. {typo(source.note)}</span>}
+            <span class="src-meta">
+              <a href={source.url} target="_blank" rel="noopener">
+                {new URL(source.url).hostname.replace(/^www\./, '')} <Icon name="external" size="sm" />
+              </a>
+              <span class="verified">перевірено {formatDate(source.checkedAt)}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}

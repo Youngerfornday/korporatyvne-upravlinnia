@@ -1,0 +1,111 @@
+---
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import DemoLecture from '../../components/topic/demo/demo-lecture.mdx';
+import { mdxComponents } from '../../components/topic/mdx-components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+
+/** Службова вітрина компонентів: noindex, без посилань із навігації. Перевіряє MDX-конвеєр і типографіку. */
+const marks = [
+  { cls: 'mark-done', icon: 'check', label: 'Пройдено' },
+  { cls: 'mark-doing', icon: 'play', label: 'У процесі' },
+  { cls: 'mark-todo', icon: undefined, label: 'Не розпочато' },
+];
+---
+
+<BaseLayout title="Вітрина компонентів — розробка" description="Службова сторінка: усі компоненти теми й елементи інтерфейсу в обох темах." noindex>
+  <div class="container" data-showcase style='--topic-n: "1"'>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Розробка' }, { label: 'Компоненти' }]} />
+    <header class="topic-head">
+      <p class="kicker">Службова сторінка · не індексується</p>
+      <h1 class="h1">Вітрина компонентів</h1>
+      <p class="lede">Усі компоненти лекції, рендерені з демонстраційного MDX через той самий конвеєр, що й теми курсу, плюс базові елементи інтерфейсу.</p>
+    </header>
+
+    <div class="layout">
+      <div>
+        <section class="section" aria-labelledby="ui-title">
+          <h2 class="h2" id="ui-title">Елементи інтерфейсу</h2>
+          <div class="stack">
+            <div class="row" aria-label="Кнопки">
+              <a class="btn btn-primary" href="#ui-title">Первинна</a>
+              <a class="btn btn-secondary" href="#ui-title">Вторинна</a>
+              <button class="btn btn-ghost" type="button">Прозора</button>
+              <button class="btn btn-primary btn-sm" type="button">Мала</button>
+              <button class="btn btn-secondary" type="button" disabled>Недоступна</button>
+            </div>
+            <div class="row chips" aria-label="Чипи">
+              <span class="chip">Чип</span>
+              <span class="chip chip-tint">СРС 1.1</span>
+              <span class="chip chip-prn">ПРН 3</span>
+              <span class="chip chip-xp">+120 XP</span>
+              <span class="chip chip-ok">перевірено</span>
+              <span class="chip chip-level">Міноритарій</span>
+            </div>
+            <div class="row" aria-label="Знаки стану">
+              {
+                marks.map((mark) => (
+                  <span class="mark-demo">
+                    <span class:list={['mark', mark.cls]} role="img" aria-label={mark.label}>
+                      {mark.icon && <Icon name={mark.icon} />}
+                    </span>
+                    {mark.label}
+                  </span>
+                ))
+              }
+            </div>
+            <div class="row" aria-label="Поля">
+              <div class="field"><label for="demo-input">Пошук</label><input class="input" id="demo-input" type="search" placeholder="Кворум" /></div>
+              <div class="field">
+                <label for="demo-select">Модуль</label>
+                <select class="select" id="demo-select"><option>Усі модулі</option><option>М1</option></select>
+              </div>
+            </div>
+            <div class="meter" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Метр"><i style="width:40%"></i></div>
+            <div class="meter meter-xp" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Метр XP"><i style="width:65%"></i></div>
+            <div class="row" aria-label="Тост">
+              <button class="btn btn-secondary btn-sm" type="button" data-demo-toast>Показати тост</button>
+              <span class="small muted">подія <code>ku:toast</code> з <code>detail.html</code></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="mdx-title">
+          <h2 class="h2" id="mdx-title">Компоненти лекції (з MDX)</h2>
+          <p class="muted small">Нижче — <code>demo-lecture.mdx</code>: заголовки нумеруються CSS-лічильником від номера теми; типографіка виправлена плагіном.</p>
+          <article class="read" data-topic-article>
+            <DemoLecture components={mdxComponents} />
+          </article>
+        </section>
+      </div>
+
+      <aside class="side" aria-label="Навігація вітриною">
+        <div class="side-block">
+          <h2>На цій сторінці</h2>
+          <nav class="toc" data-toc aria-label="Зміст">
+            <a href="#ui-title">Елементи інтерфейсу</a>
+            <a href="#mdx-title">Компоненти лекції</a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    import { initTopicPage } from '../../components/topic/topic-page';
+    initTopicPage();
+    document.querySelector('[data-demo-toast]')?.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('ku:toast', { detail: { html: 'Тему прочитано <span class="xp">+120 XP</span>' } }));
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .kicker { font-size: var(--text-sm); color: var(--ink-3); margin-bottom: var(--s-2); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .mark-demo { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--text-sm); }
+  .section + .section { padding-top: var(--s-6); border-top: 1px solid var(--line); }
+  .read { margin-top: var(--s-5); }
+</style>

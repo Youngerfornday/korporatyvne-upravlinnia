@@ -1,0 +1,6 @@
+/* Глобальні стилі сайту. Порядок важливий: токени, скидання, компоненти, шапка/футер, друк. */
+@import "./tokens.css";
+@import "./base.css";
+@import "./components.css";
+@import "./site.css";
+@import "./print.css";

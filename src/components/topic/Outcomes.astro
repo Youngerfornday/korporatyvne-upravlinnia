@@ -1,0 +1,28 @@
+---
+import { getEntry } from 'astro:content';
+import { outcomeLabel } from '../../lib/course-data-pure';
+
+/** Результати навчання теми з кодами ПРН. `prn` — ідентифікатор з реєстру (prn03); підпис береться з коду ПРН, коли він заповнений. */
+interface Props {
+  items: { prn: string; text: string }[];
+  title?: string;
+}
+
+const { items, title = 'Що ви зможете після теми' } = Astro.props;
+const courseEntry = await getEntry('course', 'course');
+const course = courseEntry?.data;
+---
+
+<section aria-labelledby="outcomes-title" data-outcomes>
+  <h2 class="h2-plain" id="outcomes-title">{title}</h2>
+  <ul class="outcomes">
+    {
+      items.map((item) => (
+        <li class="outcome">
+          <span class="chip chip-prn">{course ? outcomeLabel(course, item.prn) : item.prn}</span>
+          <span>{item.text}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

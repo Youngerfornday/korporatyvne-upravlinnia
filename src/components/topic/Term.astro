@@ -1,0 +1,56 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { url } from '../../lib/url';
+import { typo } from '../../lib/typography';
+
+/**
+ * Підказка глосарію: кнопка з крапковим підкресленням і Popover API (без React).
+ * Визначення береться з glossary.yaml теми за `id` терміна з реєстру course.yaml.
+ * Той самий термін на сторінці може зустрічатися кілька разів: поповер рендериться один раз,
+ * решта кнопок посилаються на нього (реєстр у Astro.locals на час рендеру сторінки).
+ */
+interface Props {
+  id: string;
+  /** Запасне визначення, поки глосарій теми не написано (вітрина, чернетки). У готовому контенті — лише glossary.yaml. */
+  term?: string;
+  definition?: string;
+}
+
+const { id, term: inlineTerm, definition: inlineDefinition } = Astro.props;
+const [courseEntry, glossaryFiles] = await Promise.all([getEntry('course', 'course'), getCollection('glossary')]);
+const course = courseEntry?.data;
+const registered = course?.glossaryTerms.find((term) => term.id === id);
+const fromGlossary = glossaryFiles.flatMap((file) => file.data.terms).find((entry) => entry.id === id);
+const term = fromGlossary ?? (inlineTerm && inlineDefinition ? { term: inlineTerm, definition: inlineDefinition } : undefined);
+const homeTopic = registered ? course?.topics.find((topic) => topic.id === registered.topic) : undefined;
+
+const locals = Astro.locals as { renderedTerms?: Set<string> };
+const rendered = (locals.renderedTerms ??= new Set<string>());
+const isFirst = !rendered.has(id);
+if (isFirst) rendered.add(id);
+const popId = `pop-${id}`;
+---
+
+{
+  term ? (
+    <>
+      <button class="term" type="button" popovertarget={popId} aria-controls={popId} aria-expanded="false" data-term={id}>
+        <slot>{term.term}</slot>
+      </button>
+      {isFirst && (
+        <span id={popId} class="pop" popover="auto" role="note" data-term-pop>
+          <span class="pop-title h4" style="display:block">{typo(term.term)}</span>
+          <span style="display:block">{typo(term.definition)}</span>
+          <span class="pop-src">
+            <span>Глосарій курсу{homeTopic ? ` · Тема ${course?.topics.indexOf(homeTopic)! + 1}` : ''}</span>
+            {homeTopic && <a href={url(`temy/${homeTopic.slug}/#terminy`)}>Усі терміни теми</a>}
+          </span>
+        </span>
+      )}
+    </>
+  ) : (
+    <span class="term-missing" data-term={id} title="Визначення ще не додано до глосарію">
+      <slot>{id}</slot>
+    </span>
+  )
+}

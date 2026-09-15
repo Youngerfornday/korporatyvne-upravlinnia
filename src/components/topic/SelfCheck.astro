@@ -1,0 +1,58 @@
+---
+import Icon from '../site/Icon.astro';
+
+/**
+ * Самоперевірка: 2–3 питання без балів. Вибір варіанта відкриває пояснення до всіх варіантів.
+ * Progressive enhancement: без JavaScript пояснення показані одразу (noscript-стиль).
+ * Для рушія прогресу: контейнер [data-selfcheck][data-topic]; після кожної відповіді на document
+ * надсилається CustomEvent 'ku:selfcheck' з detail { topic, question, correct, answered, total }.
+ */
+interface Option {
+  text: string;
+  correct?: boolean;
+  why: string;
+}
+
+interface Question {
+  stem: string;
+  options: Option[];
+}
+
+interface Props {
+  topic?: string;
+  questions: Question[];
+  note?: string;
+}
+
+const { topic, questions, note = 'Питання без балів — лише щоб переконатися, що прочитане склалося в картину. Повний тренувальний тест — після теми.' } = Astro.props;
+const LETTERS = ['А', 'Б', 'В', 'Г', 'Д', 'Е'];
+---
+
+<section class="selfcheck" aria-labelledby="sc-title" data-selfcheck data-topic={topic} data-total={questions.length}>
+  <h2 class="h2 h2-plain" id="sc-title">Самоперевірка</h2>
+  <p class="selfcheck-note">{note}</p>
+  <noscript><style>.selfcheck .opt-why { display: block; }</style></noscript>
+  {
+    questions.map((question, qIndex) => (
+      <div class="sc-q" data-question={qIndex}>
+        <p class="q-stem" id={`sc-q${qIndex}`}>{question.stem}</p>
+        <div class="options" role="group" aria-labelledby={`sc-q${qIndex}`}>
+          {question.options.map((option, oIndex) => (
+            <button class="opt" type="button" data-correct={option.correct ? '' : undefined}>
+              <span class="opt-key" aria-hidden="true">{LETTERS[oIndex]}</span>
+              <span class="opt-text">{option.text}</span>
+              <Icon name={option.correct ? 'check' : 'x'} class="opt-mark" />
+              <span class="opt-why">{option.why}</span>
+            </button>
+          ))}
+        </div>
+        <p class="sc-result" aria-live="polite"></p>
+      </div>
+    ))
+  }
+</section>
+
+<script>
+  import { initSelfChecks } from './selfcheck';
+  initSelfChecks();
+</script>

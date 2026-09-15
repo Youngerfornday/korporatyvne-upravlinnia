@@ -1,0 +1,204 @@
+---
+import { render } from 'astro:content';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import { mdxComponents } from '../../components/topic/mdx-components';
+import SourceList from '../../components/topic/SourceList.astro';
+import Term from '../../components/topic/Term.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData, neighbours, type TopicView } from '../../lib/course-data';
+import { TOPIC_XP, formatDate, minutesLabel, outcomeLabel } from '../../lib/course-data-pure';
+import { pluralUk } from '../../lib/plural';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+
+export async function getStaticPaths() {
+  const { topics } = await loadCourseData();
+  return topics.map((topic) => ({ params: { slug: topic.slug }, props: { topic } }));
+}
+
+interface Props {
+  topic: TopicView;
+}
+
+const { topic } = Astro.props;
+const { course, modules, topics, glossary, sources } = await loadCourseData();
+const module = modules.find((m) => m.id === topic.module);
+if (!module) throw new Error(`Модуль теми ${topic.id} не знайдено`);
+const { prev, next } = neighbours(topics, topic.id);
+const lecture = topic.lecture;
+const rendered = lecture ? await render(lecture) : undefined;
+const Content = rendered?.Content;
+const tocHeadings = rendered?.headings.filter((heading) => heading.depth === 2) ?? [];
+const glossaryFile = glossary.find((entry) => entry.data.topic === topic.id);
+const keyTerms = (lecture?.data.keyTerms ?? []).map((id) => ({ id, term: glossaryFile?.data.terms.find((t) => t.id === id) })).filter((entry) => entry.term);
+const hasSources = sources.some((entry) => entry.data.topic === topic.id);
+const outcomes = lecture?.data.learningOutcomes ?? [];
+const description = typo(lecture?.data.description ?? topic.summary);
+const title = `Тема ${topic.number}. ${topic.title} — ${course.title}`;
+const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'терміни', many: 'термінів', other: 'терміна' });
+---
+
+<BaseLayout title={title} description={description} current="topics" ogType="article">
+  {lecture && <div class="reading-progress" aria-hidden="true"><i></i></div>}
+  <div
+    class="container"
+    data-topic-page
+    data-topic={topic.id}
+    data-module={module.id}
+    data-topic-xp={TOPIC_XP}
+    data-topic-status={lecture ? lecture.data.status : 'pending'}
+    style={`--topic-n: "${topic.number}"`}
+  >
+    <Crumbs
+      items={[
+        { label: 'Курс', href: url() },
+        { label: `Модуль ${module.number}. ${typo(module.title)}`, href: url(`moduli/${module.id}/`) },
+        { label: `Тема ${topic.number}` },
+      ]}
+    />
+
+    <header class="topic-head">
+      <h1 class="h1"><span class="n">{topic.number}.</span>{typo(topic.title)}</h1>
+      <p class="lede">{description}</p>
+      <div class="topic-facts">
+        {lecture ? (
+          <>
+            {topic.readingMinutes && <span><Icon name="clock" />{minutesLabel(topic.readingMinutes)} читання</span>}
+            {topic.termCount > 0 && <span><Icon name="book" />{termsLabel}</span>}
+            <span class="chip chip-xp" data-topic-xp-chip>+{TOPIC_XP} XP за тему</span>
+            {outcomes.length > 0 && (
+              <span>
+                ПРН
+                <span class="chips">{outcomes.map((id) => <span class="chip chip-prn">{outcomeLabel(course, id)}</span>)}</span>
+              </span>
+            )}
+            {lecture.data.status !== 'verified' && <span class="chip">чернетка · оновлено {formatDate(lecture.data.updatedAt)}</span>}
+          </>
+        ) : (
+          <span><Icon name="pen" />лекція готується</span>
+        )}
+      </div>
+    </header>
+
+    {
+      lecture && Content ? (
+        <div class="layout">
+          <article class="read" data-topic-article data-pagefind-body>
+            <Content components={mdxComponents} />
+            {hasSources && <SourceList topic={topic.id} />}
+            <nav class="pager" aria-label="Сусідні теми">
+              {prev ? (
+                <a href={url(`temy/${prev.slug}/`)}>
+                  <small>Попередня тема</small>
+                  <b>{prev.number}. {typo(prev.title)}</b>
+                </a>
+              ) : (
+                <span>
+                  <small>Попередня тема</small>
+                  <b>— початок курсу —</b>
+                </span>
+              )}
+              {next ? (
+                <a class="next" href={url(`temy/${next.slug}/`)}>
+                  <small>Наступна тема</small>
+                  <b>{next.number}. {typo(next.title)}</b>
+                </a>
+              ) : (
+                <span class="next">
+                  <small>Наступна тема</small>
+                  <b>— кінець курсу —</b>
+                </span>
+              )}
+            </nav>
+          </article>
+
+          <aside class="side" aria-label="Навігація темою">
+            <div class="side-block side-progress">
+              <div class="row"><b>Прочитано</b><span class="num" data-reading-progress-label>0 %</span></div>
+              <div class="meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прочитано теми" data-reading-progress data-topic={topic.id}><i style="width:0%"></i></div>
+              <div class="faint">XP нараховуються після самоперевірки</div>
+            </div>
+            <div class="side-block">
+              <details class="toc-toggle">
+                <summary><h2>На цій сторінці</h2></summary>
+                <nav class="toc" data-toc aria-label="Зміст теми">
+                  {tocHeadings.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+                </nav>
+              </details>
+              <h2 class="toc-heading">На цій сторінці</h2>
+              <nav class="toc toc-desktop" data-toc aria-label="Зміст теми">
+                {tocHeadings.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+              </nav>
+            </div>
+            {keyTerms.length > 0 && (
+              <div class="side-block terms-block" id="terminy">
+                <h2>Терміни теми</h2>
+                <div class="terms">{keyTerms.map(({ id, term }) => <Term id={id}>{term?.term}</Term>)}</div>
+              </div>
+            )}
+            <div class="side-block no-print">
+              <button class="btn btn-secondary btn-sm" type="button" data-print><Icon name="print" size="sm" />Друк теми</button>
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <div class="pending" data-topic-pending>
+          <div class="card">
+            <Icon name="pen" size="lg" />
+            <div>
+              <p class="h3">Тема готується</p>
+              <p class="muted">
+                {typo(`Лекція, схеми, норма права, кейс і самоперевірка для цієї теми ще пишуться й проходять верифікацію. Поки що — анотація з програми курсу:`)}
+              </p>
+              <p>{typo(topic.summary)}</p>
+            </div>
+          </div>
+          <div class="pending-facts">
+            <div><b>{module.number}</b>модуль</div>
+            <div><b>{topic.number}</b>тема з {topics.length}</div>
+            <div><b>+{TOPIC_XP}</b>XP після публікації</div>
+          </div>
+          <nav class="pager" aria-label="Сусідні теми">
+            {prev ? (
+              <a href={url(`temy/${prev.slug}/`)}>
+                <small>Попередня тема</small>
+                <b>{prev.number}. {typo(prev.title)}</b>
+              </a>
+            ) : (
+              <a href={url(`moduli/${module.id}/`)}>
+                <small>Модуль</small>
+                <b>М{module.number}. {typo(module.title)}</b>
+              </a>
+            )}
+            {next ? (
+              <a class="next" href={url(`temy/${next.slug}/`)}>
+                <small>Наступна тема</small>
+                <b>{next.number}. {typo(next.title)}</b>
+              </a>
+            ) : (
+              <a class="next" href={url()}>
+                <small>Курс</small>
+                <b>Порядок денний</b>
+              </a>
+            )}
+          </nav>
+        </div>
+      )
+    }
+  </div>
+
+  <script>
+    import { initTopicPage } from '../../components/topic/topic-page';
+    initTopicPage();
+    document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+  </script>
+</BaseLayout>
+
+<style>
+  .toc-heading { display: block; }
+  @media (max-width: 960px) {
+    .toc-heading, .toc-desktop { display: none; }
+  }
+</style>
