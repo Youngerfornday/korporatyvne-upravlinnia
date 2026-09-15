@@ -25,14 +25,19 @@ const BANK_FILE = /(?:^|\/)banks\/(training|control)\/([^/]+)\.yaml$/;
 interface RegistryIndex {
   readonly topicModule: ReadonlyMap<string, string>;
   readonly termTopic: ReadonlyMap<string, string>;
+  readonly termName: ReadonlyMap<string, string>;
   readonly outcomes: ReadonlySet<string>;
+  /** ПРН, заявлені в результатах навчання теми в course.yaml. */
+  readonly topicOutcomes: ReadonlyMap<string, ReadonlySet<string>>;
 }
 
 function indexRegistry(course: Course): RegistryIndex {
   return {
     topicModule: new Map(course.topics.map((topic) => [topic.id, topic.module])),
     termTopic: new Map(course.glossaryTerms.map((term) => [term.id, term.topic])),
+    termName: new Map(course.glossaryTerms.map((term) => [term.id, term.term])),
     outcomes: new Set(course.learningOutcomes.map((outcome) => outcome.id)),
+    topicOutcomes: new Map(course.topics.map((topic) => [topic.id, new Set(topic.results.flatMap((result) => result.prn))])),
   };
 }
 
@@ -62,6 +67,9 @@ export function checkTopics(entries: ReadonlyArray<ContentEntry<TopicFrontmatter
       ...checkTopicFolder(filePath, data.id, registry),
       ...data.keyTerms.filter((term) => !registry.termTopic.has(term)).map((term) => `Ключовий термін «${term}» не зареєстровано`),
       ...data.learningOutcomes.filter((id) => !registry.outcomes.has(id)).map((id) => `ПРН «${id}» не зареєстровано`),
+      ...data.learningOutcomes
+        .filter((id) => registry.outcomes.has(id) && registry.topicOutcomes.has(data.id) && !registry.topicOutcomes.get(data.id)?.has(id))
+        .map((id) => `ПРН «${id}» не заявлено в результатах навчання теми ${data.id} у course.yaml`),
     ];
     return messages.map((message) => ({ file: filePath, message }));
   });
@@ -77,8 +85,13 @@ export function checkGlossaries(entries: ReadonlyArray<ContentEntry<GlossaryFile
       ...data.terms.flatMap((term) => {
         const registeredTopic = registry.termTopic.get(term.id);
         if (registeredTopic === undefined) return [`Термін «${term.id}» не зареєстровано в course.yaml`];
-        if (registeredTopic !== data.topic) return [`Термін «${term.id}» зареєстровано за темою ${registeredTopic}, а визначено в ${data.topic}`];
-        return [];
+        const registeredName = registry.termName.get(term.id) ?? term.term;
+        return [
+          ...(registeredTopic === data.topic ? [] : [`Термін «${term.id}» зареєстровано за темою ${registeredTopic}, а визначено в ${data.topic}`]),
+          ...(normalizeText(registeredName) === normalizeText(term.term)
+            ? []
+            : [`Термін «${term.id}»: назва «${term.term}» не збігається з назвою в реєстрі course.yaml «${registeredName}»`]),
+        ];
       }),
       ...data.terms.flatMap((term) =>
         term.seeAlso

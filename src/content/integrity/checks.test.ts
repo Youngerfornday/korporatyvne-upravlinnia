@@ -30,8 +30,13 @@ const bankEntry = (filePath: string, data: Record<string, unknown>) => ({
 
 describe('checkTopics', () => {
   it('passes a lecture that matches the registry and its folder', () => {
-    const entries = [topicEntry('content/modules/m1/t01/lecture.mdx', { id: 't01', keyTerms: ['agency-problem'], learningOutcomes: ['prn01'] })];
+    const entries = [topicEntry('content/modules/m1/t01/lecture.mdx', { id: 't01', keyTerms: ['agency-problem'], learningOutcomes: ['prn03'] })];
     expect(checkTopics(entries, registry)).toEqual([]);
+  });
+
+  it('reports a programme outcome that the topic does not declare in course.yaml', () => {
+    const entries = [topicEntry('content/modules/m1/t02/lecture.mdx', { id: 't02', learningOutcomes: ['prn03', 'prn15'] })];
+    expect(checkTopics(entries, registry).map((issue) => issue.message)).toEqual([expect.stringMatching(/prn15.*t02/)]);
   });
 
   it('reports an unregistered topic, a wrong folder and unknown references', () => {
@@ -77,6 +82,13 @@ describe('checkGlossaries', () => {
       glossaryEntry('content/modules/m1/t01/extra/glossary.yaml', 't01', [{ id: 'corporate-governance', term: 'корпорація' }]),
     ];
     expect(checkGlossaries(entries, registry).map((i) => i.message).join('\n')).toMatch(/Корпорація/i);
+  });
+
+  it('reports a term whose name differs from the registry in course.yaml', () => {
+    const entries = [glossaryEntry('content/modules/m1/t01/glossary.yaml', 't01', [{ id: 'agency-problem', term: 'Проблема агента' }])];
+    expect(checkGlossaries(entries, registry).map((issue) => issue.message)).toEqual([
+      expect.stringMatching(/agency-problem.*Проблема агента.*Агентська проблема/),
+    ]);
   });
 
   it('reports seeAlso references to terms that are not registered', () => {
