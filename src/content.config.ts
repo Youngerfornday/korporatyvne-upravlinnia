@@ -4,6 +4,7 @@ import { checkBanks, checkGlossaries, checkSources, checkTopics } from './conten
 import { withIntegrityCheck } from './content/integrity/loader';
 import { CourseSchema } from './content/schemas/course';
 import { GlossaryFileSchema } from './content/schemas/glossary';
+import { PracticalFileSchema } from './content/schemas/practical';
 import { BankFileSchema } from './content/schemas/questions';
 import { SourcesFileSchema } from './content/schemas/sources';
 import { TopicFrontmatterSchema } from './content/schemas/topic';
@@ -38,4 +39,10 @@ const trainingBanks = defineCollection({
   schema: BankFileSchema,
 });
 
-export const collections = { course, topics, glossary, sources, trainingBanks };
+/** Дані тренажерів практичних: `content/practicals/pNN.yaml`; реєстр практичних — у course.yaml. */
+const practicals = defineCollection({
+  loader: glob({ base: `${CONTENT_ROOT}/practicals`, pattern: 'p*.yaml' }),
+  schema: PracticalFileSchema,
+});
+
+export const collections = { course, topics, glossary, sources, trainingBanks, practicals };

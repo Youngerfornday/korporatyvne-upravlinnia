@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t01-4" class="scheme" viewBox="0 0 560 352" role="img" aria-labelledby="fig-t01-4-title fig-t01-4-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t01-4-title">Рисунок 4. Чотири канали впливу корпоративного управління на вартість компанії</title>
+  <desc id="fig-t01-4-desc">Угорі блок «Якісне корпоративне управління». Від нього стрілка до чотирьох блоків у два ряди: менше виведення коштів і пов’язаних правочинів; кращі рішення й менше дорогих помилок; нижча вартість капіталу — інвестори вимагають меншу премію за ризик; ширший доступ до капіталу й ліквідність акцій. Від них стрілка до нижнього блоку «Вартість компанії». Карміновим позначено зворотний ефект: слабке управління діє тими самими каналами у протилежний бік.</desc>
+  <style>
+    #fig-t01-4 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t01-4 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t01-4 .t { fill: var(--ink, #0f1c2e); font-size: 15px; font-weight: 650; }
+    #fig-t01-4 .n { fill: var(--ink, #0f1c2e); font-size: 13.5px; font-weight: 650; }
+    #fig-t01-4 .s { fill: var(--ink-2, #445570); font-size: 11.5px; }
+    #fig-t01-4 .arrow { stroke: var(--ink-2, #445570); stroke-width: 1.25; fill: none; }
+    #fig-t01-4 .arrow-head { fill: var(--ink-2, #445570); }
+    #fig-t01-4 .lbl { fill: var(--ink-2, #445570); font-size: 12px; }
+    #fig-t01-4 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t01-4 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t01-4 .exam { stroke: var(--err, #b42318); }
+    #fig-t01-4 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 12px; font-weight: 600; }
+  </style>
+  <defs>
+    <marker id="arr-t01-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrow-head" d="M0 0 10 5 0 10z"/></marker>
+  </defs>
+
+  <rect class="box box-owner" x="120" y="14" width="320" height="48" rx="6"/>
+  <text class="t" x="280" y="43" text-anchor="middle">Якісне корпоративне управління</text>
+
+  <path class="arrow" marker-end="url(#arr-t01-4)" d="M280 62 L280 92"/>
+
+  <rect class="box" x="30" y="98" width="244" height="62" rx="6"/>
+  <text class="n" x="46" y="122">Менше виведення коштів</text>
+  <text class="s" x="46" y="142">пов’язані правочини під контролем</text>
+
+  <rect class="box" x="286" y="98" width="244" height="62" rx="6"/>
+  <text class="n" x="302" y="122">Кращі рішення</text>
+  <text class="s" x="302" y="142">менше дорогих помилок і ризиків</text>
+
+  <rect class="box" x="30" y="172" width="244" height="62" rx="6"/>
+  <text class="n" x="46" y="196">Нижча вартість капіталу</text>
+  <text class="s" x="46" y="216">менша премія за ризик</text>
+
+  <rect class="box" x="286" y="172" width="244" height="62" rx="6"/>
+  <text class="n" x="302" y="196">Доступ до капіталу</text>
+  <text class="s" x="302" y="216">ліквідність акцій · кредит</text>
+
+  <path class="arrow" marker-end="url(#arr-t01-4)" d="M280 234 L280 264"/>
+
+  <rect class="box box-owner" x="120" y="270" width="320" height="48" rx="6"/>
+  <text class="t" x="280" y="299" text-anchor="middle">Вартість компанії</text>
+
+  <path class="arrow exam" marker-end="url(#arr-t01-4)" d="M544 294 L544 40" stroke-dasharray="4 3"/>
+  <text class="exam-t" x="280" y="342" text-anchor="middle">слабке управління діє тими самими каналами навпаки</text>
+
+  <circle class="refc" cx="30" cy="98" r="11"/><text class="refn" x="30" y="102">1</text>
+  <circle class="refc" cx="286" cy="98" r="11"/><text class="refn" x="286" y="102">2</text>
+  <circle class="refc" cx="30" cy="172" r="11"/><text class="refn" x="30" y="176">3</text>
+  <circle class="refc" cx="286" cy="172" r="11"/><text class="refn" x="286" y="176">4</text>
+  <circle class="refc exam" cx="544" cy="16" r="11"/><text class="refn exam-n" x="544" y="20">5</text>
+</svg>

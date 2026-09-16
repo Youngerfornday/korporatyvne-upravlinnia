@@ -1,0 +1,207 @@
+# Джерела теми 1. Кожне — з адресою, яку відкрито на дату checkedAt (прямо або через результати пошуку;
+# сторінки видавців із захистом від автоматичних запитів позначено в note). Норми права — лише з docs/research/legal-baseline.md.
+topic: t01
+sources:
+  # Класика теорії
+  - id: berle-means-1932
+    type: book
+    title: The Modern Corporation and Private Property
+    authors: [Berle A. A., Means G. C.]
+    publisher: 'Harcourt, Brace & World'
+    year: 1932
+    language: en
+    url: https://archive.org/details/moderncorporatio0000berl_i9j3
+    checkedAt: '2026-09-16'
+    note: 'Перевидання Transaction Publishers, 1991, у відкритому доступі Internet Archive; перше видання — 1932 р.'
+
+  - id: jensen-meckling-1976
+    type: article
+    title: 'Theory of the Firm: Managerial Behavior, Agency Costs and Ownership Structure'
+    authors: [Jensen M. C., Meckling W. H.]
+    publisher: 'Journal of Financial Economics, vol. 3, no. 4, pp. 305–360'
+    year: 1976
+    language: en
+    url: https://doi.org/10.1016/0304-405X(76)90026-X
+    checkedAt: '2026-09-16'
+    note: 'Джерело поняття агентських витрат: моніторинг, гарантування (bonding), залишкові втрати.'
+
+  - id: freeman-1984
+    type: book
+    title: 'Strategic Management: A Stakeholder Approach'
+    authors: [Freeman R. E.]
+    publisher: 'Pitman, 1984; перевидання Cambridge University Press, 2010'
+    year: 1984
+    language: en
+    url: https://doi.org/10.1017/CBO9781139192675
+    checkedAt: '2026-09-16'
+    note: 'Джерело поняття стейкхолдера як групи, що впливає на цілі організації або зазнає її впливу.'
+
+  - id: shleifer-vishny-1997
+    type: article
+    title: A Survey of Corporate Governance
+    authors: [Shleifer A., Vishny R. W.]
+    publisher: 'The Journal of Finance, vol. 52, no. 2, pp. 737–783'
+    year: 1997
+    language: en
+    url: https://dash.harvard.edu/entities/publication/73120379-1d3b-6bd4-e053-0100007fdf3b
+    checkedAt: '2026-09-16'
+    note: 'Огляд механізмів, якими постачальники капіталу забезпечують повернення інвестицій; концентрована власність і захист інвесторів.'
+
+  - id: friedman-1970
+    type: article
+    title: The Social Responsibility of Business Is to Increase Its Profits
+    authors: [Friedman M.]
+    publisher: 'The New York Times Magazine, 13.09.1970; передрук у збірнику Corporate Ethics and Corporate Governance, Springer, 2007'
+    year: 1970
+    language: en
+    url: https://doi.org/10.1007/978-3-540-70818-6_14
+    checkedAt: '2026-09-16'
+    note: 'Класичне формулювання концепції пріоритету акціонерів; сторінка видавця відкривається з перевіркою браузера.'
+
+  - id: business-roundtable-2019
+    type: web
+    title: 'Business Roundtable Redefines the Purpose of a Corporation to Promote «An Economy That Serves All Americans»'
+    authors: [Business Roundtable]
+    year: 2019
+    language: en
+    url: https://www.businessroundtable.org/business-roundtable-redefines-the-purpose-of-a-corporation-to-promote-an-economy-that-serves-all-americans
+    checkedAt: '2026-09-16'
+    note: 'Заява 181 генерального директора від 19.08.2019 про зобов’язання перед клієнтами, працівниками, постачальниками, громадами й акціонерами.'
+
+  # Міжнародні стандарти й дані
+  - id: oecd-principles-2023
+    type: standard
+    title: G20/OECD Principles of Corporate Governance 2023
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2023
+    language: en
+    url: https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en.html
+    checkedAt: '2026-09-15'
+    note: 'Опубліковано 11.09.2023; шість розділів. Дата перевірки — за docs/research/legal-baseline.md, рядок MS-01.'
+
+  - id: oecd-factbook-2023
+    type: report
+    title: OECD Corporate Governance Factbook 2023
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2023
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/09/oecd-corporate-governance-factbook-2023_6bae0258/6d912314-en.pdf
+    checkedAt: '2026-09-16'
+    note: 'Розділ 1.5–1.6: концентрація власності в лістингових компаніях 49 юрисдикцій на кінець 2022 р.'
+
+  # Право України (за legal-baseline)
+  - id: law-2465-ix
+    type: law
+    title: Закон України «Про акціонерні товариства» від 27.07.2022 № 2465-IX
+    authors: [Верховна Рада України]
+    year: 2022
+    url: https://zakon.rada.gov.ua/laws/show/2465-20
+    checkedAt: '2026-09-15'
+    note: 'Чинний, редакція від 01.01.2026. Використано ст. 3 (визначення АТ), ст. 2 (пакети акцій), ст. 69, 72, 107 — коди AT-01, AT-46, AT-49, AT-64, AT-69 legal-baseline.'
+
+  - id: nssmc-cg-code-2020
+    type: regulation
+    title: 'Кодекс корпоративного управління: ключові вимоги і рекомендації (рішення НКЦПФР від 12.03.2020 № 118)'
+    authors: [НКЦПФР]
+    year: 2020
+    url: https://www.nssmc.gov.ua/wp-content/uploads/2020/03/corporate-governance-code_final_ukr.pdf
+    checkedAt: '2026-09-16'
+    note: 'Рекомендаційний документ на основі Принципів ОЕСР/G20 редакції 2015 р.; законодавство — станом на 01.01.2020 (legal-baseline, розд. 6).'
+
+  # Кейс ПриватБанку (docs/research/cases.md, розд. 1)
+  - id: nbu-privatbank-2016
+    type: web
+    title: Виступ Голови НБУ під час спільного брифінгу з Міністром фінансів щодо переходу ПриватБанку у державну власність
+    authors: [Національний банк України]
+    year: 2016
+    url: https://bank.gov.ua/ua/news/all/vistup-golovi-natsionalnogo-banku-valeriyi-gontarevoyi-pid-chas-spilnogo-brifingu-z-ministrom-finansiv-oleksandrom-danilyukom-schodo-perehodu-privatbanku-u-derjavnu-vlasnist
+    checkedAt: '2026-09-16'
+    note: 'Брифінг 19.12.2016; дані про пов’язане кредитування і нестачу капіталу — позиція НБУ.'
+
+  - id: minfin-privatbank-2025
+    type: web
+    title: Ministry of Finance welcomes the judgment of the High Court in London in PrivatBank’s case against its former owners
+    authors: [Кабінет Міністрів України, Міністерство фінансів України]
+    year: 2025
+    language: en
+    url: https://www.kmu.gov.ua/en/news/minfin-vitaie-rishennia-vysokoho-sudu-velykobrytanii-pro-zdobuttia-pryvatbankom-peremohy-u-sudovomu-protsesi-proty-ioho-kolyshnikh-vlasnykiv
+    checkedAt: '2026-09-16'
+    note: 'Повідомлення від 30.07.2025 про рішення Високого суду Англії та Уельсу [2025] EWHC 1987 (Ch).'
+
+  - id: essex-court-privatbank-2025
+    type: case
+    title: US$3bn awarded in PrivatBank litigation
+    authors: [Essex Court Chambers]
+    year: 2025
+    language: en
+    url: https://essexcourt.com/us3bn-awarded-in-privatbank-litigation/
+    checkedAt: '2026-09-16'
+    note: 'Рішення [2025] EWHC 2909 (Ch) від 10.11.2025 про стягнення понад 3 млрд дол. США.'
+
+  - id: blackstone-privatbank-2026
+    type: case
+    title: JSC Commercial Bank Privatbank v Kolomoisky and Ors (Appeal)
+    authors: [Blackstone Chambers]
+    year: 2026
+    language: en
+    url: https://www.blackstonechambers.com/news/jsc-commercial-bank-privatbank-v-kolomoisky-and-ors-appeal/
+    checkedAt: '2026-09-16'
+    note: 'Рішення Апеляційного суду Англії та Уельсу [2026] EWCA Civ 658 від 22.05.2026.'
+
+  - id: suspilne-privatbank-2025
+    type: web
+    title: Коломойський програв справу у Верховному суді про оскарження націоналізації ПриватБанку
+    authors: [Суспільне]
+    year: 2025
+    url: https://suspilne.media/958547-kolomojskij-prograv-spravu-u-verhovnomu-sudi-pro-oskarzenna-nacionalizacii-privatbanku/
+    checkedAt: '2026-09-16'
+    note: 'Постанова Касаційного адміністративного суду у складі Верховного Суду від 26.02.2025 про закриття провадження.'
+
+  - id: forbes-privatbank-2026
+    type: web
+    title: ПриватБанк переміг Коломойського та Боголюбова в апеляції суду Лондона у справі на $3 млрд
+    authors: [Forbes Ukraine]
+    year: 2026
+    url: https://forbes.ua/news/privatbank-peremig-kolomoyskogo-ta-bogolyubova-v-apelyatsii-sudu-londona-u-spravi-na-3-mlrd-22052026-39047
+    checkedAt: '2026-09-16'
+    note: 'Заява банку про остаточність рішення і початок стягнення активів — позиція сторони.'
+
+  # Кейс Enron (docs/research/cases.md, розд. 7)
+  - id: crs-enron-chronology
+    type: report
+    title: 'Enron: A Select Chronology of Congressional, Corporate, and Government Activities (RL31364)'
+    authors: [Congressional Research Service]
+    year: 2002
+    language: en
+    url: https://www.everycrsreport.com/reports/RL31364.html
+    checkedAt: '2026-09-16'
+
+  - id: senate-enron-board-2002
+    type: report
+    title: 'The Role of the Board of Directors in Enron’s Collapse (S. Prt. 107-70)'
+    authors: [U.S. Senate, Permanent Subcommittee on Investigations]
+    year: 2002
+    language: en
+    url: https://www.govinfo.gov/content/pkg/CPRT-107SPRT80393/html/CPRT-107SPRT80393.htm
+    checkedAt: '2026-09-16'
+    note: 'Звіт від 08.07.2002 — висновки органу розслідування, не рішення суду.'
+
+  - id: doj-enron-verdicts-2006
+    type: case
+    title: Former Enron CEOs Kenneth Lay and Jeffrey Skilling Convicted (прес-реліз від 25.05.2006)
+    authors: [U.S. Department of Justice]
+    year: 2006
+    language: en
+    url: https://www.justice.gov/archive/opa/pr/2006/May/06_crm_328.html
+    checkedAt: '2026-09-16'
+
+  - id: crs-sox-2002
+    type: report
+    title: 'Corporate Accountability: Sarbanes-Oxley Act of 2002 (RL31554)'
+    authors: [Congressional Research Service]
+    year: 2002
+    language: en
+    url: https://www.everycrsreport.com/reports/RL31554.html
+    checkedAt: '2026-09-16'

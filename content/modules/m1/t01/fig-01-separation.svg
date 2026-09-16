@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t01-1" class="scheme" viewBox="0 0 560 420" role="img" aria-labelledby="fig-t01-1-title fig-t01-1-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t01-1-title">Рисунок 1. Відокремлення власності від контролю в корпорації</title>
+  <desc id="fig-t01-1-desc">Чотири блоки один під одним: тисячі акціонерів вкладають капітал і несуть ризик; вони обирають наглядову раду на загальних зборах; рада призначає й контролює виконавчий орган; виконавчий орган ухвалює поточні рішення. Суцільні стрілки вниз — повноваження, пунктирні вгору — звітність. Праворуч карміновою дужкою позначено розрив: власники не керують, а керівники не володіють.</desc>
+  <style>
+    #fig-t01-1 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t01-1 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t01-1 .t { fill: var(--ink, #0f1c2e); font-size: 15px; font-weight: 650; }
+    #fig-t01-1 .s { fill: var(--ink-2, #445570); font-size: 12.5px; }
+    #fig-t01-1 .arrow { stroke: var(--ink-2, #445570); stroke-width: 1.25; fill: none; }
+    #fig-t01-1 .arrow-head { fill: var(--ink-2, #445570); }
+    #fig-t01-1 .lbl { fill: var(--ink-2, #445570); font-size: 12px; }
+    #fig-t01-1 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t01-1 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t01-1 .leader { stroke: var(--ink, #0f1c2e); stroke-width: 1; fill: none; }
+    #fig-t01-1 .exam { stroke: var(--err, #b42318); }
+    #fig-t01-1 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 12px; font-weight: 600; }
+  </style>
+  <defs>
+    <marker id="arr-t01-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrow-head" d="M0 0 10 5 0 10z"/></marker>
+  </defs>
+
+  <rect class="box box-owner" x="60" y="16" width="320" height="64" rx="6"/>
+  <text class="t" x="220" y="43" text-anchor="middle">Тисячі акціонерів</text>
+  <text class="s" x="220" y="64" text-anchor="middle">вкладають капітал · несуть ризик</text>
+
+  <rect class="box" x="60" y="122" width="320" height="64" rx="6"/>
+  <text class="t" x="220" y="149" text-anchor="middle">Загальні збори</text>
+  <text class="s" x="220" y="170" text-anchor="middle">обирають раду · затверджують звіт</text>
+
+  <rect class="box" x="60" y="228" width="320" height="64" rx="6"/>
+  <text class="t" x="220" y="255" text-anchor="middle">Наглядова рада</text>
+  <text class="s" x="220" y="276" text-anchor="middle">призначає й контролює менеджмент</text>
+
+  <rect class="box" x="60" y="334" width="320" height="64" rx="6"/>
+  <text class="t" x="220" y="361" text-anchor="middle">Виконавчий орган</text>
+  <text class="s" x="220" y="382" text-anchor="middle">ухвалює поточні рішення</text>
+
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M180 80 L180 118"/>
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M180 186 L180 224"/>
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M180 292 L180 330"/>
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M260 330 L260 296" stroke-dasharray="4 3"/>
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M260 224 L260 190" stroke-dasharray="4 3"/>
+  <path class="arrow" marker-end="url(#arr-t01-1)" d="M260 118 L260 84" stroke-dasharray="4 3"/>
+  <text class="lbl" x="172" y="104" text-anchor="end">повноваження</text>
+  <text class="lbl" x="268" y="104">звітність</text>
+
+  <path class="leader exam" d="M430 24 L446 24 L446 390 L430 390"/>
+  <path class="leader exam" d="M446 207 L462 207"/>
+  <text class="exam-t" x="470" y="196">власники</text>
+  <text class="exam-t" x="470" y="211">не керують,</text>
+  <text class="exam-t" x="470" y="226">керівники</text>
+  <text class="exam-t" x="470" y="241">не володіють</text>
+
+  <circle class="refc" cx="44" cy="32" r="11"/><text class="refn" x="44" y="36">1</text>
+  <circle class="refc" cx="44" cy="138" r="11"/><text class="refn" x="44" y="142">2</text>
+  <circle class="refc" cx="44" cy="244" r="11"/><text class="refn" x="44" y="248">3</text>
+  <circle class="refc" cx="44" cy="350" r="11"/><text class="refn" x="44" y="354">4</text>
+  <circle class="refc exam" cx="512" cy="170" r="11"/><text class="refn exam-n" x="512" y="174">5</text>
+</svg>
