@@ -9,6 +9,9 @@
 // з правильною відповіддю (get_correct_response) і має отримати повний бал.
 // Для кожного файлу глосарію: новий курс -> глосарій -> імпорт записів тією самою логікою, що
 // mod/glossary/import.php (поточний глосарій, «Імпортувати категорії») -> звірка записів, синонімів, категорій.
+// Якщо в маніфесті є курсові файли обох видів (тренувальний і контрольний), окремо перевіряється змішаний
+// сценарій: обидва імпортуються в ОДИН банк одного курсу, і випадковий слот тесту з фільтром «категорія + тег»
+// має брати питання лише свого виду.
 // Код виходу 1, якщо є хоч одна помилка (включно з попередженнями PHP).
 
 define('CLI_SCRIPT', true);
@@ -200,6 +203,153 @@ function ku_check_question_file(testing_data_generator $gen, string $dir, array 
 }
 
 /**
+ * Ідентифікатори питань пулу, який дасть фільтр випадкового слота (той самий random_question_loader,
+ * що використовує mod_quiz під час спроби).
+ */
+function ku_pool_idnumbers(array $filter, int $limit = 200): array {
+    global $DB;
+    $loader = new \core_question\local\bank\random_question_loader(new qubaid_list([]));
+    $questions = $loader->get_filtered_questions($filter, $limit, 0, ['q.id']);
+    if (!$questions) {
+        return [];
+    }
+    [$insql, $params] = $DB->get_in_or_equal(array_keys($questions));
+    $sql = "SELECT q.id, qbe.idnumber
+              FROM {question} q
+              JOIN {question_versions} qv ON qv.questionid = q.id
+              JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+             WHERE q.id $insql";
+    return ku_sorted(array_map(fn($r) => (string)$r->idnumber, $DB->get_records_sql($sql, $params)));
+}
+
+/**
+ * Кілька послідовних жеребкувань тим самим фільтром: так само добирає питання спроба тесту.
+ */
+function ku_draw_idnumbers(array $filter, int $draws): array {
+    global $DB;
+    $loader = new \core_question\local\bank\random_question_loader(new qubaid_list([]));
+    $result = [];
+    for ($i = 0; $i < $draws; $i++) {
+        $questionid = $loader->get_next_filtered_question_id($filter);
+        if ($questionid === null) {
+            break;
+        }
+        $result[] = (string)$DB->get_field_sql(
+            "SELECT qbe.idnumber FROM {question_versions} qv
+               JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+              WHERE qv.questionid = ?", [$questionid]);
+    }
+    return $result;
+}
+
+/**
+ * Змішаний сценарій: обидва види банків в одному курсі. Доводить, що випадковий слот із фільтром
+ * «категорія теми + тег Блума» бере лише питання свого виду (idnumber tNN-qNNN проти tNN-kNNN).
+ */
+function ku_check_mixed_bank(testing_data_generator $gen, string $dir, array $manifest, string $prefix): ?array {
+    $files = array_values(array_filter($manifest['questions'], fn($file) => $file['scope'] === 'course'));
+    $kinds = array_unique(array_map(fn($file) => $file['kind'], $files));
+    if (count($kinds) < 2) {
+        return null;
+    }
+    $shortname = strtoupper("{$prefix}-MIX");
+    $result = ['course' => $shortname, 'files' => array_map(fn($file) => $file['file'], $files), 'errors' => []];
+    $course = ku_fresh_course($gen, $shortname);
+    $bank = spike_create_question_bank($course);
+
+    $expected = [];
+    foreach ($files as $file) {
+        try {
+            $import = spike_import_questions($course, $bank, $dir . '/' . $file['file']);
+        } catch (Throwable $e) {
+            $result['errors'][] = "{$file['file']}: import failed: " . $e->getMessage();
+            return $result;
+        }
+        $expected[$file['kind']] = $file;
+    }
+    // Після другого імпорту в банку мають лежати питання обох видів.
+    $total = array_sum(array_map(fn($file) => $file['total'], $files));
+    $result['questionsinbank'] = ku_count_bank_questions($bank);
+    if ($result['questionsinbank'] !== $total) {
+        $result['errors'][] = "questions in shared bank {$result['questionsinbank']} != {$total}";
+    }
+
+    foreach ($expected as $kind => $file) {
+        [$categoryidnumber, $tag, $wanted] = ku_pick_probe($file);
+        if ($tag === null) {
+            $result['errors'][] = "{$kind}: у маніфесті немає питань з тегом bloom-*";
+            continue;
+        }
+        $topic = explode('-', $categoryidnumber, 2)[1] ?? $categoryidnumber;
+        $otherkind = $kind === 'training' ? 'control' : 'training';
+        $sameTopicOtherKind = isset($expected[$otherkind])
+            ? ku_sorted(array_values(array_map(fn($q) => $q['idnumber'], array_filter(
+                $expected[$otherkind]['questions'],
+                fn($q) => str_ends_with($q['category'], $topic) && in_array($tag, $q['tags'], true)
+            ))))
+            : [];
+
+        $category = spike_category_by_idnumber($bank, $categoryidnumber);
+        $quiz = spike_create_quiz($gen, $course, 0, "Тест ({$kind})", 6);
+        spike_add_random_slots($quiz, $category, [$tag]);
+        $filter = spike_random_slot_filters($quiz->cmid)[0] ?? [];
+        $pool = ku_pool_idnumbers($filter);
+        $draws = ku_draw_idnumbers($filter, 10);
+        $foreign = array_values(array_unique(array_filter(array_merge($pool, $draws),
+            fn($idnumber) => !in_array($idnumber, $wanted, true))));
+        $result['filters'][$kind] = ['category' => $categoryidnumber, 'tag' => $tag, 'expected' => $wanted,
+            'pool' => $pool, 'draws' => $draws, 'sametopicotherkind' => $sameTopicOtherKind];
+        if ($pool !== $wanted) {
+            $result['errors'][] = "{$kind}: пул фільтра " . json_encode($pool) . ' != ' . json_encode($wanted);
+        }
+        if (!$draws) {
+            $result['errors'][] = "{$kind}: випадковий слот не дав жодного питання";
+        }
+        if ($foreign) {
+            $result['errors'][] = "{$kind}: у вибірку потрапили чужі питання " . json_encode(array_values($foreign));
+        }
+        if (!$sameTopicOtherKind) {
+            $result['errors'][] = "{$kind}: у другого виду немає питань тієї самої теми й тегу — перевірка нічого не доводить";
+        }
+    }
+    return $result;
+}
+
+/**
+ * Пара «категорія + тег Блума» з найбільшою кількістю питань у файлі та перелік її питань.
+ *
+ * @return array [idnumber категорії, назва тега або null, відсортовані idnumber питань]
+ */
+function ku_pick_probe(array $file): array {
+    $groups = [];
+    foreach ($file['questions'] as $question) {
+        foreach ($question['tags'] as $tag) {
+            if (str_starts_with($tag, 'bloom-')) {
+                $groups["{$question['category']}|{$tag}"][] = $question['idnumber'];
+            }
+        }
+    }
+    if (!$groups) {
+        return ['', null, []];
+    }
+    uasort($groups, fn($a, $b) => count($b) <=> count($a));
+    $key = array_key_first($groups);
+    [$category, $tag] = explode('|', $key, 2);
+    return [$category, $tag, ku_sorted($groups[$key])];
+}
+
+/** Кількість питань (без підпитань Cloze) у банку курсу. */
+function ku_count_bank_questions(stdClass $bank): int {
+    global $DB;
+    return (int)$DB->count_records_sql(
+        "SELECT COUNT(1) FROM {question} q
+           JOIN {question_versions} qv ON qv.questionid = q.id
+           JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+           JOIN {question_categories} qc ON qc.id = qbe.questioncategoryid
+          WHERE qc.contextid = ? AND q.parent = 0", [$bank->contextid]);
+}
+
+/**
  * Імпорт записів у поточний глосарій з категоріями: той самий цикл, що в mod/glossary/import.php (Moodle 5.2.2),
  * без форми завантаження. Повертає [імпортовано, відхилено, створено категорій].
  */
@@ -320,8 +470,9 @@ foreach ($manifest['questions'] as $expected) {
 foreach ($manifest['glossaries'] as $expected) {
     $report['glossaryfiles'][] = ku_check_glossary_file($gen, $dir, $expected, $options['prefix']);
 }
+$report['mixedbank'] = ku_check_mixed_bank($gen, $dir, $manifest, $options['prefix']);
 
-$files = array_merge($report['questionfiles'], $report['glossaryfiles']);
+$files = array_merge($report['questionfiles'], $report['glossaryfiles'], $report['mixedbank'] ? [$report['mixedbank']] : []);
 if ($options['cleanup']) {
     foreach ($files as $file) {
         ku_delete_course($file['course']);
@@ -335,6 +486,7 @@ $report['summary'] = [
     'questionsfullmarks' => array_sum(array_map(fn($f) => $f['imported']['fullmarksforcorrectresponse'] ?? 0, $report['questionfiles'])),
     'glossaryfiles' => count($report['glossaryfiles']),
     'glossaryentriesimported' => array_sum(array_map(fn($f) => $f['imported']['total'] ?? 0, $report['glossaryfiles'])),
+    'mixedbankquestions' => $report['mixedbank']['questionsinbank'] ?? null,
     'errors' => $errors,
     'phpwarnings' => count($phpwarnings),
 ];

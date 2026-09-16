@@ -28,9 +28,10 @@ describe('lintYaml', () => {
       '  - prn03',
       'act: Закон № 2465-IX (z1307-23, 448/96-ВР), п. 2-1',
       'isbn: 978-617-7360-05-2',
+      'title: S. Prt. 107-70; Pub. L. 107-204; No. 12-45',
       'range: 2020-2026 рр.',
     ].join('\n');
-    expect(lintYaml(yaml)).toEqual([{ line: 8, actual: '2020-2026 рр.', expected: '2020–2026 рр.' }]);
+    expect(lintYaml(yaml)).toEqual([{ line: 9, actual: '2020-2026 рр.', expected: '2020–2026 рр.' }]);
   });
 });
 
