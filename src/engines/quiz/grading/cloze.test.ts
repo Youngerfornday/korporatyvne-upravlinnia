@@ -21,6 +21,13 @@ describe('compareWithWildcard (qtype_shortanswer_question::compare_string_with_w
   it('normalises Unicode to NFC before comparing', () => {
     expect(compareWithWildcard('й', 'и\u0306', false)).toBe(true);
   });
+  it('прирівнює три варіанти апострофа, бо експорт у Moodle дає їх як окремі відповіді', () => {
+    expect(compareWithWildcard('обов’язки', "обов'язки", false)).toBe(true);
+    expect(compareWithWildcard("обов'язки", 'обов’язки', false)).toBe(true);
+    expect(compareWithWildcard('обовʼязки', 'обов’язки', false)).toBe(true);
+    expect(compareWithWildcard('обовязки', 'обов’язки', false)).toBe(false);
+  });
+
 });
 
 describe('gradeMultianswer (qtype_multianswer_question: weighted sum of subquestions)', () => {

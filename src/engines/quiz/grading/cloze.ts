@@ -9,12 +9,22 @@ type PartResponse = ResponseOf<'multianswer'>['parts'][number];
 const UNESCAPED_STAR_RUN = /(?<!\\)\*+/;
 const REGEX_SPECIAL = /[.*+?^${}()|[\]\\/]/g;
 
+const APOSTROPHES = /[\u2019\u02BC\u02B9\u0027\u00B4]/g;
+
+/**
+ * Один канонічний апостроф. Moodle порівнює короткі відповіді буквально, тому експортер вивантажує
+ * варіанти ’ / ' / ʼ окремими відповідями; на сайті ту саму рівність дає нормалізація.
+ */
+function canonicalApostrophes(value: string): string {
+  return value.normalize('NFC').replace(APOSTROPHES, '\u2019');
+}
+
 /** qtype_shortanswer_question::compare_string_with_wildcard: `*` — будь-які символи, `\*` — зірочка. */
 export function compareWithWildcard(text: string, pattern: string, ignoreCase: boolean): boolean {
-  const bits = pattern.normalize('NFC').split(UNESCAPED_STAR_RUN);
+  const bits = canonicalApostrophes(pattern).split(UNESCAPED_STAR_RUN);
   const source = bits.map((bit) => bit.replaceAll('\\*', '*').replace(REGEX_SPECIAL, '\\$&')).join('.*');
   const regex = new RegExp(`^${source}$`, ignoreCase ? 'iu' : 'u');
-  return regex.test(text.normalize('NFC').trim());
+  return regex.test(canonicalApostrophes(text).trim());
 }
 
 export interface ClozePartMatch {
