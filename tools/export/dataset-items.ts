@@ -33,9 +33,6 @@ export function datasetVariants(question: CalculatedQuestion): ReadonlyArray<Rea
 
 /** Значення однієї змінної для всіх варіантів рядками для XML (як `sprintf("%.{decimals}f")` у Moodle). */
 export function datasetItems(question: CalculatedQuestion, dataset: Dataset): string[] {
-  if (dataset.distribution === 'loguniform' && (dataset.min <= 0 || dataset.max <= 0)) {
-    throw new Error(`Набір даних {${dataset.name}}: логарифмічний розподіл потребує додатних min і max`);
-  }
   return datasetVariants(question).map((values) => formatDatasetValue(values[dataset.name], dataset));
 }
 

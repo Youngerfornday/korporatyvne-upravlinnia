@@ -20,6 +20,26 @@ export function htmlField(tag: string, html: string): XmlElement {
   return element(tag, [cdataElement('text', html)], { format: 'html' });
 }
 
+/** Дата перевірки норми в українському записі: 2026-09-15 → 15.09.2026. */
+function formatCheckedAt(date: string): string {
+  const [year, month, day] = date.split('-');
+  return day && month && year ? `${day}.${month}.${year}` : date;
+}
+
+/**
+ * Норми з `lawRef` дописуються окремими рядками до загального відгуку: тегами їх не виводимо
+ * (ліміт довжини тегів Moodle), а студентові після спроби й викладачеві на рев’ю посилання потрібне.
+ */
+export function lawRefsHtml(lawRef: Question['lawRef']): string {
+  return lawRef
+    .map((reference) => {
+      const text = escapeHtml(typo(`${reference.article} ${reference.act}`));
+      const source = reference.url ? `<a href="${escapeHtml(reference.url)}">${text}</a>` : text;
+      return `<p>Норма: ${source} (перевірено ${formatCheckedAt(reference.checkedAt)})</p>`;
+    })
+    .join('');
+}
+
 export interface HeaderOptions {
   readonly questionText: string;
   readonly generalFeedback: string;
@@ -32,7 +52,7 @@ export function questionHeader(question: Question, options: HeaderOptions): XmlE
   return [
     element('name', [cdataElement('text', questionName(question.stem))]),
     htmlField('questiontext', options.questionText),
-    htmlField('generalfeedback', options.generalFeedback),
+    htmlField('generalfeedback', `${options.generalFeedback}${lawRefsHtml(question.lawRef)}`),
     ...(options.withDefaultGrade === false ? [] : [textElement('defaultgrade', formatNumber(question.defaultMark))]),
     textElement('penalty', options.penalty),
     textElement('hidden', '0'),

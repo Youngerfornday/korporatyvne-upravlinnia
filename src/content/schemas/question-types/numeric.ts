@@ -62,7 +62,10 @@ const DatasetSchema = z
     decimals: z.int().min(0).max(MAX_DECIMALS),
     distribution: z.enum(['uniform', 'loguniform']).default('uniform'),
   })
-  .refine((dataset) => dataset.min <= dataset.max, { message: 'Набір даних: min має бути не більшим за max' });
+  .refine((dataset) => dataset.min <= dataset.max, { message: 'Набір даних: min має бути не більшим за max' })
+  .refine((dataset) => dataset.distribution !== 'loguniform' || dataset.min > 0, {
+    message: 'Набір даних: логарифмічний розподіл потребує min більшого за нуль',
+  });
 
 const CalculatedAnswerSchema = z.object({
   formula: z.string().trim().min(1),

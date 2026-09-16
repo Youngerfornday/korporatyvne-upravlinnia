@@ -41,14 +41,20 @@ const ClozeSubquestionSchema = z.discriminatedUnion('kind', [
 
 const PLACEHOLDER_PATTERN = /\{#(\d+)\}/g;
 
+/** Бал Cloze Moodle рахує сам як суму ваг підпитань, тож `defaultMark` у файлі банку не задають. */
+const { defaultMark: _defaultMark, ...multianswerBaseShape } = questionBaseShape;
+
 /**
  * Moodle multianswer (Cloze). Стовбур містить `{#1}`, `{#2}` … — по одному на кожне підпитання в порядку списку.
  * Синтаксис `{1:MULTICHOICE:=…}` генерує експортер, тож екранування спецсимволів Cloze тут не потрібне.
  */
 export const MultianswerQuestionSchema = z
   .object({
-    ...questionBaseShape,
+    ...multianswerBaseShape,
     type: z.literal('multianswer'),
+    defaultMark: z
+      .undefined({ error: 'Cloze не має поля defaultMark: бал дорівнює сумі ваг підпитань' })
+      .optional(),
     subquestions: z.array(ClozeSubquestionSchema).min(1),
   })
   .superRefine((question, ctx) => {
@@ -72,4 +78,10 @@ export const MultianswerQuestionSchema = z
         reportDuplicateTexts(subquestion.answers.map((a) => a.text), 'Відповіді підпитання', ['subquestions', index], ctx);
       }
     });
-  });
+  })
+  // Бал питання = сума ваг підпитань (qtype_multianswer_extract_question): рушій тесту й експортер
+  // читають його з того самого поля, що й в інших типах.
+  .transform((question) => ({
+    ...question,
+    defaultMark: question.subquestions.reduce((sum, subquestion) => sum + subquestion.weight, 0),
+  }));

@@ -70,6 +70,11 @@ function escapeCategoryName(name: string): string {
   return name.replace(/\//g, '//');
 }
 
+/** Шлях категорії банку питань від кореня `top`. */
+export function categoryPath(...names: readonly string[]): string {
+  return ['top', ...names.map(escapeCategoryName)].join('/');
+}
+
 export function moduleCategoryName(module: RegistryModule): string {
   return typoPlain(`Модуль ${module.id.slice(1)}. ${module.title}`);
 }
@@ -78,10 +83,4 @@ export function topicCategoryName(topic: RegistryTopic): string {
   return typoPlain(`Тема ${topic.id.slice(1)}. ${topic.title}`);
 }
 
-export function moduleCategoryPath(module: RegistryModule): string {
-  return `top/${escapeCategoryName(moduleCategoryName(module))}`;
-}
 
-export function topicCategoryPath(module: RegistryModule, topic: RegistryTopic): string {
-  return `${moduleCategoryPath(module)}/${escapeCategoryName(topicCategoryName(topic))}`;
-}

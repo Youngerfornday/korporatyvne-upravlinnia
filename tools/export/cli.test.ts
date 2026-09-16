@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CONTROL_CANARY_PREFIX } from '../../src/content/schemas/questions.ts';
 import { runCli, type CliIo } from './cli.ts';
 import type { ExportManifest } from './export-files.ts';
-import { examples } from './test-support/banks.ts';
+import { asControl, examples } from './test-support/banks.ts';
 import { parseXml } from './test-support/xml-tree.ts';
 
 /**
@@ -80,8 +80,8 @@ describe('runCli: успішний експорт', () => {
     await runOnFixtures(outDir);
     const manifest = JSON.parse(await readFile(join(outDir, 'manifest.json'), 'utf8')) as ExportManifest;
     const course = manifest.questions.find((entry) => entry.scope === 'course');
-    expect(course?.total).toBe(12);
-    expect(course?.byType).toEqual({ calculated: 2, ddwtos: 1, match: 1, multianswer: 2, multichoice: 3, numerical: 1, truefalse: 2 });
+    expect(course?.total).toBe(13);
+    expect(course?.byType).toEqual({ calculated: 2, ddwtos: 1, match: 1, multianswer: 2, multichoice: 3, numerical: 1, truefalse: 3 });
     expect(manifest.questions.map((entry) => entry.scope)).toEqual(['m1', 'm2', 'm3', 'course']);
     expect(manifest.questions.every((entry) => entry.kind === 'training')).toBe(true);
     expect(manifest.glossaries.map((entry) => entry.total)).toEqual([3, 2, 1, 6]);
@@ -101,7 +101,7 @@ describe('runCli: успішний експорт', () => {
   it('контрольний банк: файли з префіксом control і жодного canary у виводі', async () => {
     const canary = `${CONTROL_CANARY_PREFIX}m2-cli`;
     const banks = await bankDir(
-      { schemaVersion: 1, kind: 'control', module: 'm2', canary, questions: [examples.multichoiceSingle()] },
+      { schemaVersion: 1, kind: 'control', module: 'm2', canary, questions: [asControl(examples.multichoiceSingle())] },
       'm2.yaml',
     );
     const outDir = await temporaryDir();
@@ -162,7 +162,7 @@ describe('runCli: звіт про помилки', () => {
         kind: 'control',
         module: 'm2',
         canary: `${CONTROL_CANARY_PREFIX}m2-dir`,
-        questions: [examples.multichoiceSingle()],
+        questions: [asControl(examples.multichoiceSingle())],
       }),
       'utf8',
     );
@@ -171,22 +171,16 @@ describe('runCli: звіт про помилки', () => {
     expect(err.join('\n')).toContain('контрольний банк лежить у каталозі тренувальних банків');
   });
 
-  it('помилка генерації (логарифмічний набір даних із нулем) потрапляє у звіт', async () => {
-    const calculated = examples.calculated();
-    const banks = await bankDir({
-      schemaVersion: 1,
-      kind: 'training',
-      module: 'm3',
-      questions: [
-        {
-          ...calculated,
-          datasets: [...calculated.datasets.slice(0, 2), { name: 'n', min: 0, max: 20, decimals: 0, distribution: 'loguniform' }],
-        },
-      ],
-    });
+  it('помилка генерації (canary в тексті контрольного питання) потрапляє у звіт', async () => {
+    const canary = `${CONTROL_CANARY_PREFIX}m2-leak`;
+    const question = asControl(examples.multichoiceSingle());
+    const banks = await bankDir(
+      { schemaVersion: 1, kind: 'control', module: 'm2', canary, questions: [{ ...question, stem: `${question.stem} ${canary}` }] },
+      'm2.yaml',
+    );
     const { code, err } = await run(['--banks', banks, '--modules', `${FIXTURES}/modules`, '--out', await temporaryDir()]);
     expect(code).toBe(1);
-    expect(err.join('\n')).toContain('логарифмічний розподіл потребує додатних min і max');
+    expect(err.join('\n')).toContain('Canary контрольного банку');
   });
 
   it('невідомий параметр — код 2 з підказкою, --help — код 0', async () => {

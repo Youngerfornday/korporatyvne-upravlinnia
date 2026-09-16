@@ -50,14 +50,4 @@ describe('datasetVariants = generateDatasetItems рушія тесту', () => {
     expect(datasetVariants(first)).toEqual(datasetVariants(first));
     expect(datasetVariants(first)).not.toEqual(datasetVariants({ ...first, id: 't07-q916' }));
   });
-
-  it('недодатні межі логарифмічного розподілу — зрозуміла помилка', () => {
-    const bad = calculated({
-      ...examples.calculated(),
-      datasets: [...examples.calculated().datasets.slice(0, 2), { name: 'n', min: 0, max: 20, decimals: 0, distribution: 'loguniform' }],
-    });
-    const dataset = bad.datasets[2];
-    expect(dataset).toBeDefined();
-    expect(() => datasetItems(bad, dataset!)).toThrow(/логарифмічний розподіл потребує додатних min і max/);
-  });
 });

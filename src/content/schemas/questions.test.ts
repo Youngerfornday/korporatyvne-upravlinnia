@@ -168,6 +168,23 @@ describe('QuestionSchema: ddwtos and multianswer', () => {
     expect(issuesOf({ ...multianswer(), stem: '{#1} {#2} {#3}' })).toContainEqual(expect.stringMatching(/\{#3\}/));
   });
 
+  it('computes the Cloze mark from subquestion weights and rejects an explicit defaultMark', () => {
+    const question = multianswer();
+    const [first, second] = question.subquestions;
+    expect(QuestionSchema.parse(question).defaultMark).toBe(2);
+    expect(QuestionSchema.parse({ ...question, subquestions: [{ ...first, weight: 2 }, { ...second, weight: 3 }] }).defaultMark).toBe(5);
+    expect(issuesOf({ ...question, defaultMark: 3 })).toContainEqual(expect.stringMatching(/defaultMark/));
+  });
+
+  it('rejects a logarithmic dataset that starts at zero or below', () => {
+    const question = calculated();
+    const [first, ...rest] = question.datasets;
+    expect(issuesOf({ ...question, datasets: [{ ...first, min: 0, distribution: 'loguniform' }, ...rest] })).toContainEqual(
+      expect.stringMatching(/логарифмічний розподіл потребує min більшого за нуль/),
+    );
+    expect(issuesOf({ ...question, datasets: [{ ...first, min: 1, distribution: 'loguniform' }, ...rest] })).toEqual([]);
+  });
+
   it('requires a 100% answer in every Cloze subquestion', () => {
     const question = multianswer();
     const [first, second] = question.subquestions;
@@ -184,6 +201,15 @@ describe('BankFileSchema', () => {
     questions: [multichoiceSingle(), ddwtos()],
   });
 
+  /** Контрольні питання мають власний шаблон ID: tNN-kNNN. */
+  const asControl = <T extends { id: string }>(question: T): T => ({ ...question, id: question.id.replace('-q', '-k') });
+  const controlBank = () => ({
+    ...trainingBank(),
+    kind: 'control',
+    canary: `${CONTROL_CANARY_PREFIX}m2-2026`,
+    questions: trainingBank().questions.map(asControl),
+  });
+
   it('accepts a training bank without canary', () => {
     expect(BankFileSchema.safeParse(trainingBank()).success).toBe(true);
   });
@@ -194,11 +220,27 @@ describe('BankFileSchema', () => {
   });
 
   it('requires a control bank canary with the agreed prefix', () => {
-    const control = { ...trainingBank(), kind: 'control' };
+    const control = { ...controlBank(), canary: undefined };
     expect(BankFileSchema.safeParse(control).success).toBe(false);
     expect(BankFileSchema.safeParse({ ...control, canary: 'CANARY-m2' }).success).toBe(false);
     expect(BankFileSchema.safeParse({ ...control, canary: CONTROL_CANARY_PREFIX }).success).toBe(false);
-    expect(BankFileSchema.safeParse({ ...control, canary: `${CONTROL_CANARY_PREFIX}m2-2026` }).success).toBe(true);
+    expect(BankFileSchema.safeParse(controlBank()).success).toBe(true);
+  });
+
+  it('keeps training and control ids apart: tNN-qNNN and tNN-kNNN', () => {
+    const messages = (input: unknown) => {
+      const result = BankFileSchema.safeParse(input);
+      return result.success ? [] : result.error.issues.map((issue) => issue.message);
+    };
+    expect(messages({ ...trainingBank(), questions: [asControl(multichoiceSingle())] })).toContainEqual(
+      expect.stringMatching(/тренувального питання має вигляд tNN-qNNN/),
+    );
+    expect(messages({ ...controlBank(), questions: [multichoiceSingle()] })).toContainEqual(
+      expect.stringMatching(/контрольного питання має вигляд tNN-kNNN/),
+    );
+    expect(messages({ ...trainingBank(), questions: [{ ...multichoiceSingle(), id: 't04-q1' }] })).toContainEqual(
+      expect.stringMatching(/tNN-qNNN/),
+    );
   });
 
   it('builds the canary prefix without spelling it out, so source files never trip the leak check', () => {

@@ -5,14 +5,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > calculated:
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 3. Капітал // ринок]]></text></category>
-    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
-    <idnumber>m3</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 3. Капітал // ринок]]></text></category>
+    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
+    <idnumber>tr-m3</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
     <info format="html"><text><![CDATA[<p>Розрахунок дивідендів.</p>]]></text></info>
-    <idnumber>t07</idnumber>
+    <idnumber>tr-t07</idnumber>
   </question>
   <question type="calculated">
     <name><text><![CDATA[Чистий прибуток {p} тис. грн, частка на дивіденди {r}%, акцій…]]></text></name>
@@ -216,14 +221,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > ddwtos: с�
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
-    <idnumber>m2</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
     <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
-    <idnumber>t04</idnumber>
+    <idnumber>tr-t04</idnumber>
   </question>
   <question type="ddwtos">
     <name><text><![CDATA[Кворум загальних зборів — це … голосуючих акцій, а рішення…]]></text></name>
@@ -264,14 +274,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > matching: �
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
-    <idnumber>m1</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління/Тема 02. Моделі КУ]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 1. Основи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m1</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 1. Основи корпоративного управління/Тема 02. Моделі КУ]]></text></category>
     <info format="html"><text><![CDATA[<p>Моделі й стандарти.</p>]]></text></info>
-    <idnumber>t02</idnumber>
+    <idnumber>tr-t02</idnumber>
   </question>
   <question type="matching">
     <name><text><![CDATA[Установіть відповідність між моделлю корпоративного управління та її ознакою.]]></text></name>
@@ -312,14 +327,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multianswer
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
-    <idnumber>m2</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
     <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
-    <idnumber>t04</idnumber>
+    <idnumber>tr-t04</idnumber>
   </question>
   <question type="cloze">
     <name><text><![CDATA[Кумулятивне голосування застосовують під час обрання …. Мінімальний пакет для…]]></text></name>
@@ -342,14 +362,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multichoice
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
-    <idnumber>m2</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 05. Наглядова рада]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 05. Наглядова рада]]></text></category>
     <info format="html"><text><![CDATA[<p>Комітети ради.</p>]]></text></info>
-    <idnumber>t05</idnumber>
+    <idnumber>tr-t05</idnumber>
   </question>
   <question type="multichoice">
     <name><text><![CDATA[Які з наведених комітетів зазвичай утворює наглядова рада?]]></text></name>
@@ -393,19 +418,24 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multichoice
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
-    <idnumber>m2</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
     <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
-    <idnumber>t04</idnumber>
+    <idnumber>tr-t04</idnumber>
   </question>
   <question type="multichoice">
     <name><text><![CDATA[Який орган є вищим органом акціонерного товариства?]]></text></name>
     <questiontext format="html"><text><![CDATA[<p>Який орган є вищим органом акціонерного товариства?</p>]]></text></questiontext>
-    <generalfeedback format="html"><text><![CDATA[<p>Вищий орган АТ — загальні збори акціонерів.</p>]]></text></generalfeedback>
+    <generalfeedback format="html"><text><![CDATA[<p>Вищий орган АТ — загальні збори акціонерів.</p><p>Норма: ст. 39 Закон України «Про акціонерні товариства» № 2465-IX (перевірено 01.09.2026)</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
@@ -443,14 +473,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > numerical: 
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 3. Капітал // ринок]]></text></category>
-    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
-    <idnumber>m3</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 3. Капітал // ринок]]></text></category>
+    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
+    <idnumber>tr-m3</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
     <info format="html"><text><![CDATA[<p>Розрахунок дивідендів.</p>]]></text></info>
-    <idnumber>t07</idnumber>
+    <idnumber>tr-t07</idnumber>
   </question>
   <question type="numerical">
     <name><text><![CDATA[Чистий прибуток 650 000 грн, на дивіденди — 50%, акцій…]]></text></name>
@@ -483,14 +518,19 @@ exports[`bankToMoodleXml: снапшоти кожного типу > truefalse: 
 <!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління]]></text></category>
-    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
-    <idnumber>m1</idnumber>
+    <category><text><![CDATA[top/Тренувальний банк]]></text></category>
+    <info format="html"><text><![CDATA[<p>Тренувальні питання курсу: відкриті банки з поясненнями.</p>]]></text></info>
+    <idnumber>tr</idnumber>
   </question>
   <question type="category">
-    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація]]></text></category>
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 1. Основи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
+    <idnumber>tr-m1</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Тренувальний банк/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація]]></text></category>
     <info format="html"><text><![CDATA[<p>Власність і контроль.</p>]]></text></info>
-    <idnumber>t01</idnumber>
+    <idnumber>tr-t01</idnumber>
   </question>
   <question type="truefalse">
     <name><text><![CDATA[Агентська проблема виникає через відокремлення власності від контролю.]]></text></name>

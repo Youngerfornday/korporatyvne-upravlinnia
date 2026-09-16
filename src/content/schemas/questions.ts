@@ -34,6 +34,15 @@ export type QuestionType = Question['type'];
 const CANARY_SUFFIX = /^[A-Za-z0-9][A-Za-z0-9-]*$/;
 
 /**
+ * ID питання залежить від виду банку: тренувальні — `tNN-qNNN`, контрольні — `tNN-kNNN`.
+ * Так idnumber у Moodle ніколи не збігаються, навіть якщо викладач імпортує обидва банки в один курс.
+ */
+const QUESTION_ID = {
+  training: { pattern: /^t\d{2}-q\d{3}$/, shape: 'tNN-qNNN', example: 't04-q001', label: 'тренувального' },
+  control: { pattern: /^t\d{2}-k\d{3}$/, shape: 'tNN-kNNN', example: 't04-k001', label: 'контрольного' },
+} as const;
+
+/**
  * Файл банку: `content/banks/training/mN.yaml` (публічний) або `banks/control/mN.yaml` (лише приватний репозиторій).
  * Контрольний банк обов’язково має canary; тренувальний — ні.
  */
@@ -59,6 +68,16 @@ export const BankFileSchema = z
     if (bank.kind === 'training' && bank.canary !== undefined) {
       ctx.addIssue({ code: 'custom', message: 'Тренувальний банк не повинен мати поле canary', path: ['canary'] });
     }
+    const { pattern, shape, example, label } = QUESTION_ID[bank.kind];
+    bank.questions.forEach((question, index) => {
+      if (!pattern.test(question.id)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `ID ${label} питання має вигляд ${shape} (наприклад ${example})`,
+          path: ['questions', index, 'id'],
+        });
+      }
+    });
     for (const id of findDuplicates(bank.questions.map((q) => q.id))) {
       ctx.addIssue({ code: 'custom', message: `Дублікат ID питання «${id}»`, path: ['questions'] });
     }

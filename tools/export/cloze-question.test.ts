@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NBSP } from '../../src/lib/typography/normalize.ts';
-import { clozeMaxMark, clozeQuestionText, encodeClozeText } from './cloze-question.ts';
+import { clozeQuestionText, encodeClozeText } from './cloze-question.ts';
 import { examples, parsedQuestion, question } from './test-support/banks.ts';
 import { htmlEntityDecode, parseCloze } from './test-support/cloze-parse.ts';
 import { textAt } from './test-support/xml-tree.ts';
@@ -67,7 +67,7 @@ describe('Cloze: код підпитань читається парсером M
       },
       { weight: 1, type: 'SHORTANSWER_C', alternatives: [{ fraction: 1, answer: 'НКЦПФР', feedback: 'Так.' }] },
     ]);
-    expect(clozeMaxMark(cloze(raw))).toBe(4);
+    expect(cloze(raw).defaultMark).toBe(4);
   });
 
   it.each([

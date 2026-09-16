@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONTROL_CANARY_PREFIX } from '../../src/content/schemas/questions.ts';
+import { NBSP } from '../../src/lib/typography/normalize.ts';
 import { REGISTRY } from './__fixtures__/registry.ts';
 import {
   bankToMoodleXml,
@@ -9,7 +10,7 @@ import {
   planQuestionExport,
 } from './moodle-xml.ts';
 import { ExportError } from './registry.ts';
-import { allExampleBanks, bank, examples, singleQuestionXml } from './test-support/banks.ts';
+import { allExampleBanks, bank, controlBank, examples, parsedQuestion, singleQuestionXml } from './test-support/banks.ts';
 import { child, childrenNamed, parseXml, textAt } from './test-support/xml-tree.ts';
 
 const EXAMPLES = {
@@ -41,15 +42,32 @@ describe('категорії, теги й порядок', () => {
       .filter((node) => node.attributes.type === 'category')
       .map((node) => [textAt(node, 'idnumber'), textAt(node, 'category', 'text')]);
     expect(categories).toEqual([
-      ['m1', 'top/Модуль 1. Основи корпоративного управління'],
-      ['t01', 'top/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація'],
-      ['t02', 'top/Модуль 1. Основи корпоративного управління/Тема 02. Моделі КУ'],
-      ['m2', 'top/Модуль 2. Органи корпоративного управління'],
-      ['t04', 'top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори'],
-      ['t05', 'top/Модуль 2. Органи корпоративного управління/Тема 05. Наглядова рада'],
-      ['m3', 'top/Модуль 3. Капітал // ринок'],
-      ['t07', 'top/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди'],
+      ['tr', 'top/Тренувальний банк'],
+      ['tr-m1', 'top/Тренувальний банк/Модуль 1. Основи корпоративного управління'],
+      ['tr-t01', 'top/Тренувальний банк/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація'],
+      ['tr-t02', 'top/Тренувальний банк/Модуль 1. Основи корпоративного управління/Тема 02. Моделі КУ'],
+      ['tr-m2', 'top/Тренувальний банк/Модуль 2. Органи корпоративного управління'],
+      ['tr-t04', 'top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори'],
+      ['tr-t05', 'top/Тренувальний банк/Модуль 2. Органи корпоративного управління/Тема 05. Наглядова рада'],
+      ['tr-m3', 'top/Тренувальний банк/Модуль 3. Капітал // ринок'],
+      ['tr-t07', 'top/Тренувальний банк/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди'],
     ]);
+  });
+
+  it('контрольний банк лежить в окремій гілці з власними idnumber', () => {
+    const control = controlBank('m2', [examples.multichoiceSingle(), examples.ddwtos()]);
+    const categories = childrenNamed(parseXml(bankToMoodleXml(control, REGISTRY)), 'question')
+      .filter((node) => node.attributes.type === 'category')
+      .map((node) => [textAt(node, 'idnumber'), textAt(node, 'category', 'text')]);
+    expect(categories).toEqual([
+      ['ct', 'top/Контрольний банк'],
+      ['ct-m2', 'top/Контрольний банк/Модуль 2. Органи корпоративного управління'],
+      ['ct-t04', 'top/Контрольний банк/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори'],
+    ]);
+    const ids = childrenNamed(parseXml(bankToMoodleXml(control, REGISTRY)), 'question')
+      .filter((node) => node.attributes.type !== 'category')
+      .map((node) => textAt(node, 'idnumber'));
+    expect(ids).toEqual(['t04-k001', 't04-k007']);
   });
 
   it('порядок не залежить від порядку банків: реєстр, а в межах теми — порядок банку', () => {
@@ -60,6 +78,22 @@ describe('категорії, теги й порядок', () => {
       .filter((node) => node.attributes.type !== 'category')
       .map((node) => textAt(node, 'idnumber'));
     expect(ids).toEqual(['t01-q003', 't02-q004', 't04-q001', 't04-q007', 't04-q008', 't05-q002', 't07-q005', 't07-q006']);
+  });
+
+  it('норми з lawRef дописуються до загального відгуку окремими рядками', () => {
+    const raw = {
+      ...examples.multichoiceSingle(),
+      lawRef: [
+        { act: 'Закону № 2465-IX', article: 'ст. 40 ч. 1', checkedAt: '2026-09-15' },
+        { act: 'Кодексу корпоративного управління', article: 'п. 2.3', checkedAt: '2026-09-01', url: 'https://zakon.rada.gov.ua/laws/show/2465-20' },
+      ],
+    };
+    const feedback = textAt(parsedQuestion(raw), 'generalfeedback', 'text');
+    expect(feedback).toContain(`<p>Норма: ст.${NBSP}40 ч.${NBSP}1 Закону №${NBSP}2465-IX (перевірено 15.09.2026)</p>`);
+    expect(feedback).toContain(
+      `<p>Норма: <a href="https://zakon.rada.gov.ua/laws/show/2465-20">п.${NBSP}2.3 Кодексу корпоративного управління</a> (перевірено 01.09.2026)</p>`,
+    );
+    expect(textAt(parsedQuestion(examples.trueFalse()), 'generalfeedback', 'text')).not.toContain('Норма:');
   });
 
   it('кожне питання має теги bloom-<рівень> і topic-tNN та idnumber = ID', () => {
@@ -90,7 +124,7 @@ describe('canary контрольних банків', () => {
   const canary = `${CONTROL_CANARY_PREFIX}m2-test`;
 
   it('не потрапляє у вивід', () => {
-    const control = bank('m2', [examples.multichoiceSingle()], { kind: 'control', canary });
+    const control = controlBank('m2', [examples.multichoiceSingle()], 'm2-test');
     const xml = bankToMoodleXml(control, REGISTRY);
     expect(xml).not.toContain(canary);
     expect(xml).not.toContain(CONTROL_CANARY_PREFIX);
@@ -100,8 +134,7 @@ describe('canary контрольних банків', () => {
 
   it('експорт падає, якщо canary випадково опинився в тексті питання', () => {
     const leaked = { ...examples.multichoiceSingle(), stem: `Питання ${canary}?` };
-    const control = bank('m2', [leaked], { kind: 'control', canary });
-    expect(() => bankToMoodleXml(control, REGISTRY)).toThrow(/Canary контрольного банку/);
+    expect(() => bankToMoodleXml(controlBank('m2', [leaked], 'm2-test'), REGISTRY)).toThrow(/Canary контрольного банку/);
   });
 });
 
@@ -110,7 +143,7 @@ describe('помилки вхідних даних', () => {
     const m1 = bank('m1', [examples.trueFalse()]);
     const wrongModule = bank('m1', [examples.multichoiceSingle()]);
     const unknownTopic = bank('m2', [{ ...examples.ddwtos(), id: 't09-q007', topic: 't09' }]);
-    const control = bank('m3', [examples.numerical()], { kind: 'control', canary: `${CONTROL_CANARY_PREFIX}m3` });
+    const control = controlBank('m3', [examples.numerical()], 'm3');
     const unregistered = bank('m7', [{ ...examples.trueFalse(), id: 't01-q999' }]);
     expect(findBankProblems([m1, wrongModule, unknownTopic, control, unregistered, m1], REGISTRY)).toEqual([
       'Тренувальні й контрольні банки не можна змішувати в одному файлі',
@@ -145,11 +178,12 @@ describe('describeQuestionPlan', () => {
     expect(manifest.total).toBe(8);
     expect(manifest.byType).toEqual({ calculated: 1, ddwtos: 1, match: 1, multianswer: 1, multichoice: 2, numerical: 1, truefalse: 1 });
     expect(Object.keys(manifest.byType)).toEqual([...Object.keys(manifest.byType)].sort());
-    expect(manifest.categories.slice(0, 2)).toEqual([
-      { idnumber: 'm1', path: 'top/Модуль 1. Основи корпоративного управління', parent: null },
-      { idnumber: 't01', path: 'top/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація', parent: 'm1' },
+    expect(manifest.categories.slice(0, 3)).toEqual([
+      { idnumber: 'tr', path: 'top/Тренувальний банк', parent: null },
+      { idnumber: 'tr-m1', path: 'top/Тренувальний банк/Модуль 1. Основи корпоративного управління', parent: 'tr' },
+      { idnumber: 'tr-t01', path: 'top/Тренувальний банк/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація', parent: 'tr-m1' },
     ]);
     const cloze = manifest.questions.find((entry) => entry.idnumber === 't04-q008');
-    expect(cloze).toEqual({ idnumber: 't04-q008', qtype: 'multianswer', category: 't04', defaultMark: 2, tags: ['bloom-analyze', 'topic-t04'] });
+    expect(cloze).toEqual({ idnumber: 't04-q008', qtype: 'multianswer', category: 'tr-t04', defaultMark: 2, tags: ['bloom-analyze', 'topic-t04'] });
   });
 });

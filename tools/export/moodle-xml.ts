@@ -1,15 +1,16 @@
 import { findDuplicates } from '../../src/content/schemas/primitives.ts';
 import type { BankFile, Question } from '../../src/content/schemas/questions.ts';
 import { ddwtosBody, matchingBody, multichoiceBody, trueFalseBody } from './choice-questions.ts';
-import { clozeBody, clozeMaxMark } from './cloze-question.ts';
+import { clozeBody } from './cloze-question.ts';
 import { calculatedBody, numericalBody } from './numeric-questions.ts';
 import { htmlField, tagsField } from './question-parts.ts';
 import {
+  categoryPath,
   indexTopics,
-  moduleCategoryPath,
+  moduleCategoryName,
   moduleOrder,
   throwIfProblems,
-  topicCategoryPath,
+  topicCategoryName,
   type CourseRegistry,
   type TopicPlace,
 } from './registry.ts';
@@ -24,6 +25,15 @@ import { cdataElement, element, serializeXml, textElement, type XmlElement } fro
  */
 
 export type BankKind = BankFile['kind'];
+
+/**
+ * Корінь дерева категорій за видом банку. Тренувальні й контрольні питання живуть у різних гілках
+ * і мають різні idnumber, тож навіть в одному курсі випадковий вибір за категорією не змішає їх.
+ */
+export const BANK_ROOTS = {
+  training: { idnumber: 'tr', name: 'Тренувальний банк', info: 'Тренувальні питання курсу: відкриті банки з поясненнями.' },
+  control: { idnumber: 'ct', name: 'Контрольний банк', info: 'Контрольні питання курсу: модульні й підсумковий тести.' },
+} as const satisfies Record<BankFile['kind'], { idnumber: string; name: string; info: string }>;
 /** Назва типу в базі Moodle (`question.qtype`). */
 export type MoodleQtype = 'multichoice' | 'truefalse' | 'match' | 'numerical' | 'calculated' | 'ddwtos' | 'multianswer';
 
@@ -109,26 +119,39 @@ export function findBankProblems(banks: readonly BankFile[], course: CourseRegis
 /** Порядок виводу — порядок реєстру (модуль, тема), усередині теми — порядок у банку. */
 export function planQuestionExport(banks: readonly BankFile[], course: CourseRegistry): QuestionExportPlan {
   throwIfProblems(findBankProblems(banks, course));
+  const kind = banks[0]?.kind ?? 'training';
+  const root = BANK_ROOTS[kind];
   const questions = banks.flatMap((bank) => bank.questions);
-  const sections = course.modules.flatMap((module): QuestionSection[] => {
+  const moduleSections = course.modules.flatMap((module): QuestionSection[] => {
     const moduleTopics = course.topics.filter((topic) => topic.module === module.id);
     const topicSections = moduleTopics.flatMap((topic): QuestionSection[] => {
       const inTopic = questions.filter((question) => question.topic === topic.id);
       if (inTopic.length === 0) return [];
-      const category = { idnumber: topic.id, path: topicCategoryPath(module, topic), parent: module.id, infoHtml: htmlText(topic.summary) };
-      return [{ category, questions: inTopic.map((question) => ({ question, category: topic.id, tags: questionTags(question) })) }];
+      const idnumber = `${root.idnumber}-${topic.id}`;
+      const category = {
+        idnumber,
+        path: categoryPath(root.name, moduleCategoryName(module), topicCategoryName(topic)),
+        parent: `${root.idnumber}-${module.id}`,
+        infoHtml: htmlText(topic.summary),
+      };
+      return [{ category, questions: inTopic.map((question) => ({ question, category: idnumber, tags: questionTags(question) })) }];
     });
     if (topicSections.length === 0) return [];
     const moduleCategory = {
-      idnumber: module.id,
-      path: moduleCategoryPath(module),
-      parent: null,
+      idnumber: `${root.idnumber}-${module.id}`,
+      path: categoryPath(root.name, moduleCategoryName(module)),
+      parent: root.idnumber,
       infoHtml: `<p>${escapeHtml(typo(module.title))}</p>`,
     };
     return [{ category: moduleCategory, questions: [] }, ...topicSections];
   });
+  const rootSection: QuestionSection = {
+    category: { idnumber: root.idnumber, path: categoryPath(root.name), parent: null, infoHtml: `<p>${escapeHtml(root.info)}</p>` },
+    questions: [],
+  };
+  const sections = moduleSections.length === 0 ? [] : [rootSection, ...moduleSections];
   const canaries = banks.flatMap((bank) => (bank.kind === 'control' && bank.canary ? [bank.canary] : []));
-  return { kind: banks[0]?.kind ?? 'training', sections, canaries };
+  return { kind, sections, canaries };
 }
 
 function questionBody(question: Question): XmlElement[] {
@@ -204,7 +227,7 @@ export function describeQuestionPlan(plan: QuestionExportPlan): QuestionManifest
       idnumber: question.id,
       qtype: DB_TYPES[question.type],
       category,
-      defaultMark: question.type === 'multianswer' ? clozeMaxMark(question) : question.defaultMark,
+      defaultMark: question.defaultMark,
       tags,
     })),
   );

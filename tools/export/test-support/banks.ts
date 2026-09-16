@@ -1,5 +1,5 @@
 import * as examples from '../../../src/content/schemas/__fixtures__/questions.ts';
-import { BankFileSchema, QuestionSchema, type BankFile, type Question } from '../../../src/content/schemas/questions.ts';
+import { BankFileSchema, CONTROL_CANARY_PREFIX, QuestionSchema, type BankFile, type Question } from '../../../src/content/schemas/questions.ts';
 import { banksToMoodleXml } from '../moodle-xml.ts';
 import { REGISTRY } from '../__fixtures__/registry.ts';
 import { childrenNamed, parseXml, type XmlNode } from './xml-tree.ts';
@@ -14,6 +14,22 @@ export function question(raw: unknown): Question {
 
 export function bank(module: string, questions: readonly unknown[], extra: Partial<Pick<BankFile, 'kind' | 'canary'>> = {}): BankFile {
   return BankFileSchema.parse({ schemaVersion: 1, kind: 'training', module, questions, ...extra });
+}
+
+/** Контрольний варіант питання з фікстури: ID за шаблоном tNN-kNNN. */
+export function asControl<T extends { readonly id: string }>(question: T): T {
+  return { ...question, id: question.id.replace('-q', '-k') };
+}
+
+/** Контрольний банк із тих самих прикладів: ID із «k» і canary, який складається під час виконання. */
+export function controlBank(module: string, questions: readonly { readonly id: string }[], canarySuffix = 'test'): BankFile {
+  return BankFileSchema.parse({
+    schemaVersion: 1,
+    kind: 'control',
+    module,
+    canary: `${CONTROL_CANARY_PREFIX}${canarySuffix}`,
+    questions: questions.map(asControl),
+  });
 }
 
 /** Модуль прикладу за темою в стабільному реєстрі. */

@@ -107,11 +107,6 @@ export function clozeQuestionText(question: QuestionOf<'multianswer'>): string {
   return toHtmlParagraphs(typo(question.stem), (line) => renderStemLine(line, codes));
 }
 
-/** Бал Cloze у Moodle — сума ваг підпитань (`defaultgrade` з файлу ігнорується). */
-export function clozeMaxMark(question: QuestionOf<'multianswer'>): number {
-  return question.subquestions.reduce((sum, subquestion) => sum + subquestion.weight, 0);
-}
-
 export function clozeBody(question: QuestionOf<'multianswer'>): XmlElement[] {
   return questionHeader(question, {
     questionText: clozeQuestionText(question),

@@ -25,6 +25,21 @@ questions:
         fraction: 0
         feedback: Виконавчий орган керує поточною діяльністю.
 
+  - id: t04-q002
+    type: truefalse
+    topic: t04
+    bloom: remember
+    stem: Загальні збори акціонерів скликає наглядова рада.
+    generalFeedback: Скликання зборів — повноваження наглядової ради.
+    lawRef:
+      - act: Закону України «Про акціонерні товариства» № 2465-IX
+        article: ст. 48 ч. 1
+        checkedAt: 2026-09-01
+        url: https://zakon.rada.gov.ua/laws/show/2465-20
+    correct: true
+    feedbackTrue: Так, це повноваження наглядової ради.
+    feedbackFalse: Ні, збори скликає наглядова рада.
+
   - id: t05-q002
     type: multichoice
     topic: t05

@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MOODLE_GRADE_PERCENTS } from '../../src/content/schemas/questions.ts';
 import { NBSP } from '../../src/lib/typography/normalize.ts';
-import { REGISTRY } from './__fixtures__/registry.ts';
-import { bankToMoodleXml } from './moodle-xml.ts';
-import { bank, examples, parsedQuestion } from './test-support/banks.ts';
+import { examples, parsedQuestion } from './test-support/banks.ts';
 import { child, childrenNamed, textAt, type XmlNode } from './test-support/xml-tree.ts';
 
 const FRACTION_PRECISION = 1e-5;
@@ -187,10 +185,6 @@ describe('calculated', () => {
     });
   });
 
-  it('логарифмічний розподіл із недодатною межею — зрозуміла помилка', () => {
-    const bad = { ...examples.calculated(), datasets: [...examples.calculated().datasets.slice(0, 2), { name: 'n', min: 0, max: 20, decimals: 0, distribution: 'loguniform' }] };
-    expect(() => bankToMoodleXml(bank('m3', [bad]), REGISTRY)).toThrow(/логарифмічний розподіл потребує додатних min і max/);
-  });
 });
 
 describe('ddwtos', () => {
