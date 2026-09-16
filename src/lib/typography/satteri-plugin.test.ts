@@ -22,6 +22,14 @@ describe('typographyPlugin (Sätteri hast)', () => {
     expect(html).toContain(`і${NBSP}«код»`);
   });
 
+  it('keeps dates, act codes and identifiers intact while converting real ranges', () => {
+    const html = render('Перевірено 2026-09-15 за Законом № 2465-IX (z1307-23): у 2020-2026 рр., п. 2-1.');
+    expect(html).toContain('2026-09-15');
+    expect(html).toContain('2465-IX (z1307-23)');
+    expect(html).toContain('2020–2026');
+    expect(html).toContain('п.\u00A02-1');
+  });
+
   it('keeps headings free of non-breaking spaces so anchors stay clean', () => {
     const html = render('## Ст. 3 і "кворум" у законі');
     expect(html).toContain('>Ст. 3 і «кворум» у законі</h2>');

@@ -68,6 +68,24 @@ describe('normalizeTypography: тире й крапки', () => {
     );
   });
 
+  it('keeps hyphens in ISO dates, ISBN, phone-like codes, act codes, item numbers and paths', () => {
+    const cases = [
+      'перевірено 2026-09-15',
+      'ISBN 978-617-7360-05-2',
+      'тел. 050-123-45-67',
+      'Закон № 2465-IX, наказ z1307-23, постанова 448/96-ВР',
+      'див. п. 2-1 і ст. 5-2, ч. 3-1, абз. 2-3',
+      'файл content/modules/m1-2/lecture-2024-01.mdx і id law-2465-ix',
+      'варіант 1-й, 2-га група, 10-ти',
+    ];
+    for (const text of cases) expect(normalizeTypography(text, { nbsp: false })).toBe(text);
+  });
+
+  it('still turns real numeric ranges into en dashes', () => {
+    expect(normalizeTypography('у 2020-2026 рр. зросли на 10-25%', { nbsp: false })).toBe('у 2020–2026 рр. зросли на 10–25%');
+    expect(normalizeTypography('с. 305-360; 1,5-2 млн', { nbsp: false })).toBe('с. 305–360; 1,5–2 млн');
+  });
+
   it('replaces three dots with an ellipsis', () => {
     expect(normalizeTypography('і так далі...')).toBe(`і${NBSP}так далі…`);
   });

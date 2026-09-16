@@ -85,13 +85,25 @@ function fixQuotes(text: string): string {
   return out;
 }
 
+/**
+ * Числовий діапазон — лексема лише з цифр, ком, крапок і % з рівно одним дефісом (2020-2026, 10-25%, 1,5-2).
+ * Не діапазон: ISO-дати й ISBN (два й більше дефісів), коди з літерами чи «/» (2465-IX, z1307-23, 448/96-ВР, шляхи),
+ * а також номери пунктів і статей після п., ст., ч., абз., № (п. 2-1).
+ */
+const NUMERIC_RANGE = /(?<![^\s(«„])(\d[\d,.]*)-(\d[\d,.%]*)(?![^\s)»“.,;:!?])/g;
+const ITEM_NUMBER_BEFORE = new RegExp(`(?:№|(?<![${CYRILLIC}])(?:п|ст|ч|абз|розд)\\.)[ ${NBSP}]*$`);
+
+function fixNumericRanges(text: string): string {
+  return text.replace(NUMERIC_RANGE, (match, from: string, to: string, offset: number) =>
+    ITEM_NUMBER_BEFORE.test(text.slice(0, offset)) ? match : `${from}${EN_DASH}${to}`,
+  );
+}
+
 function fixDashes(text: string): string {
   return (
     text
       // « - », « – », « — », « -- » → нерозривний пробіл, тире, пробіл
       .replace(new RegExp(`[ ${NBSP}]+(?:--|[-${EN_DASH}${EM_DASH}])[ ${NBSP}]+`, 'g'), `${NBSP}${EM_DASH} `)
-      // числові діапазони 2023-2024 → 2023–2024
-      .replace(/(?<=\d)-(?=\d)/g, EN_DASH)
       .replace(/\.{3}/g, '…')
   );
 }
@@ -119,7 +131,7 @@ export function normalizeTypography(text: string, options: NormalizeOptions = {}
   const nbsp = options.nbsp ?? true;
   const parts = splitProtected(text);
   const masked = parts.map((part) => (part.protected ? PLACEHOLDER : part.text)).join('');
-  const base = fixDashes(fixQuotes(fixApostrophes(masked)));
+  const base = fixNumericRanges(fixDashes(fixQuotes(fixApostrophes(masked))));
   const normalized = nbsp ? fixSpaces(base) : base.replace(new RegExp(NBSP, 'g'), ' ');
   const protectedTokens = parts.filter((part) => part.protected).map((part) => part.text);
   let index = 0;

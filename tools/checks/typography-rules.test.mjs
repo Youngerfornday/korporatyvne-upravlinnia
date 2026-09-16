@@ -18,6 +18,20 @@ describe('lintYaml', () => {
     const yaml = ['url: "https://zakon.rada.gov.ua/laws/show/2465-20"', 'title: «Уже добре»', 'list:', '  - "просто рядок"'].join('\n');
     expect(lintYaml(yaml)).toEqual([]);
   });
+
+  it('does not flag ISO dates, kebab-case ids, outcome codes, act codes or hyphenated keys', () => {
+    const yaml = [
+      'checked-at: 2026-09-15',
+      'checkedAt: 2026-09-01',
+      'id: law-2465-ix',
+      'learningOutcomes:',
+      '  - prn03',
+      'act: Закон № 2465-IX (z1307-23, 448/96-ВР), п. 2-1',
+      'isbn: 978-617-7360-05-2',
+      'range: 2020-2026 рр.',
+    ].join('\n');
+    expect(lintYaml(yaml)).toEqual([{ line: 8, actual: '2020-2026 рр.', expected: '2020–2026 рр.' }]);
+  });
 });
 
 describe('lintMdx', () => {
@@ -25,6 +39,7 @@ describe('lintMdx', () => {
     '---',
     'id: t01',
     "description: Об'єкт у статуті",
+    'updatedAt: 2026-09-15',
     '---',
     'import { x } from "./x"',
     '',
@@ -43,7 +58,7 @@ describe('lintMdx', () => {
 
   it('checks frontmatter strings, prose lines and jsx attribute values, skipping code, esm and tag syntax', () => {
     const findings = lintMdx(source);
-    expect(findings.map((f) => f.line)).toEqual([3, 7, 9, 15]);
+    expect(findings.map((f) => f.line)).toEqual([3, 8, 10, 16]);
     expect(findings[0]).toMatchObject({ actual: "Об'єкт у статуті", expected: 'Об’єкт у статуті' });
     expect(findings[1]?.expected).toBe('## Заголовок з «лапками»');
     expect(findings[2]?.expected).toContain('«лапками»');
@@ -51,9 +66,9 @@ describe('lintMdx', () => {
   });
 
   it('reports missing non-breaking spaces only in strict mode', () => {
-    expect(lintMdx(source).some((f) => f.line === 17)).toBe(false);
+    expect(lintMdx(source).some((f) => f.line === 18)).toBe(false);
     const strict = lintMdx(source, { nbsp: true });
-    expect(strict.find((f) => f.line === 17)?.expected).toContain('в 2023 р.');
+    expect(strict.find((f) => f.line === 18)?.expected).toContain('в 2023 р.');
   });
 
   it('masks removed regions without shifting line numbers', () => {
