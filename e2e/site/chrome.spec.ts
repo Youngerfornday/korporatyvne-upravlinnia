@@ -67,7 +67,8 @@ test.describe('шапка на десктопі', () => {
     await page.goto('temy/');
     await expect(page.locator('.nav a[aria-current="page"]')).toHaveText('Теми');
     await expect(page.locator('[data-menu-open]')).toBeHidden();
-    await expect(page.locator('.nav .nav-soon')).toHaveCount(3);
+    await expect(page.locator('.nav .nav-soon')).toHaveCount(2);
+    await expect(page.locator('.nav a[href$="/testy/"]')).toHaveText('Тести');
   });
 });
 

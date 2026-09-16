@@ -1,0 +1,26 @@
+---
+import { ProfileIsland } from '../../components/profile/ProfileIsland';
+import Crumbs from '../../components/site/Crumbs.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData } from '../../lib/course-data';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/profile/profile.css';
+
+/** Профіль гравця: серверний стан «Акціонер · 0 XP», решту підставляє острів зі сховища браузера. */
+const { course, modules } = await loadCourseData();
+const mapModules = modules.map((module) => ({
+  id: module.id,
+  number: module.number,
+  title: typo(module.title),
+  topics: module.topics.map((topic) => ({ id: topic.id, number: topic.number, title: typo(topic.title), slug: topic.slug })),
+}));
+---
+
+<BaseLayout title={`Ваш профіль — ${course.title}`} description="Рівень, XP, бейджі й карта проходження курсу. Прогрес зберігається у вашому браузері; його можна перенести кодом." noindex>
+  <div class="container" data-profile-page>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Профіль' }]} />
+    <ProfileIsland client:load modules={mapModules} topicsBase={url('temy/')} />
+  </div>
+</BaseLayout>

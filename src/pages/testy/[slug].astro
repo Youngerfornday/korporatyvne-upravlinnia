@@ -1,0 +1,86 @@
+---
+import { QuizIsland } from '../../components/quiz/QuizIsland';
+import { loadTopicQuestions } from '../../components/quiz/load-bank';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData, type TopicView } from '../../lib/course-data';
+import { pluralUk } from '../../lib/plural';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/quiz/quiz.css';
+
+export async function getStaticPaths() {
+  const { topics } = await loadCourseData();
+  return topics.map((topic) => ({ params: { slug: topic.slug }, props: { topic } }));
+}
+
+interface Props {
+  topic: TopicView;
+}
+
+const { topic } = Astro.props;
+const { course, modules } = await loadCourseData();
+const module = modules.find((m) => m.id === topic.module);
+if (!module) throw new Error(`Модуль теми ${topic.id} не знайдено`);
+const questions = await loadTopicQuestions(topic.id);
+const quizId = `${topic.id}-training`;
+const topicHref = url(`temy/${topic.slug}/`);
+const questionsLabel = pluralUk(questions.length, { one: 'питання', few: 'питання', many: 'питань', other: 'питання' });
+const title = `Тренувальний тест · Тема ${topic.number} — ${course.title}`;
+const description = questions.length > 0
+  ? typo(`Тренувальний тест до теми «${topic.title}»: ${questionsLabel}, без обмеження часу, пояснення до кожного варіанта відповіді.`)
+  : typo(`Тренувальний тест до теми «${topic.title}» готується: банк питань пишеться й проходить верифікацію.`);
+---
+
+<BaseLayout title={title} description={description} current="tests">
+  <div class="container" data-quiz-page data-topic={topic.id} data-quiz-ready={questions.length > 0 ? 'true' : 'false'}>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Тести', href: url('testy/') }, { label: `Тема ${topic.number}` }]} />
+    <header class="quiz-head">
+      <div>
+        <h1 class="h1">Тренувальний тест · Тема {topic.number}</h1>
+        <p class="sub">
+          {typo(topic.title)}. {questions.length > 0 ? `${questionsLabel}, без обмеження часу, кожен варіант із поясненням.` : 'Банк питань готується.'}
+        </p>
+      </div>
+    </header>
+
+    {
+      questions.length > 0 ? (
+        <QuizIsland client:only="react" quizId={quizId} topicId={topic.id} topicHref={topicHref} questions={questions}>
+          <div slot="fallback" class="quiz-pending" aria-busy="true">
+            <div class="card">
+              <Icon name="clock" size="lg" />
+              <div>
+                <p class="h3">Тест завантажується</p>
+                <p class="muted">{typo('Питання перемішуються у вашому браузері. Якщо цей напис не зникає, увімкніть JavaScript.')}</p>
+              </div>
+            </div>
+          </div>
+        </QuizIsland>
+      ) : (
+        <div class="quiz-pending" data-quiz-pending>
+          <div class="card">
+            <Icon name="pen" size="lg" />
+            <div>
+              <p class="h3">Тест готується</p>
+              <p class="muted">
+                {typo('Тренувальний банк цієї теми — 15 питань із поясненням до кожного варіанта — ще пишеться й проходить верифікацію. Тим часом можна прочитати тему і пройти самоперевірку в її кінці.')}
+              </p>
+              <p class="btns">
+                <a class="btn btn-primary" href={topicHref}>
+                  {topic.lecture ? `Читати тему ${topic.number}` : `Тема ${topic.number}`}
+                  <Icon name="arrow-r" />
+                </a>
+                <a class="btn btn-secondary" href={url('testy/')}>
+                  Усі тести
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

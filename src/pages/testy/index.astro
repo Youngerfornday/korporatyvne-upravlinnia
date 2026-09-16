@@ -1,0 +1,72 @@
+---
+import { loadQuestionCounts } from '../../components/quiz/load-bank';
+import Crumbs from '../../components/site/Crumbs.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData } from '../../lib/course-data';
+import { pluralUk } from '../../lib/plural';
+import { quizPath } from '../../lib/site-nav';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/quiz/quiz.css';
+
+/**
+ * Список тренувальних тестів за темами. Найкращий результат підставляє шар прогресу:
+ * [data-quiz-best-topic=tNN] (стан рядка і знак) і [data-quiz-best=tNN] (текст).
+ */
+const { course, modules, topics } = await loadCourseData();
+const counts = await loadQuestionCounts();
+const ready = topics.filter((topic) => (counts.get(topic.id) ?? 0) > 0).length;
+const questionsLabel = (count: number) => pluralUk(count, { one: 'питання', few: 'питання', many: 'питань', other: 'питання' });
+---
+
+<BaseLayout
+  title={`Тренувальні тести — ${course.title}`}
+  description={`Тренувальні тести до ${topics.length} тем курсу «${course.title}» з поясненням до кожного варіанта відповіді. Не впливають на оцінку.`}
+  current="tests"
+>
+  <div class="container">
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Тести' }]} />
+    <header class="topic-head">
+      <h1 class="h1">Тренувальні тести</h1>
+      <p class="lede">
+        {typo(`По одному тесту на тему: 15 питань усіх типів Moodle, без обмеження часу, розбір кожного варіанта. Готово тестів: ${ready} із ${topics.length}. XP нараховуються за найкращий результат.`)}
+      </p>
+    </header>
+
+    <section class="section" aria-label="Тести за темами">
+      <div class="agenda">
+        {
+          modules.map((module) => (
+            <section class="module" aria-labelledby={`quiz-module-${module.id}`} data-module={module.id}>
+              <div class="module-head">
+                <h2 class="module-name" id={`quiz-module-${module.id}`}>
+                  <span class="n">М{module.number}</span>
+                  {typo(module.title)}
+                </h2>
+              </div>
+              {module.topics.map((topic) => {
+                const count = counts.get(topic.id) ?? 0;
+                return (
+                  <a class="topic" href={url(quizPath(topic.slug))} data-quiz-best-topic={topic.id} data-state="todo">
+                    <span class="mark mark-todo" data-topic-mark role="img" aria-label="Не розпочато" />
+                    <span>
+                      <span class="topic-title">
+                        <span class="n">{topic.number}.</span>
+                        {typo(topic.title)}
+                      </span>
+                      <span class="topic-meta">
+                        <span>{count > 0 ? questionsLabel(count) : 'готується'}</span>
+                        <span data-quiz-best={topic.id} />
+                      </span>
+                    </span>
+                  </a>
+                );
+              })}
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>

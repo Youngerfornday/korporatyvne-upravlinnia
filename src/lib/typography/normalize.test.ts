@@ -81,9 +81,15 @@ describe('normalizeTypography: тире й крапки', () => {
     for (const text of cases) expect(normalizeTypography(text, { nbsp: false })).toBe(text);
   });
 
+  it('keeps numbers after dotted abbreviations in any alphabet (document and item numbers)', () => {
+    const cases = ['S. Prt. 107-70', 'No. 12-45', 'Nos. 3-4', 'Pub. L. 107-204', 'H.R. 3763-1', 'Doc. 22-18', 'Rep. 5-7', 'вип. 3-4', 'Т. 2-3'];
+    for (const text of cases) expect(normalizeTypography(text, { nbsp: false })).toBe(text);
+  });
+
   it('still turns real numeric ranges into en dashes', () => {
     expect(normalizeTypography('у 2020-2026 рр. зросли на 10-25%', { nbsp: false })).toBe('у 2020–2026 рр. зросли на 10–25%');
     expect(normalizeTypography('с. 305-360; 1,5-2 млн', { nbsp: false })).toBe('с. 305–360; 1,5–2 млн');
+    expect(normalizeTypography('С. 12-14, pp. 3-9, у 2019 р. 10-25% фірм', { nbsp: false })).toBe('С. 12–14, pp. 3–9, у 2019 р. 10–25% фірм');
   });
 
   it('replaces three dots with an ellipsis', () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { estimateReadingMinutes, formatDate, minutesLabel } from './course-data-pure';
+import { XP_RULES } from '../engines/gamification/xp-rules';
+import { estimateReadingMinutes, formatDate, minutesLabel, TOPIC_XP } from './course-data-pure';
 
 describe('estimateReadingMinutes', () => {
   it('returns undefined without a body and at least one minute otherwise', () => {
@@ -20,5 +21,11 @@ describe('formatDate and minutesLabel', () => {
 
   it('binds the minutes unit with a non-breaking space', () => {
     expect(minutesLabel(32)).toBe('32 хв');
+  });
+});
+
+describe('TOPIC_XP', () => {
+  it('дорівнює правилу рушія за прочитану тему, щоб сторінка й нарахування не розходилися', () => {
+    expect(TOPIC_XP).toBe(XP_RULES.topicRead);
   });
 });

@@ -1,5 +1,5 @@
 ---
-import { CABINET_PATH, NAV_ITEMS, type NavId } from '../../lib/site-nav';
+import { CABINET_PATH, NAV_ITEMS, PROFILE_PATH, type NavId } from '../../lib/site-nav';
 import { url } from '../../lib/url';
 import Icon from './Icon.astro';
 import PlayerChip from './PlayerChip.astro';
@@ -103,6 +103,7 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
     <div class="menu-section">
       <h3>Ваш рівень</h3>
       <p class="small" data-player-summary>Акціонер · 0 XP. Прогрес зберігається у вашому браузері.</p>
+      <a class="btn btn-secondary btn-sm menu-profile" href={url(PROFILE_PATH)}>Відкрити профіль</a>
     </div>
     <p class="menu-foot">{institution}</p>
   </dialog>

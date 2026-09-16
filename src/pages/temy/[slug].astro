@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { loadTopicQuestions } from '../../components/quiz/load-bank';
 import Crumbs from '../../components/site/Crumbs.astro';
 import Icon from '../../components/site/Icon.astro';
 import { mdxComponents } from '../../components/topic/mdx-components';
@@ -9,6 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { loadCourseData, neighbours, type TopicView } from '../../lib/course-data';
 import { TOPIC_XP, formatDate, minutesLabel, outcomeLabel } from '../../lib/course-data-pure';
 import { pluralUk } from '../../lib/plural';
+import { quizPath } from '../../lib/site-nav';
 import { typo } from '../../lib/typography';
 import { url } from '../../lib/url';
 import '../../styles/topic.css';
@@ -37,6 +39,8 @@ const hasSources = sources.some((entry) => entry.data.topic === topic.id);
 const outcomes = lecture?.data.learningOutcomes ?? [];
 const description = typo(lecture?.data.description ?? topic.summary);
 const title = `Тема ${topic.number}. ${topic.title} — ${course.title}`;
+const quizQuestions = await loadTopicQuestions(topic.id);
+const quizHref = url(quizPath(topic.slug));
 const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'терміни', many: 'термінів', other: 'терміна' });
 ---
 
@@ -88,6 +92,20 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
           <article class="read" data-topic-article data-pagefind-body>
             <Content components={mdxComponents} />
             {hasSources && <SourceList topic={topic.id} />}
+            <div class="cta-test" data-topic-quiz-cta>
+              {quizQuestions.length > 0 ? (
+                <a class="btn btn-primary" href={quizHref}>
+                  Пройти тренувальний тест
+                  <Icon name="arrow-r" />
+                </a>
+              ) : (
+                <a class="btn btn-secondary" href={quizHref}>
+                  <Icon name="pen" size="sm" />
+                  Тест готується
+                </a>
+              )}
+              <span class="small muted">{quizQuestions.length > 0 ? 'XP — за найкращий результат, до 150.' : 'Банк питань теми пишеться; сторінка тесту пояснює, що буде.'}</span>
+            </div>
             <nav class="pager" aria-label="Сусідні теми">
               {prev ? (
                 <a href={url(`temy/${prev.slug}/`)}>
@@ -118,7 +136,7 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
             <div class="side-block side-progress">
               <div class="row"><b>Прочитано</b><span class="num" data-reading-progress-label>0 %</span></div>
               <div class="meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прочитано теми" data-reading-progress data-topic={topic.id}><i style="width:0%"></i></div>
-              <div class="faint">XP нараховуються після самоперевірки</div>
+              <div class="faint" data-topic-xp-note>XP нараховуються після самоперевірки</div>
             </div>
             <div class="side-block">
               <details class="toc-toggle">
@@ -159,6 +177,12 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
             <div><b>{module.number}</b>модуль</div>
             <div><b>{topic.number}</b>тема з {topics.length}</div>
             <div><b>+{TOPIC_XP}</b>XP після публікації</div>
+          </div>
+          <div class="cta-test" data-topic-quiz-cta>
+            <a class={quizQuestions.length > 0 ? 'btn btn-primary' : 'btn btn-secondary'} href={quizHref}>
+              {quizQuestions.length > 0 ? 'Пройти тренувальний тест' : 'Тест готується'}
+              <Icon name="arrow-r" size="sm" />
+            </a>
           </div>
           <nav class="pager" aria-label="Сусідні теми">
             {prev ? (

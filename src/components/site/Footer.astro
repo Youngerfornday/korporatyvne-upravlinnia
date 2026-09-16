@@ -1,5 +1,5 @@
 ---
-import { CABINET_PATH } from '../../lib/site-nav';
+import { CABINET_PATH, PROFILE_PATH } from '../../lib/site-nav';
 import { url } from '../../lib/url';
 
 interface Props {
@@ -28,7 +28,8 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
           <li><a href={url('#agenda')}>Порядок денний курсу</a></li>
           <li><a href={url('temy/')}>Усі теми</a></li>
           <li><span class="soon">Практикуми й тренажери</span></li>
-          <li><span class="soon">Тренувальні тести</span></li>
+          <li><a href={url('testy/')}>Тренувальні тести</a></li>
+          <li><a href={url(PROFILE_PATH)}>Ваш профіль</a></li>
           <li><span class="soon">Флеш-картки й глосарій</span></li>
         </ul>
       </nav>

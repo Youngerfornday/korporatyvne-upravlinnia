@@ -1,16 +1,17 @@
 ---
 import { INITIAL_LEVEL, formatXp } from '../../lib/player-levels';
-import Icon from './Icon.astro';
+import { PROFILE_PATH } from '../../lib/site-nav';
+import { url } from '../../lib/url';
 
 /**
- * Чип рівня гравця. Поки статичний «Акціонер · 0 XP»; рушій прогресу гідрує його за data-атрибутами:
- * [data-player-chip] → data-level-id, data-xp; тексти — [data-player-level], [data-player-xp].
+ * Чип рівня гравця — посилання на профіль. Серверний стан «Акціонер · 0 XP»; шар прогресу гідрує
+ * за data-атрибутами: [data-player-chip] → data-level-id, data-xp; тексти — [data-player-level], [data-player-xp], [data-player-sr].
  */
 ---
 
-<span class="me" data-player-chip data-level-id={INITIAL_LEVEL.id} data-xp="0">
-  <Icon name="hex" class="hex me-hex" />
-  <span class="visually-hidden" data-player-sr>Ваш рівень: {INITIAL_LEVEL.title}, {formatXp(0)}</span>
+<a class="me" href={url(PROFILE_PATH)} data-player-chip data-level-id={INITIAL_LEVEL.id} data-xp="0">
+  <svg class="hex me-hex" aria-hidden="true" focusable="false"><use href="#hex"></use></svg>
+  <span class="visually-hidden" data-player-sr>Профіль. Ваш рівень: {INITIAL_LEVEL.title}, {formatXp(0)}</span>
   <span class="me-level" data-player-level aria-hidden="true">{INITIAL_LEVEL.title}</span>
   <span class="me-xp num" data-player-xp aria-hidden="true">{formatXp(0)}</span>
-</span>
+</a>

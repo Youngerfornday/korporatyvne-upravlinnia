@@ -1,9 +1,10 @@
+import { XP_RULES } from '../engines/gamification/xp-rules';
 import type { Course } from '../content/schemas/course';
 
 /** Середній темп читання навчального тексту українською, слів за хвилину. */
 const WORDS_PER_MINUTE = 180;
-/** XP за прочитану тему. ponytail: робоча константа; правило нарахування задає рушій геймифікації. */
-export const TOPIC_XP = 120;
+/** XP за прочитану тему — з правил рушія геймифікації, щоб сторінка теми й нарахування не розходилися. */
+export const TOPIC_XP = XP_RULES.topicRead;
 
 export function estimateReadingMinutes(body: string | undefined): number | undefined {
   if (!body) return undefined;

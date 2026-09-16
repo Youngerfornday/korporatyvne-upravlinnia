@@ -68,9 +68,12 @@ const themeScript = `(function(){try{var t=localStorage.getItem(${JSON.stringify
     </main>
     <Footer institution={course.institution} credits={credits} />
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div id="progress-live" class="visually-hidden" role="status" aria-live="polite"></div>
     <script>
       import { initSiteChrome } from '../components/site/chrome';
+      import { initProgress } from '../components/progress/hydrate';
       initSiteChrome();
+      initProgress();
     </script>
   </body>
 </html>

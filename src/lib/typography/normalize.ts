@@ -88,14 +88,20 @@ function fixQuotes(text: string): string {
 /**
  * Числовий діапазон — лексема лише з цифр, ком, крапок і % з рівно одним дефісом (2020-2026, 10-25%, 1,5-2).
  * Не діапазон: ISO-дати й ISBN (два й більше дефісів), коди з літерами чи «/» (2465-IX, z1307-23, 448/96-ВР, шляхи),
- * а також номери пунктів і статей після п., ст., ч., абз., № (п. 2-1).
+ * а також номери після № і після скорочення з крапкою будь-якою абеткою, зокрема ланцюжків
+ * (п. 2-1, ст. 5-2, S. Prt. 107-70, Pub. L. 107-204, No. 12-45). Винятки — скорочення сторінок і років
+ * (с. 305-360, pp. 3-9, у 2019 р. 10-25%): після них діапазон лишається діапазоном.
  */
 const NUMERIC_RANGE = /(?<![^\s(«„])(\d[\d,.]*)-(\d[\d,.%]*)(?![^\s)»“.,;:!?])/g;
-const ITEM_NUMBER_BEFORE = new RegExp(`(?:№|(?<![${CYRILLIC}])(?:п|ст|ч|абз|розд)\\.)[ ${NBSP}]*$`);
+const RANGE_ABBREVIATIONS = ['с', 'стор', 'p', 'pp', 'р', 'рр'];
+const ABBREVIATION_BEFORE = new RegExp(
+  `(?:№|(?<!\\p{L})(?!(?:${RANGE_ABBREVIATIONS.join('|')})\\.)\\p{L}+\\.(?:[ ${NBSP}]*\\p{L}{1,4}\\.)*)[ ${NBSP}]*$`,
+  'iu',
+);
 
 function fixNumericRanges(text: string): string {
   return text.replace(NUMERIC_RANGE, (match, from: string, to: string, offset: number) =>
-    ITEM_NUMBER_BEFORE.test(text.slice(0, offset)) ? match : `${from}${EN_DASH}${to}`,
+    ABBREVIATION_BEFORE.test(text.slice(0, offset)) ? match : `${from}${EN_DASH}${to}`,
   );
 }
 

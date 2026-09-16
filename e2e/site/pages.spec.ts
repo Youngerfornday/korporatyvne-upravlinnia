@@ -4,9 +4,14 @@ import { expectAllReferencesBased, expectNoHorizontalScroll, expectNoSeriousAxeV
 const PAGES = [
   { name: 'головна', path: '', heading: 'Корпоративне управління' },
   { name: 'модуль', path: 'moduli/m1/', heading: /Основи корпоративного управління/ },
-  { name: 'тема-заглушка', path: 'temy/korporatsiia-i-korporatyvne-upravlinnia/', heading: /Корпорація і корпоративне управління/ },
+  { name: 'тема опублікована', path: 'temy/korporatsiia-i-korporatyvne-upravlinnia/', heading: /Корпорація і корпоративне управління/ },
+  { name: 'тема-заглушка', path: 'temy/modeli-ku-ta-mizhnarodni-standarty/', heading: /Моделі корпоративного управління/ },
   { name: 'усі теми', path: 'temy/', heading: 'Теми курсу' },
   { name: 'вітрина компонентів', path: 'rozrobka/komponenty/', heading: 'Вітрина компонентів' },
+  { name: 'список тестів', path: 'testy/', heading: 'Тренувальні тести' },
+  { name: 'тест теми 1 (фікстурний банк)', path: 'testy/korporatsiia-i-korporatyvne-upravlinnia/', heading: /Тренувальний тест · Тема 1/ },
+  { name: 'тест-заглушка', path: 'testy/aktsionery-ta-zahalni-zbory/', heading: /Тренувальний тест · Тема 4/ },
+  { name: 'профіль', path: 'profil/', heading: 'Акціонер' },
 ] as const;
 
 for (const item of PAGES) {
@@ -40,6 +45,19 @@ test('модуль: три теми з номерами й посиланням�
   await expect(topics.first()).toContainText('4.');
   await topics.first().click();
   await expect(page).toHaveURL(/temy\/aktsionery-ta-zahalni-zbory\/$/);
+});
+
+test('тема 1 опублікована: лекція зі змістом, чотирма схемами, самоперевіркою і кнопкою тренувального тесту', async ({ page }) => {
+  await page.goto('temy/korporatsiia-i-korporatyvne-upravlinnia/');
+  await expect(page.locator('[data-topic-pending]')).toHaveCount(0);
+  await expect(page.locator('[data-topic-article]')).toBeVisible();
+  expect(await page.locator('[data-topic-article] h2[id]').count()).toBeGreaterThanOrEqual(3);
+  await expect(page.locator('[data-topic-article] .figure svg')).toHaveCount(4);
+  await expect(page.locator('[data-selfcheck][data-topic="t01"]')).toBeVisible();
+  const cta = page.locator('[data-topic-quiz-cta] a');
+  await expect(cta).toHaveText(/Пройти тренувальний тест/);
+  await cta.click();
+  await expect(page).toHaveURL(/testy\/korporatsiia-i-korporatyvne-upravlinnia\/$/);
 });
 
 test('тема без лекції: сторінка «Тема готується» з анотацією, а не 404', async ({ page }) => {
