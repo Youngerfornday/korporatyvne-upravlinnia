@@ -1,0 +1,114 @@
+# Фікстура експорту: модуль 2 (одиночний і множинний вибір, перетягування, Cloze, так/ні з правильним «Неправда»).
+schemaVersion: 1
+kind: training
+module: m2
+questions:
+  - id: t04-q001
+    type: multichoice
+    topic: t04
+    bloom: remember
+    single: true
+    stem: Який орган є вищим органом акціонерного товариства?
+    generalFeedback: Вищий орган АТ — загальні збори акціонерів.
+    lawRef:
+      - act: Закон України «Про акціонерні товариства» № 2465-IX
+        article: ст. 39
+        checkedAt: 2026-09-01
+    answers:
+      - text: Загальні збори акціонерів
+        fraction: 100
+        feedback: Так, це вищий орган товариства.
+      - text: Наглядова рада
+        fraction: 0
+        feedback: Наглядова рада контролює виконавчий орган.
+      - text: Виконавчий орган
+        fraction: 0
+        feedback: Виконавчий орган керує поточною діяльністю.
+
+  - id: t05-q002
+    type: multichoice
+    topic: t05
+    bloom: understand
+    single: false
+    stem: Які з наведених комітетів зазвичай утворює наглядова рада?
+    generalFeedback: Типові комітети — аудиторський і з винагород.
+    answers:
+      - text: Аудиторський комітет
+        fraction: 50
+        feedback: Правильно.
+      - text: Комітет з винагород
+        fraction: 50
+        feedback: Правильно.
+      - text: Ревізійна комісія
+        fraction: -100
+        feedback: Це окремий орган, а не комітет ради.
+
+  - id: t04-q007
+    type: ddwtos
+    topic: t04
+    bloom: understand
+    stem: Кворум загальних зборів — це [[1]] голосуючих акцій, рішення ухвалюють [[2]] голосів, а про [[3]] повідомляють [[3]].
+    generalFeedback: Кворум і більшість для рішення — різні пороги.
+    choices:
+      - text: понад 50%
+        feedback: Поріг кворуму.
+      - text: простою більшістю
+        feedback: Типова більшість для рішення.
+      - text: акціонерів
+        group: 2
+        infinite: true
+        feedback: Повідомлення отримують акціонери.
+      - text: 10%
+        feedback: Такого порогу кворуму немає.
+
+  - id: t04-q008
+    type: multianswer
+    topic: t04
+    bloom: analyze
+    stem: |-
+      Кумулятивне голосування застосовують під час обрання {#1}. Мінімальний пакет для 1 місця з 5 при 600 акціях: {#2}.
+      Орган, що скликає збори: {#3}. Фігурні дужки {у тексті} і знаки ~ # % = не ламають Cloze.
+    generalFeedback: S·k/(N+1)+1 = 600·1/6+1 = 101.
+    subquestions:
+      - kind: multichoice
+        display: vertical
+        shuffle: true
+        answers:
+          - text: членів наглядової ради
+            fraction: 100
+            feedback: Так.
+          - text: аудитора & ревізора
+            fraction: 50
+            feedback: 'Частково: {аудитор} ~ не # обирається %так%.'
+          - text: =корпоративного секретаря
+            fraction: 0
+            feedback: Ні.
+      - kind: numerical
+        weight: 2
+        answers:
+          - value: 101
+            tolerance: 0
+            fraction: 100
+            feedback: Правильно.
+          - value: 100
+            tolerance: 0.5
+            fraction: 50
+            feedback: Забули додати одиницю.
+      - kind: shortanswer
+        answers:
+          - text: наглядова рада
+            fraction: 100
+            feedback: Так, наглядова рада.
+          - text: об’єднання акціонерів*
+            fraction: 0
+            feedback: Ні, це не орган товариства.
+
+  - id: t06-q001
+    type: truefalse
+    topic: t06
+    bloom: understand
+    stem: Правочин із заінтересованістю не потребує жодного погодження.
+    generalFeedback: Такі правочини погоджує наглядова рада або загальні збори.
+    correct: false
+    feedbackTrue: Ні, погодження потрібне.
+    feedbackFalse: Так, погодження обов’язкове.

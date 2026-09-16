@@ -17,6 +17,10 @@
     "test:live": "playwright test --config playwright.live.config.ts",
     "check:dist": "node tools/checks/check-dist.mjs",
     "lint:typography": "node tools/checks/typography-lint.mjs",
+    "test:export": "vitest run --config tools/export/vitest.config.ts",
+    "test:export:coverage": "vitest run --config tools/export/vitest.config.ts --coverage",
+    "export:moodle": "node --import ./tools/export/register-ts.mjs tools/export/cli.ts",
+    "moodle:import-check": "tools/moodle/import-check.sh",
     "test:e2e": "playwright test --config e2e/site/playwright.config.ts",
     "screens": "node e2e/site/screens.mjs"
   },

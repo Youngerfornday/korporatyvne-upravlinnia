@@ -1,6 +1,8 @@
 # dependencies and builds
 node_modules/
 dist/
+dist-e2e/
+dist-export/
 .astro/
 coverage/
 build/

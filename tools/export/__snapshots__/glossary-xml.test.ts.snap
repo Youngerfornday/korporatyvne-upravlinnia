@@ -1,0 +1,74 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`glossaryToMoodleXml > снапшот формату «Імпорт записів» 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Записи глосарію для «Імпорт записів» Moodle. Згенеровано tools/export/glossary-xml.ts, не редагуйте вручну. -->
+<GLOSSARY>
+  <INFO>
+    <NAME><![CDATA[Глосарій курсу «Корпоративне управління»]]></NAME>
+    <INTRO></INTRO>
+    <INTROFORMAT>1</INTROFORMAT>
+    <ALLOWDUPLICATEDENTRIES>0</ALLOWDUPLICATEDENTRIES>
+    <DISPLAYFORMAT>dictionary</DISPLAYFORMAT>
+    <SHOWSPECIAL>1</SHOWSPECIAL>
+    <SHOWALPHABET>1</SHOWALPHABET>
+    <SHOWALL>1</SHOWALL>
+    <ALLOWCOMMENTS>0</ALLOWCOMMENTS>
+    <USEDYNALINK>0</USEDYNALINK>
+    <DEFAULTAPPROVAL>1</DEFAULTAPPROVAL>
+    <GLOBALGLOSSARY>0</GLOBALGLOSSARY>
+    <ENTBYPAGE>10</ENTBYPAGE>
+    <ENTRIES>
+      <ENTRY>
+        <CONCEPT><![CDATA[Корпорація]]></CONCEPT>
+        <DEFINITION><![CDATA[<p>Юридична особа A &amp; B.</p><p>Другий абзац із «лапками».</p><p>Див. також: Агентська проблема.</p>]]></DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+        <ALIASES>
+          <ALIAS><NAME><![CDATA[корпоративне підприємство]]></NAME></ALIAS>
+        </ALIASES>
+        <CATEGORIES>
+          <CATEGORY>
+            <NAME><![CDATA[Тема 01. Корпорація]]></NAME>
+            <USEDYNALINK>0</USEDYNALINK>
+          </CATEGORY>
+        </CATEGORIES>
+      </ENTRY>
+      <ENTRY>
+        <CONCEPT><![CDATA[Агентська проблема]]></CONCEPT>
+        <DEFINITION><![CDATA[<p>Конфлікт інтересів.</p>]]></DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+        <CATEGORIES>
+          <CATEGORY>
+            <NAME><![CDATA[Тема 01. Корпорація]]></NAME>
+            <USEDYNALINK>0</USEDYNALINK>
+          </CATEGORY>
+        </CATEGORIES>
+      </ENTRY>
+      <ENTRY>
+        <CONCEPT><![CDATA[Дивіденд]]></CONCEPT>
+        <DEFINITION><![CDATA[<p>Частина прибутку.</p><p>Див. також: Корпорація.</p>]]></DEFINITION>
+        <FORMAT>1</FORMAT>
+        <USEDYNALINK>0</USEDYNALINK>
+        <CASESENSITIVE>0</CASESENSITIVE>
+        <FULLMATCH>1</FULLMATCH>
+        <TEACHERENTRY>1</TEACHERENTRY>
+        <CATEGORIES>
+          <CATEGORY>
+            <NAME><![CDATA[Тема 07. Капітал і дивіденди]]></NAME>
+            <USEDYNALINK>0</USEDYNALINK>
+          </CATEGORY>
+        </CATEGORIES>
+      </ENTRY>
+    </ENTRIES>
+  </INFO>
+</GLOSSARY>
+"
+`;

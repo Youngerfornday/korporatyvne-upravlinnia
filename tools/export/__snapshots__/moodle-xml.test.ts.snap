@@ -1,0 +1,518 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bankToMoodleXml: снапшоти кожного типу > calculated: стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 3. Капітал // ринок]]></text></category>
+    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
+    <idnumber>m3</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
+    <info format="html"><text><![CDATA[<p>Розрахунок дивідендів.</p>]]></text></info>
+    <idnumber>t07</idnumber>
+  </question>
+  <question type="calculated">
+    <name><text><![CDATA[Чистий прибуток {p} тис. грн, частка на дивіденди {r}%, акцій…]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Чистий прибуток {p} тис. грн, частка на дивіденди {r}%, акцій {n} тис. Який дивіденд на акцію, грн?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Дивіденд на акцію = прибуток × частка / кількість акцій.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t07-q006</idnumber>
+    <synchronize>0</synchronize>
+    <single>0</single>
+    <answernumbering>abc</answernumbering>
+    <shuffleanswers>0</shuffleanswers>
+    <correctfeedback format="html"><text><![CDATA[]]></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text><![CDATA[]]></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text><![CDATA[]]></text></incorrectfeedback>
+    <answer fraction="100">
+      <text>{p} * {r} / 100 / {n}</text>
+      <tolerance>0.01</tolerance>
+      <tolerancetype>1</tolerancetype>
+      <correctanswerformat>1</correctanswerformat>
+      <correctanswerlength>2</correctanswerlength>
+      <feedback format="html"><text><![CDATA[<p>Формула: p × r / 100 / n.</p>]]></text></feedback>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+    <dataset_definitions>
+      <dataset_definition>
+        <status><text>private</text></status>
+        <name><text>p</text></name>
+        <type>calculated</type>
+        <distribution><text>uniform</text></distribution>
+        <minimum><text>500</text></minimum>
+        <maximum><text>900</text></maximum>
+        <decimals><text>0</text></decimals>
+        <itemcount>10</itemcount>
+        <dataset_items>
+          <dataset_item>
+            <number>1</number>
+            <value>651</value>
+          </dataset_item>
+          <dataset_item>
+            <number>2</number>
+            <value>874</value>
+          </dataset_item>
+          <dataset_item>
+            <number>3</number>
+            <value>788</value>
+          </dataset_item>
+          <dataset_item>
+            <number>4</number>
+            <value>606</value>
+          </dataset_item>
+          <dataset_item>
+            <number>5</number>
+            <value>777</value>
+          </dataset_item>
+          <dataset_item>
+            <number>6</number>
+            <value>591</value>
+          </dataset_item>
+          <dataset_item>
+            <number>7</number>
+            <value>797</value>
+          </dataset_item>
+          <dataset_item>
+            <number>8</number>
+            <value>857</value>
+          </dataset_item>
+          <dataset_item>
+            <number>9</number>
+            <value>503</value>
+          </dataset_item>
+          <dataset_item>
+            <number>10</number>
+            <value>555</value>
+          </dataset_item>
+        </dataset_items>
+        <number_of_items>10</number_of_items>
+      </dataset_definition>
+      <dataset_definition>
+        <status><text>private</text></status>
+        <name><text>r</text></name>
+        <type>calculated</type>
+        <distribution><text>uniform</text></distribution>
+        <minimum><text>20</text></minimum>
+        <maximum><text>60</text></maximum>
+        <decimals><text>0</text></decimals>
+        <itemcount>10</itemcount>
+        <dataset_items>
+          <dataset_item>
+            <number>1</number>
+            <value>46</value>
+          </dataset_item>
+          <dataset_item>
+            <number>2</number>
+            <value>49</value>
+          </dataset_item>
+          <dataset_item>
+            <number>3</number>
+            <value>46</value>
+          </dataset_item>
+          <dataset_item>
+            <number>4</number>
+            <value>35</value>
+          </dataset_item>
+          <dataset_item>
+            <number>5</number>
+            <value>38</value>
+          </dataset_item>
+          <dataset_item>
+            <number>6</number>
+            <value>25</value>
+          </dataset_item>
+          <dataset_item>
+            <number>7</number>
+            <value>34</value>
+          </dataset_item>
+          <dataset_item>
+            <number>8</number>
+            <value>29</value>
+          </dataset_item>
+          <dataset_item>
+            <number>9</number>
+            <value>37</value>
+          </dataset_item>
+          <dataset_item>
+            <number>10</number>
+            <value>21</value>
+          </dataset_item>
+        </dataset_items>
+        <number_of_items>10</number_of_items>
+      </dataset_definition>
+      <dataset_definition>
+        <status><text>private</text></status>
+        <name><text>n</text></name>
+        <type>calculated</type>
+        <distribution><text>uniform</text></distribution>
+        <minimum><text>5</text></minimum>
+        <maximum><text>20</text></maximum>
+        <decimals><text>0</text></decimals>
+        <itemcount>10</itemcount>
+        <dataset_items>
+          <dataset_item>
+            <number>1</number>
+            <value>11</value>
+          </dataset_item>
+          <dataset_item>
+            <number>2</number>
+            <value>13</value>
+          </dataset_item>
+          <dataset_item>
+            <number>3</number>
+            <value>8</value>
+          </dataset_item>
+          <dataset_item>
+            <number>4</number>
+            <value>10</value>
+          </dataset_item>
+          <dataset_item>
+            <number>5</number>
+            <value>17</value>
+          </dataset_item>
+          <dataset_item>
+            <number>6</number>
+            <value>16</value>
+          </dataset_item>
+          <dataset_item>
+            <number>7</number>
+            <value>10</value>
+          </dataset_item>
+          <dataset_item>
+            <number>8</number>
+            <value>17</value>
+          </dataset_item>
+          <dataset_item>
+            <number>9</number>
+            <value>17</value>
+          </dataset_item>
+          <dataset_item>
+            <number>10</number>
+            <value>13</value>
+          </dataset_item>
+        </dataset_items>
+        <number_of_items>10</number_of_items>
+      </dataset_definition>
+    </dataset_definitions>
+    <tags>
+      <tag><text>bloom-apply</text></tag>
+      <tag><text>topic-t07</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > ddwtos: стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
+    <idnumber>t04</idnumber>
+  </question>
+  <question type="ddwtos">
+    <name><text><![CDATA[Кворум загальних зборів — це … голосуючих акцій, а рішення…]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Кворум загальних зборів — це [[1]] голосуючих акцій, а рішення ухвалюють [[2]] голосів.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Кворум і більшість для рішення — різні пороги.</p><ul><li>понад 50% — Поріг кворуму.</li><li>простою більшістю — Типова більшість для рішення.</li><li>10% — Такого порогу кворуму немає.</li></ul>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t04-q007</idnumber>
+    <shuffleanswers>1</shuffleanswers>
+    <correctfeedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text><![CDATA[<p>Частково правильно.</p>]]></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text><![CDATA[<p>Неправильно.</p>]]></text></incorrectfeedback>
+    <shownumcorrect/>
+    <dragbox>
+      <text><![CDATA[понад 50%]]></text>
+      <group>1</group>
+    </dragbox>
+    <dragbox>
+      <text><![CDATA[простою більшістю]]></text>
+      <group>1</group>
+    </dragbox>
+    <dragbox>
+      <text><![CDATA[10%]]></text>
+      <group>1</group>
+    </dragbox>
+    <tags>
+      <tag><text>bloom-understand</text></tag>
+      <tag><text>topic-t04</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > matching: стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
+    <idnumber>m1</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління/Тема 02. Моделі КУ]]></text></category>
+    <info format="html"><text><![CDATA[<p>Моделі й стандарти.</p>]]></text></info>
+    <idnumber>t02</idnumber>
+  </question>
+  <question type="matching">
+    <name><text><![CDATA[Установіть відповідність між моделлю корпоративного управління та її ознакою.]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Установіть відповідність між моделлю корпоративного управління та її ознакою.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Моделі різняться структурою власності й роллю банків.</p><ul><li>Англо-американська → Розпорошена власність — Акції розподілені між багатьма інвесторами.</li><li>Німецька → Дворівнева рада — Наглядова рада відокремлена від правління.</li></ul>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t02-q004</idnumber>
+    <shuffleanswers>true</shuffleanswers>
+    <correctfeedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text><![CDATA[<p>Частково правильно.</p>]]></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text><![CDATA[<p>Неправильно.</p>]]></text></incorrectfeedback>
+    <shownumcorrect/>
+    <subquestion format="html">
+      <text><![CDATA[Англо-американська]]></text>
+      <answer><text><![CDATA[Розпорошена власність]]></text></answer>
+    </subquestion>
+    <subquestion format="html">
+      <text><![CDATA[Німецька]]></text>
+      <answer><text><![CDATA[Дворівнева рада]]></text></answer>
+    </subquestion>
+    <subquestion format="html">
+      <text></text>
+      <answer><text><![CDATA[Відсутність ради]]></text></answer>
+    </subquestion>
+    <tags>
+      <tag><text>bloom-understand</text></tag>
+      <tag><text>topic-t02</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > multianswer (Cloze): стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
+    <idnumber>t04</idnumber>
+  </question>
+  <question type="cloze">
+    <name><text><![CDATA[Кумулятивне голосування застосовують під час обрання …. Мінімальний пакет для…]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Кумулятивне голосування застосовують під час обрання {1:MULTICHOICE:=членів наглядової ради#Так.~аудитора#Ні.}. Мінімальний пакет для 1 місця з 5 при 600 акціях: {1:NUMERICAL:=101:0#Правильно.}.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>S·k/(N+1)+1 = 600·1/6+1 = 101.</p>]]></text></generalfeedback>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t04-q008</idnumber>
+    <tags>
+      <tag><text>bloom-analyze</text></tag>
+      <tag><text>topic-t04</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > multichoice (множинний вибір): стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 05. Наглядова рада]]></text></category>
+    <info format="html"><text><![CDATA[<p>Комітети ради.</p>]]></text></info>
+    <idnumber>t05</idnumber>
+  </question>
+  <question type="multichoice">
+    <name><text><![CDATA[Які з наведених комітетів зазвичай утворює наглядова рада?]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Які з наведених комітетів зазвичай утворює наглядова рада?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Типові комітети — аудиторський і з винагород.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t05-q002</idnumber>
+    <single>false</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>1</showstandardinstruction>
+    <correctfeedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text><![CDATA[<p>Частково правильно.</p>]]></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text><![CDATA[<p>Неправильно.</p>]]></text></incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="50" format="html">
+      <text><![CDATA[Аудиторський комітет]]></text>
+      <feedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></feedback>
+    </answer>
+    <answer fraction="50" format="html">
+      <text><![CDATA[Комітет з винагород]]></text>
+      <feedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></feedback>
+    </answer>
+    <answer fraction="-100" format="html">
+      <text><![CDATA[Ревізійна комісія]]></text>
+      <feedback format="html"><text><![CDATA[<p>Це окремий орган, а не комітет ради.</p>]]></text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-understand</text></tag>
+      <tag><text>topic-t05</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > multichoice (один правильний): стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Органи корпоративного управління</p>]]></text></info>
+    <idnumber>m2</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори]]></text></category>
+    <info format="html"><text><![CDATA[<p>Кворум і голосування.</p>]]></text></info>
+    <idnumber>t04</idnumber>
+  </question>
+  <question type="multichoice">
+    <name><text><![CDATA[Який орган є вищим органом акціонерного товариства?]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Який орган є вищим органом акціонерного товариства?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Вищий орган АТ — загальні збори акціонерів.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t04-q001</idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html"><text><![CDATA[<p>Правильно.</p>]]></text></correctfeedback>
+    <partiallycorrectfeedback format="html"><text><![CDATA[<p>Частково правильно.</p>]]></text></partiallycorrectfeedback>
+    <incorrectfeedback format="html"><text><![CDATA[<p>Неправильно.</p>]]></text></incorrectfeedback>
+    <answer fraction="100" format="html">
+      <text><![CDATA[Загальні збори акціонерів]]></text>
+      <feedback format="html"><text><![CDATA[<p>Так, це вищий орган товариства.</p>]]></text></feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[Наглядова рада]]></text>
+      <feedback format="html"><text><![CDATA[<p>Наглядова рада контролює виконавчий орган.</p>]]></text></feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[Виконавчий орган]]></text>
+      <feedback format="html"><text><![CDATA[<p>Виконавчий орган керує поточною діяльністю.</p>]]></text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-remember</text></tag>
+      <tag><text>topic-t04</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > numerical: стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 3. Капітал // ринок]]></text></category>
+    <info format="html"><text><![CDATA[<p>Капітал / ринок</p>]]></text></info>
+    <idnumber>m3</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 3. Капітал // ринок/Тема 07. Капітал і дивіденди]]></text></category>
+    <info format="html"><text><![CDATA[<p>Розрахунок дивідендів.</p>]]></text></info>
+    <idnumber>t07</idnumber>
+  </question>
+  <question type="numerical">
+    <name><text><![CDATA[Чистий прибуток 650 000 грн, на дивіденди — 50%, акцій…]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Чистий прибуток 650 000 грн, на дивіденди — 50%, акцій 10 000. Який дивіденд на акцію, грн?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>650 000 × 0,5 / 10 000 = 32,5 грн.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber>t07-q005</idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>32.5</text>
+      <feedback format="html"><text><![CDATA[<p>Правильно: 32,5 грн.</p>]]></text></feedback>
+      <tolerance>0.01</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+    <tags>
+      <tag><text>bloom-apply</text></tag>
+      <tag><text>topic-t07</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
+
+exports[`bankToMoodleXml: снапшоти кожного типу > truefalse: стабільний і well-formed XML 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<quiz>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління]]></text></category>
+    <info format="html"><text><![CDATA[<p>Основи корпоративного управління</p>]]></text></info>
+    <idnumber>m1</idnumber>
+  </question>
+  <question type="category">
+    <category><text><![CDATA[top/Модуль 1. Основи корпоративного управління/Тема 01. Корпорація]]></text></category>
+    <info format="html"><text><![CDATA[<p>Власність і контроль.</p>]]></text></info>
+    <idnumber>t01</idnumber>
+  </question>
+  <question type="truefalse">
+    <name><text><![CDATA[Агентська проблема виникає через відокремлення власності від контролю.]]></text></name>
+    <questiontext format="html"><text><![CDATA[<p>Агентська проблема виникає через відокремлення власності від контролю.</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>Інтереси менеджерів і власників можуть не збігатися.</p>]]></text></generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <idnumber>t01-q003</idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text><![CDATA[<p>Так, саме відокремлення створює конфлікт інтересів.</p>]]></text></feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text><![CDATA[<p>Ні: без відокремлення власник сам контролює рішення.</p>]]></text></feedback>
+    </answer>
+    <tags>
+      <tag><text>bloom-remember</text></tag>
+      <tag><text>topic-t01</text></tag>
+    </tags>
+  </question>
+</quiz>
+"
+`;
