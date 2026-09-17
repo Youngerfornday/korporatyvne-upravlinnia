@@ -21,6 +21,9 @@ const EXPRESSION = /\{[^{}\n]*\}/g;
 
 /** @typedef {{ nbsp?: boolean }} LintOptions */
 
+/** Поля з офіційними назвами актів і джерел (sources.yaml title, lawRef act): дефіс у пробілах там — частина назви. */
+const OFFICIAL_TITLE_KEYS = new Set(['title', 'act']);
+
 function blankKeepingLines(text) {
   return text.replace(/[^\n]/g, ' ');
 }
@@ -91,15 +94,15 @@ export function lintYaml(source, options = {}) {
   const doc = parseDocument(source, { lineCounter, keepSourceTokens: true });
   /** @type {Finding[]} */
   const findings = [];
-  const check = (node) => {
+  const check = (node, key) => {
     if (!isScalar(node) || typeof node.value !== 'string' || !node.range) return;
-    const expected = normalizeTypography(node.value, { nbsp: options.nbsp === true });
+    const expected = normalizeTypography(node.value, { nbsp: options.nbsp === true, keepSpacedHyphens: OFFICIAL_TITLE_KEYS.has(key) });
     if (expected === node.value) return;
     findings.push({ line: lineCounter.linePos(node.range[0]).line, ...firstDiffLine(node.value, expected) });
   };
   visit(doc, {
-    Pair: (_key, pair) => check(pair.value),
-    Seq: (_key, seq) => seq.items.forEach(check),
+    Pair: (_key, pair) => check(pair.value, isScalar(pair.key) ? String(pair.key.value) : undefined),
+    Seq: (_key, seq) => seq.items.forEach((item) => check(item, undefined)),
   });
   return findings.sort((a, b) => a.line - b.line);
 }

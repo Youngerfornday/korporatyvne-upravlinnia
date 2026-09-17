@@ -21,6 +21,11 @@ const PROTECTED = /(?:https?:\/\/|www\.)[^\s«»„“”"<>]+|[\w.+-]+@[\w-]+\.
 export interface NormalizeOptions {
   /** Ставити нерозривні пробіли. Вимикається для заголовків, що стають якорями. */
   readonly nbsp?: boolean;
+  /**
+   * Не перетворювати « - » на тире: значення — офіційна назва акта чи джерела (поля title і act),
+   * де дефіс у пробілах може бути частиною назви (Закон № 755-IV: «фізичних осіб - підприємців»).
+   */
+  readonly keepSpacedHyphens?: boolean;
 }
 
 export interface TextPart {
@@ -105,12 +110,34 @@ function fixNumericRanges(text: string): string {
   );
 }
 
-function fixDashes(text: string): string {
+const SPACED_DASH = new RegExp(`[ ${NBSP}]+(?:--|[-${EN_DASH}${EM_DASH}])[ ${NBSP}]+`, 'g');
+const SPACED_HYPHEN = new RegExp(`[ ${NBSP}]+-[ ${NBSP}]+`, 'g');
+/**
+ * Цитата в «…» — назва нормативного акта, якщо маркер акта (Закон, Кодекс, Постанова, Наказ, Рішення, № з номером)
+ * стоїть усередині або безпосередньо перед нею («Закон України «…»»); дефіс у пробілах у ній — частина офіційної назви.
+ */
+const QUOTED = /«[^«»]*»/g;
+const ACT_MARKER = /Закон|Кодекс|Постанов|Наказ|Рішенн|№[ \u00A0]*\d/u;
+const ACT_MARKER_BEFORE = /(?:Закон|Кодекс|Постанов|Наказ|Рішенн)[^«»]{0,40}$/u;
+/** Дефіс у пробілах усередині назви акта на час обробки ховається за символом приватної зони. */
+const HYPHEN_PLACEHOLDER = '\uE001';
+
+function maskSpacedHyphens(text: string): string {
+  return text.replace(SPACED_HYPHEN, (m) => m.replace('-', HYPHEN_PLACEHOLDER));
+}
+
+function fixDashes(text: string, keepSpacedHyphens: boolean): string {
+  const masked = keepSpacedHyphens
+    ? maskSpacedHyphens(text)
+    : text.replace(QUOTED, (quoted, offset: number) =>
+        ACT_MARKER.test(quoted) || ACT_MARKER_BEFORE.test(text.slice(0, offset)) ? maskSpacedHyphens(quoted) : quoted,
+      );
   return (
-    text
+    masked
       // « - », « – », « — », « -- » → нерозривний пробіл, тире, пробіл
-      .replace(new RegExp(`[ ${NBSP}]+(?:--|[-${EN_DASH}${EM_DASH}])[ ${NBSP}]+`, 'g'), `${NBSP}${EM_DASH} `)
+      .replace(SPACED_DASH, `${NBSP}${EM_DASH} `)
       .replace(/\.{3}/g, '…')
+      .replace(new RegExp(HYPHEN_PLACEHOLDER, 'g'), '-')
   );
 }
 
@@ -137,7 +164,7 @@ export function normalizeTypography(text: string, options: NormalizeOptions = {}
   const nbsp = options.nbsp ?? true;
   const parts = splitProtected(text);
   const masked = parts.map((part) => (part.protected ? PLACEHOLDER : part.text)).join('');
-  const base = fixNumericRanges(fixDashes(fixQuotes(fixApostrophes(masked))));
+  const base = fixNumericRanges(fixDashes(fixQuotes(fixApostrophes(masked)), options.keepSpacedHyphens === true));
   const normalized = nbsp ? fixSpaces(base) : base.replace(new RegExp(NBSP, 'g'), ' ');
   const protectedTokens = parts.filter((part) => part.protected).map((part) => part.text);
   let index = 0;

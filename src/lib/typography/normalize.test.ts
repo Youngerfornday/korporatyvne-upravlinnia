@@ -92,6 +92,24 @@ describe('normalizeTypography: тире й крапки', () => {
     expect(normalizeTypography('С. 12-14, pp. 3-9, у 2019 р. 10-25% фірм', { nbsp: false })).toBe('С. 12–14, pp. 3–9, у 2019 р. 10–25% фірм');
   });
 
+  it('keeps a spaced hyphen inside a quoted title of a normative act (official wording is data, not typography)', () => {
+    const act = 'Закон України «Про державну реєстрацію юридичних осіб, фізичних осіб - підприємців та громадських формувань» від 15.05.2003 № 755-IV';
+    expect(normalizeTypography(act, { nbsp: false })).toBe(act);
+    expect(normalizeTypography('Постанова "Про порядок - процедуру" № 12', { nbsp: false })).toBe('Постанова «Про порядок - процедуру» № 12');
+    expect(normalizeTypography('див. «Кодекс - збірник норм»', { nbsp: false })).toBe('див. «Кодекс - збірник норм»');
+    expect(normalizeTypography('назва «Наказ - зразок», «Рішення - зразок», «Порядок № 5 - зразок»', { nbsp: false })).toBe('назва «Наказ - зразок», «Рішення - зразок», «Порядок № 5 - зразок»');
+  });
+
+  it('still fixes spaced hyphens outside quotes and inside quotes without an act marker', () => {
+    expect(normalizeTypography('рада - орган; «Зоря - Плюс» - назва', { nbsp: false })).toBe('рада — орган; «Зоря — Плюс» — назва');
+    expect(normalizeTypography('Закон - основа; у 2020-2026 рр. 10-25%', { nbsp: false })).toBe('Закон — основа; у 2020–2026 рр. 10–25%');
+  });
+
+  it('keeps spaced hyphens anywhere when the value is an act or source title field', () => {
+    expect(normalizeTypography('Про порядок - процедуру', { nbsp: false, keepSpacedHyphens: true })).toBe('Про порядок - процедуру');
+    expect(normalizeTypography('Закон "Про АТ"', { nbsp: false, keepSpacedHyphens: true })).toBe('Закон «Про АТ»');
+  });
+
   it('replaces three dots with an ellipsis', () => {
     expect(normalizeTypography('і так далі...')).toBe(`і${NBSP}так далі…`);
   });

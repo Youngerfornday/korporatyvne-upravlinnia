@@ -35,6 +35,21 @@ describe('lintYaml', () => {
   });
 });
 
+describe('lintYaml: назви актів', () => {
+  it('does not flag spaced hyphens in title and act fields (official wording), but flags them in other fields', () => {
+    const yaml = [
+      'sources:',
+      '  - id: law-755-iv',
+      '    title: Закон України «Про державну реєстрацію юридичних осіб, фізичних осіб - підприємців та громадських формувань» від 15.05.2003 № 755-IV',
+      '    note: коментар - пояснення',
+      'lawRef:',
+      '  - act: Про порядок - процедуру',
+      '    article: ст. 3',
+    ].join('\n');
+    expect(lintYaml(yaml)).toEqual([{ line: 4, actual: 'коментар - пояснення', expected: 'коментар — пояснення' }]);
+  });
+});
+
 describe('lintMdx', () => {
   const source = [
     '---',

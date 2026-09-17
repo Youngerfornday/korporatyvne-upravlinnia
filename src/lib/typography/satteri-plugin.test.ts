@@ -30,6 +30,12 @@ describe('typographyPlugin (Sätteri hast)', () => {
     expect(html).toContain('п.\u00A02-1');
   });
 
+  it('keeps the official spaced hyphen inside a quoted act title, but fixes a spaced hyphen in plain prose', () => {
+    const html = render('За Законом «Про державну реєстрацію юридичних осіб, фізичних осіб - підприємців та громадських формувань» рада - орган.');
+    expect(html).toContain('фізичних осіб - підприємців');
+    expect(html).toContain(`рада${NBSP}— орган`);
+  });
+
   it('keeps headings free of non-breaking spaces so anchors stay clean', () => {
     const html = render('## Ст. 3 і "кворум" у законі');
     expect(html).toContain('>Ст. 3 і «кворум» у законі</h2>');
