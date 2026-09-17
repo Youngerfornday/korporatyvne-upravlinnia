@@ -1,0 +1,70 @@
+topic: t01
+slides:
+  - id: title-fixture
+    type: title
+    subtitle: Фікстурна тема для перевірки генератора
+    notes: Нотатки титульного слайда.
+    sources: [fixture-source]
+  - id: section-fixture
+    type: section
+    number: 1
+    title: Розділ фікстури
+    notes: Нотатки розділу.
+  - id: outcomes-fixture
+    type: outcomes
+    title: Результати фікстури
+    notes: Нотатки результатів.
+  - id: bullets-fixture
+    type: bullets
+    title: Тези фікстури
+    bullets:
+      - Перший пункт для перевірки
+      - Другий пункт для перевірки
+    sources: [fixture-source]
+  - id: columns-fixture
+    type: two-columns
+    title: Порівняння у двох колонках
+    left:
+      heading: Ліва частина
+      bullets: [Лівий пункт]
+    right:
+      heading: Права частина
+      bullets: [Правий пункт]
+  - id: figure-fixture
+    type: figure
+    title: Растрова схема
+    figure: fig-fixture.svg
+    caption: Фікстурна SVG-схема, вставлена як PNG.
+  - id: norm-fixture
+    type: norm
+    title: Нормативний блок
+    text: Норма права для перевірки структури слайда.
+    lawRef:
+      act: Закон України «Про фікстури»
+      article: ст. 1 (FX-01)
+      checkedAt: '2026-09-17'
+    sources: [fixture-source]
+  - id: formula-fixture
+    type: formula
+    title: Формула фікстури
+    formula: Агентські витрати = моніторинг + гарантування + залишкові втрати
+    explanation: [Пояснення формули фікстури]
+  - id: case-fixture
+    type: case
+    title: Кейс фікстури
+    case: privatbank
+    facts: [Перший факт кейсу, Другий факт кейсу]
+    question: Який механізм слід перевірити першим?
+  - id: quote-fixture
+    type: quote
+    text: Управління визначає, хто контролює рішення і хто несе ризик.
+    attribution: Навчальна фікстура
+    notes: Нотатки цитати.
+  - id: question-fixture
+    type: question
+    prompt: Який варіант відповіді правильний?
+    options: [Варіант А, Варіант Б]
+  - id: summary-fixture
+    type: summary
+    title: Підсумок фікстури
+    bullets: [Підсумок перший, Підсумок другий]

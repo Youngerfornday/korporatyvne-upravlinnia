@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <style>
+    .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); }
+    .label { fill: var(--ink, #0f1c2e); font: 12px Arial; }
+  </style>
+  <rect class="box" x="10" y="10" width="100" height="60" rx="6"/>
+  <text class="label" x="60" y="45" text-anchor="middle">Схема</text>
+</svg>

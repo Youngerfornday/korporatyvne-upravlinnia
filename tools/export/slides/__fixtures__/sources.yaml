@@ -1,0 +1,9 @@
+topic: t01
+sources:
+  - id: fixture-source
+    type: book
+    title: Фікстурне джерело
+    authors: [Автор Ф.] 
+    year: 2026
+    url: https://example.com/fixture-source
+    checkedAt: '2026-09-17'
