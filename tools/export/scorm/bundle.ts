@@ -26,7 +26,8 @@ export async function buildScormBundle(kind: ScormPackageKind, outDir: string): 
     logLevel: 'warn',
     mode: 'production',
     define: { 'process.env.NODE_ENV': JSON.stringify('production') },
-    oxc: { jsx: { runtime: 'automatic', importSource: 'react' } },
+    // Продакшен-JSX явно: у Vitest NODE_ENV=test, і без цього збірка бере jsxDEV з абсолютними шляхами файлів.
+    oxc: { jsx: { runtime: 'automatic', importSource: 'react', development: false } },
     build: {
       outDir,
       emptyOutDir: true,
