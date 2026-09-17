@@ -1,15 +1,15 @@
-/* print.css — друк теми: без навігації, з адресами посилань, розрив сторінки перед h2. */
+/* print.css — друк теми: без навігації й ігрових елементів, з адресами посилань; розділи йдуть суцільно. */
 @media print {
   @page { margin: 18mm 16mm; }
   :root { --bg: #fff; --surface: #fff; --surface-tint: #f3f5f8; --ink: #000; --ink-2: #222; --ink-3: #444; --line: #bbb; --rule: #000; --link: #000; }
   html { scroll-behavior: auto; }
   body { background: #fff; color: #000; font-size: 11pt; display: block; }
-  .topbar, .footer, .toast, .skip, .menu, .btn, .side, .crumbs, .pager, .cta-test, .reading-progress, .no-print { display: none !important; }
+  .topbar, .footer, .toast, .skip, .menu, .btn, .side, .crumbs, .pager, .cta-test, .reading-progress, .chip-xp, [data-topic-xp-chip], [data-topic-xp-note], .no-print { display: none !important; }
   main { flex: none; }
   .read { max-width: none; font-size: 11pt; line-height: 1.5; }
-  .read h2 { break-before: page; page-break-before: always; }
-  .read h2:first-of-type { break-before: auto; page-break-before: auto; }
-  h1, h2, h3, figure, .norm, .case, .callout { break-inside: avoid; page-break-inside: avoid; }
+  /* Заголовок не лишається внизу сторінки без тексту; розрив перед кожним розділом роздував PDF лекції вдвічі. */
+  .read h2, .read h3 { break-after: avoid; page-break-after: avoid; }
+  h1, h2, h3, figure, .norm, .callout { break-inside: avoid; page-break-inside: avoid; }
   p, li { orphans: 3; widows: 3; }
   a { color: #000; text-decoration: underline; }
   .read a[href^="http"]::after, .sources a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #444; word-break: break-all; }
