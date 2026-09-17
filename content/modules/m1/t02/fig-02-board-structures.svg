@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t02-2" class="scheme" viewBox="0 0 520 516" role="img" aria-labelledby="fig-t02-2-title fig-t02-2-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t02-2-title">Рисунок 2. Дворівнева і однорівнева структури управління акціонерним товариством</title>
+  <desc id="fig-t02-2-desc">Дві панелі одна під одною. Верхня панель — дворівнева структура: загальні збори обирають наглядову раду, наглядова рада обирає виконавчий орган — правління або одноосібного директора — і контролює його. Нагляд і поточне управління розведені по різних органах, і одна особа не може входити до обох. Нижня панель — однорівнева структура: загальні збори обирають раду директорів, усередині якої працюють виконавчі директори, що ведуть поточну діяльність, і невиконавчі директори, зокрема незалежні, які наглядають, не втручаючись у поточні рішення. Суцільні стрілки вниз позначають обрання і призначення, пунктирні вгору — звітність. Карміновим позначено головне: розділення нагляду й поточного управління зберігається в обох структурах, змінюється лише те, чи проходить межа між органами, чи всередині одного органу.</desc>
+  <style>
+    #fig-t02-2 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-2 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t02-2 .t { fill: var(--ink, #0f1c2e); font-size: 15.5px; font-weight: 650; }
+    #fig-t02-2 .s { fill: var(--ink-2, #445570); font-size: 12.5px; }
+    #fig-t02-2 .lbl { fill: var(--ink-2, #445570); font-size: 12px; }
+    #fig-t02-2 .cap { fill: var(--ink, #0f1c2e); font-size: 13.5px; font-weight: 700; }
+    #fig-t02-2 .arrow { stroke: var(--ink-2, #445570); stroke-width: 1.25; fill: none; }
+    #fig-t02-2 .arrow-head { fill: var(--ink-2, #445570); }
+    #fig-t02-2 .dashed { stroke-dasharray: 4 3; }
+    #fig-t02-2 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-2 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t02-2 .exam { stroke: var(--err, #b42318); }
+    #fig-t02-2 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 12.5px; font-weight: 600; }
+    #fig-t02-2 .exam-n { fill: var(--err-ink, #8f1d14); }
+  </style>
+
+  <text class="cap" x="40" y="20">Дворівнева структура: нагляд і управління — різні органи</text>
+
+  <rect class="box box-owner" x="92" y="34" width="340" height="42" rx="6"/>
+  <text class="t" x="262" y="60" text-anchor="middle">Загальні збори акціонерів</text>
+  <circle class="refc" cx="74" cy="55" r="11"/><text class="refn" x="74" y="59">1</text>
+
+  <path class="arrow" d="M232 76 V 104"/>
+  <path class="arrow-head" d="M232 112 l-5 -9 h10 z"/>
+  <text class="lbl" x="222" y="97" text-anchor="end">обирають</text>
+  <path class="arrow dashed" d="M302 112 V 84"/>
+  <path class="arrow-head" d="M302 76 l-5 9 h10 z"/>
+  <text class="lbl" x="312" y="97">звітує</text>
+
+  <rect class="box" x="92" y="112" width="340" height="60" rx="6"/>
+  <text class="t" x="108" y="134">Наглядова рада</text>
+  <text class="s" x="108" y="156">захищає права акціонерів, контролює правління</text>
+  <circle class="refc" cx="74" cy="142" r="11"/><text class="refn" x="74" y="146">2</text>
+
+  <path class="arrow" d="M232 172 V 200"/>
+  <path class="arrow-head" d="M232 208 l-5 -9 h10 z"/>
+  <text class="lbl" x="222" y="193" text-anchor="end">обирає і контролює</text>
+  <path class="arrow dashed" d="M302 208 V 180"/>
+  <path class="arrow-head" d="M302 172 l-5 9 h10 z"/>
+  <text class="lbl" x="312" y="193">звітує</text>
+
+  <rect class="box" x="92" y="208" width="340" height="60" rx="6"/>
+  <text class="t" x="108" y="230">Виконавчий орган</text>
+  <text class="s" x="108" y="252">правління або одноосібний директор</text>
+  <circle class="refc" cx="74" cy="238" r="11"/><text class="refn" x="74" y="242">3</text>
+
+  <text class="cap" x="40" y="312">Однорівнева структура: межа проходить усередині ради</text>
+
+  <rect class="box box-owner" x="92" y="324" width="340" height="42" rx="6"/>
+  <text class="t" x="262" y="350" text-anchor="middle">Загальні збори акціонерів</text>
+
+  <path class="arrow" d="M232 366 V 394"/>
+  <path class="arrow-head" d="M232 402 l-5 -9 h10 z"/>
+  <text class="lbl" x="222" y="387" text-anchor="end">обирають</text>
+  <path class="arrow dashed" d="M302 402 V 374"/>
+  <path class="arrow-head" d="M302 366 l-5 9 h10 z"/>
+  <text class="lbl" x="312" y="387">звітує</text>
+
+  <rect class="box" x="72" y="402" width="380" height="110" rx="6"/>
+  <text class="t" x="88" y="424">Рада директорів</text>
+  <rect class="box box-owner" x="88" y="434" width="176" height="66" rx="5"/>
+  <text class="s" x="100" y="456">Виконавчі</text>
+  <text class="s" x="100" y="474">директори: поточне</text>
+  <text class="s" x="100" y="492">управління</text>
+  <rect class="box box-owner exam" x="272" y="434" width="164" height="66" rx="5"/>
+  <text class="exam-t" x="284" y="456">Невиконавчі,</text>
+  <text class="exam-t" x="284" y="474">зокрема незалежні:</text>
+  <text class="exam-t" x="284" y="492">нагляд</text>
+  <circle class="refc" cx="54" cy="428" r="11"/><text class="refn" x="54" y="432">4</text>
+  <circle class="refc exam" cx="54" cy="466" r="11"/><text class="refn exam-n" x="54" y="470">5</text>
+</svg>

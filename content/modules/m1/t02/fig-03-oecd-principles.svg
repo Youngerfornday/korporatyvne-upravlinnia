@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t02-3" class="scheme" viewBox="0 0 520 444" role="img" aria-labelledby="fig-t02-3-title fig-t02-3-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t02-3-title">Рисунок 3. Шість розділів Принципів корпоративного управління G20/ОЕСР 2023</title>
+  <desc id="fig-t02-3-desc">Шість рядків один під одним, кожен з римським номером розділу. Розділ перший — забезпечення основи ефективної системи корпоративного управління: законодавство, регулятори, суди, якість правозастосування. Розділ другий — права акціонерів, рівне ставлення до них і ключові функції власності: участь у зборах, голосування, захист від зловживань контролюючих осіб. Розділ третій — інституційні інвестори, фондові ринки та інші посередники: як голосують фонди і що розкривають радники з голосування. Розділ четвертий — розкриття інформації і прозорість: фінансова та нефінансова звітність, аудит, структура власності. Розділ п’ятий — відповідальність ради: стратегічне керівництво, нагляд за менеджментом, підзвітність акціонерам, незалежність. Розділ шостий, виділений карміновим, — сталий розвиток і стійкість: новий розділ редакції 2023 року, який увібрав колишній розділ про роль стейкхолдерів.</desc>
+  <style>
+    #fig-t02-3 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-3 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t02-3 .t { fill: var(--ink, #0f1c2e); font-size: 14.5px; font-weight: 650; }
+    #fig-t02-3 .s { fill: var(--ink-2, #445570); font-size: 12.5px; }
+    #fig-t02-3 .num { fill: var(--ink, #0f1c2e); font-size: 15px; font-weight: 700; text-anchor: middle; }
+    #fig-t02-3 .cap { fill: var(--ink-2, #445570); font-size: 12.5px; font-weight: 650; }
+    #fig-t02-3 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-3 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t02-3 .exam { stroke: var(--err, #b42318); }
+    #fig-t02-3 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 12.5px; font-weight: 600; }
+    #fig-t02-3 .exam-n { fill: var(--err-ink, #8f1d14); }
+  </style>
+
+  <text class="cap" x="40" y="18">Принципи G20/ОЕСР 2023: шість розділів, орієнтир для законодавця</text>
+
+  <rect class="box box-owner" x="40" y="30" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="65">I</text>
+  <rect class="box" x="92" y="30" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="52">Основа ефективної системи</text>
+  <text class="s" x="108" y="72">законодавство, регулятори, суди, правозастосування</text>
+  <circle class="refc" cx="500" cy="59" r="11"/><text class="refn" x="500" y="63">1</text>
+
+  <rect class="box box-owner" x="40" y="98" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="133">II</text>
+  <rect class="box" x="92" y="98" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="120">Права і рівне ставлення до акціонерів</text>
+  <text class="s" x="108" y="140">голосування і захист від зловживань контролюючих осіб</text>
+  <circle class="refc" cx="500" cy="127" r="11"/><text class="refn" x="500" y="131">2</text>
+
+  <rect class="box box-owner" x="40" y="166" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="201">III</text>
+  <rect class="box" x="92" y="166" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="188">Інвестори, ринки й посередники</text>
+  <text class="s" x="108" y="208">як голосують фонди, що розкривають радники</text>
+  <circle class="refc" cx="500" cy="195" r="11"/><text class="refn" x="500" y="199">3</text>
+
+  <rect class="box box-owner" x="40" y="234" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="269">IV</text>
+  <rect class="box" x="92" y="234" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="256">Розкриття інформації і прозорість</text>
+  <text class="s" x="108" y="276">фінансова й нефінансова звітність, аудит, власність</text>
+  <circle class="refc" cx="500" cy="263" r="11"/><text class="refn" x="500" y="267">4</text>
+
+  <rect class="box box-owner" x="40" y="302" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="337">V</text>
+  <rect class="box" x="92" y="302" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="324">Відповідальність ради</text>
+  <text class="s" x="108" y="344">стратегія, нагляд за менеджментом, підзвітність ради</text>
+  <circle class="refc" cx="500" cy="331" r="11"/><text class="refn" x="500" y="335">5</text>
+
+  <rect class="box box-owner exam" x="40" y="370" width="44" height="58" rx="6"/>
+  <text class="num" x="62" y="405">VI</text>
+  <rect class="box exam" x="92" y="370" width="388" height="58" rx="6"/>
+  <text class="t" x="108" y="392">Сталий розвиток і стійкість</text>
+  <text class="exam-t" x="108" y="412">новий розділ: увібрав розділ про стейкхолдерів</text>
+  <circle class="refc exam" cx="500" cy="399" r="11"/><text class="refn exam-n" x="500" y="403">6</text>
+</svg>

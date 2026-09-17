@@ -1,0 +1,420 @@
+# Джерела теми 2. Кожне — з адресою, відкритою на дату checkedAt. Норми права — лише з docs/research/legal-baseline.md,
+# факти кейсів — з docs/research/cases.md, дані про структуру власності — з docs/research/data-sources.md, розд. 5.
+# Дати перевірки міжнародних стандартів збігаються з датами legal-baseline.md (MS-01 — MS-04, KKU-03 — KKU-05).
+topic: t02
+sources:
+  # Класифікація систем і теорія
+  - id: franks-mayer-1992
+    type: article
+    title: 'Corporate Control: A Synthesis of the International Evidence'
+    authors: [Franks J., Mayer C.]
+    publisher: London Business School, IFA Working Paper
+    year: 1992
+    language: en
+    url: https://lbsresearch.london.edu/id/eprint/4224/
+    checkedAt: '2026-09-17'
+    note: 'Джерело поділу на аутсайдерські системи Великої Британії і США та інсайдерські системи континентальної Європи і Японії: у перших багато біржових компаній з розпорошеною власністю й дисципліною ринку, у других — менше компаній і великі пакети в руках інших компаній, а контроль здійснюється через органи й комітети.'
+
+  - id: shleifer-vishny-1997
+    type: article
+    title: A Survey of Corporate Governance
+    authors: [Shleifer A., Vishny R. W.]
+    publisher: 'The Journal of Finance, vol. 52, no. 2, pp. 737–783'
+    year: 1997
+    language: en
+    url: https://dash.harvard.edu/entities/publication/73120379-1d3b-6bd4-e053-0100007fdf3b
+    checkedAt: '2026-09-16'
+    note: 'Протиставлення ринкових систем США і Великої Британії банкоцентричним системам Німеччини та Японії станом на 1990-ті; поглинання як головний зовнішній механізм дисципліни менеджменту. Історичні характеристики подано в минулому часі.'
+
+  - id: villalonga-amit-2020
+    type: article
+    title: Family ownership
+    authors: [Villalonga B., Amit R.]
+    publisher: 'Oxford Review of Economic Policy, vol. 36, no. 2, pp. 241–257'
+    year: 2020
+    language: en
+    url: https://faculty.wharton.upenn.edu/wp-content/uploads/2020/04/Family_Ownership.pdf
+    checkedAt: '2026-09-17'
+    note: 'Рецензований огляд про сімейні фірми: Західна Європа — 44 % сімейних проти 45 % з розпорошеною власністю (табл. 1, дані Faccio і Lang по 5 232 компаніях 13 країн), без Великої Британії — 56 % проти 28 %; розкид від 23 % до близько 60 %; родина серед ключових осіб у третині компаній S&P 500; «терплячий капітал», нижчі зарплати і рідші звільнення; тунелювання і гірші результати під керівництвом нащадків; теза «30 % доживають до другого покоління» емпірично не підтверджена (с. 247).'
+
+  # Дані про структуру власності
+  - id: oecd-factbook-2025
+    type: report
+    title: OECD Corporate Governance Factbook 2025
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2025
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/10/oecd-corporate-governance-factbook-2025_56febc0d/f4f43735-en.pdf
+    checkedAt: '2026-09-17'
+    note: 'Розд. 1.2.1 (с. 29–31): 46 086 лістингових компаній з 98 ринків на кінець 2024 р.; у 44 % компаній світу три найбільші власники тримають понад 50 % капіталу (Європа 53 %, Латинська Америка 71 %, США 17 %; у США в 53 % компаній три найбільші тримають 10–29 %); структура власників — інституційні інвестори 47 %, інший вільний обіг 27 %, публічний сектор 10 %, корпорації 9 %, стратегічні фізичні особи й родини 7 % (Європа 9 %, США 5 %).'
+
+  - id: oecd-factbook-2023
+    type: report
+    title: OECD Corporate Governance Factbook 2023
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2023
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/09/oecd-corporate-governance-factbook-2023_6bae0258/6d912314-en.pdf
+    checkedAt: '2026-09-16'
+    note: 'Розд. 1.5–1.6 і табл. 1.1 (дані на кінець 2022 р., 44 з 49 юрисдикцій): у Німеччині три найбільші акціонери тримають понад 50 % капіталу у 59 % лістингових компаній, в Японії — у 28 %; у Німеччині 804 лістингові компанії з капіталізацією 1 993 млрд дол. США, в Японії 3 904 компанії; корпораціям належить 22 % капіталу японського ринку.'
+
+  - id: oecd-wp27-2022
+    type: report
+    title: 'Corporate ownership and concentration (OECD Corporate Governance Working Papers No. 27)'
+    authors: [Medina A., de la Cruz A., Tang Y.]
+    publisher: OECD Publishing
+    year: 2022
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/09/corporate-ownership-and-concentration_071a223d/bc3adca3-en.pdf
+    checkedAt: '2026-09-17'
+    note: 'Механізми контролю — піраміди й подвійні класи акцій (с. 13); перехресне володіння: Японія 6,3 % капіталізації — найвищий показник (табл. 2.3); стратегічні фізичні особи тримають у середньому понад 20 % акцій у 16 юрисдикціях (с. 9–10); розкриття акціонерних угод не обов’язкове у 12 юрисдикціях, бенефіціарів — у 13 (с. 20).'
+
+  - id: oecd-ukraine-2025
+    type: report
+    title: Mapping Ukraine’s Financial Markets and Corporate Governance Framework for a Sustainable Recovery
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2025
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/01/mapping-ukraine-s-financial-markets-and-corporate-governance-framework-for-a-sustainable-recovery_ba6fc369/866c5c44-en.pdf
+    checkedAt: '2026-09-17'
+    note: 'Розд. 3.2.1: понад 60 % компаній, акції яких торгувалися на біржах України, мають єдиного власника з пакетом понад 50 % (у юрисдикціях Factbook — близько 32 % у 2022 р.); держава — найбільший власник, майже 50 % усіх акцій і облігацій у торгах проти 11 % у середньому; агрегованої інформації про дотримання Кодексу КУ 2020 р. немає (с. 61).'
+
+  # Міжнародні стандарти
+  - id: oecd-principles-2023
+    type: standard
+    title: G20/OECD Principles of Corporate Governance 2023
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2023
+    language: en
+    url: https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en.html
+    checkedAt: '2026-09-14'
+    note: 'Дата перевірки — за docs/research/legal-baseline.md, MS-01. Опубліковано 11.09.2023; шість розділів; редакція 2015 р. — попередня, перше видання — 1999 р.'
+
+  - id: oecd-soe-guidelines-2024
+    type: standard
+    title: OECD Guidelines on Corporate Governance of State-Owned Enterprises 2024
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2024
+    language: en
+    url: https://www.oecd.org/en/publications/oecd-guidelines-on-corporate-governance-of-state-owned-enterprises-2024_18a24f43-en.html
+    checkedAt: '2026-09-15'
+    note: 'Дата перевірки — за docs/research/legal-baseline.md, MS-02. Опубліковано 28.10.2024; сім розділів; уперше розроблені 2005 р., переглянуті 2015 р.'
+
+  - id: srd-ii-2017
+    type: law
+    title: Директива (ЄС) 2017/828 від 17.05.2017 про заохочення довгострокової залученості акціонерів (SRD II)
+    authors: [Європейський Парламент і Рада ЄС]
+    year: 2017
+    language: en
+    url: https://eur-lex.europa.eu/eli/dir/2017/828/oj/eng
+    checkedAt: '2026-09-14'
+    note: 'Дата перевірки — за docs/research/legal-baseline.md, MS-03. Політика залученості інституційних інвесторів у режимі «дотримуйся або пояснюй», прозорість радників з голосування, голосування щодо політики і звіту про винагороду, правочини з пов’язаними сторонами; транспозиція — до 10.06.2019.'
+
+  - id: uk-cg-code-2024
+    type: regulation
+    title: UK Corporate Governance Code 2024
+    authors: [Financial Reporting Council]
+    year: 2024
+    language: en
+    url: https://www.frc.org.uk/library/standards-codes-policy/corporate-governance/uk-corporate-governance-code/
+    checkedAt: '2026-09-14'
+    note: 'Дата перевірки — за docs/research/legal-baseline.md, MS-04. Опубліковано 22.01.2024, застосовується з 01.01.2025, положення 29 — з 01.01.2026; п’ять розділів; режим «дотримуйся або пояснюй».'
+
+  - id: cadbury-report-1992
+    type: report
+    title: The Report of the Committee on the Financial Aspects of Corporate Governance
+    authors: [Committee on the Financial Aspects of Corporate Governance]
+    publisher: 'Gee and Co., London; архів Cambridge Judge Business School'
+    year: 1992
+    language: en
+    url: https://www.jbs.cam.ac.uk/cadbury-report/
+    checkedAt: '2026-09-17'
+    note: 'Звіт комітету під головуванням Адріана Кедбері, грудень 1992 р., разом з першим кодексом кращої практики: розведення посад голови ради і головного виконавчого директора, зовнішні директори в раді та режим «дотримуйся або пояснюй».'
+
+  # Німецька модель
+  - id: dcgk-2022
+    type: regulation
+    title: Deutscher Corporate Governance Kodex у редакції від 28.04.2022
+    authors: [Regierungskommission Deutscher Corporate Governance Kodex]
+    year: 2022
+    language: en
+    url: https://www.dcgk.de/en/code.html
+    checkedAt: '2026-09-16'
+    note: 'Правління (Vorstand) і наглядова рада (Aufsichtsrat) як окремі органи з різними повноваженнями, процедурами й винагородою; декларація відповідності за § 161 Закону про АТ («дотримуйся або пояснюй»).'
+
+  - id: mitbestg-1976
+    type: law
+    title: Gesetz über die Mitbestimmung der Arbeitnehmer (Mitbestimmungsgesetz) від 04.05.1976
+    authors: [Bundesministerium der Justiz]
+    year: 1976
+    language: de
+    url: https://www.gesetze-im-internet.de/mitbestg/BJNR011530976.html
+    checkedAt: '2026-09-16'
+    note: '§ 1: компанії, що зазвичай мають понад 2 000 працівників; § 7: наглядова рада з рівної кількості представників акціонерів і працівників.'
+
+  - id: drittelbg-2004
+    type: law
+    title: Gesetz über die Drittelbeteiligung der Arbeitnehmer im Aufsichtsrat (Drittelbeteiligungsgesetz) від 18.05.2004
+    authors: [Bundesministerium der Justiz]
+    year: 2004
+    language: de
+    url: https://www.gesetze-im-internet.de/drittelbg/BJNR097410004.html
+    checkedAt: '2026-09-16'
+    note: 'Третина місць у наглядовій раді — представникам працівників у компаніях, що зазвичай мають понад 500 працівників.'
+
+  - id: aktg-135
+    type: law
+    title: Aktiengesetz, § 135 Ausübung des Stimmrechts durch Intermediäre und geschäftsmäßig Handelnde
+    authors: [Bundesministerium der Justiz]
+    year: 1965
+    language: de
+    url: https://www.gesetze-im-internet.de/aktg/__135.html
+    checkedAt: '2026-09-17'
+    note: 'Посередник (зокрема банк-депозитарій) голосує акціями, які йому не належать, лише за дорученням акціонера і за його вказівками або за заздалегідь розкритими пропозиціями. Спростовує тезу про автоматичне голосування банку акціями клієнтів.'
+
+  # Японська модель
+  - id: jcgc-code-2026
+    type: regulation
+    title: Japan’s Corporate Governance Code (редакція від 21.07.2026)
+    authors: [Tokyo Stock Exchange, Inc.]
+    year: 2026
+    language: en
+    url: https://www.jpx.co.jp/english/corporate/news/news-releases/1020/vk0khi000001xys3-att/vk0khi000001xyv1.pdf
+    checkedAt: '2026-09-17'
+    note: 'Чинна редакція; звіти за нею компанії подають до липня 2027 р. Принцип 4.10: для ринку Prime — щонайменше третина незалежних директорів, а за наявності контролюючого акціонера — більшість незалежних від нього або спеціальний комітет; принцип 4.7 — більшість незалежних у комітетах з номінацій і винагород для Prime; принцип 1.4 (1)–(4) — перехресне володіння. Режим «дотримуйся або пояснюй» з різним обсягом для сегментів ринку.'
+
+  - id: jcgc-code-2015
+    type: regulation
+    title: 'Japan’s Corporate Governance Code [Final Proposal] (05.03.2015)'
+    authors: [The Council of Experts Concerning the Corporate Governance Code, Financial Services Agency of Japan]
+    year: 2015
+    language: en
+    url: https://www.fsa.go.jp/en/refer/councils/corporategovernance/20150306-1/01.pdf
+    checkedAt: '2026-09-17'
+    note: 'Перша редакція: принцип 1.4 уже вимагав розкривати політику щодо перехресного володіння, щорічно оцінювати економічну доцільність великих пакетів і розкривати стандарти голосування ними.'
+
+  - id: jcgc-code-2018
+    type: regulation
+    title: Japan’s Corporate Governance Code (Revised June 2018)
+    authors: [Tokyo Stock Exchange, Inc.]
+    year: 2018
+    language: en
+    url: https://www.jpx.co.jp/english/rules-participants/public-comment/detail/d1/b5b4pj0000022v6o-att/20180601.pdf
+    checkedAt: '2026-09-17'
+    note: 'Редакція 2018 р. посилила принцип 1.4: щорічна оцінка кожного окремого пакета проти вартості капіталу, оприлюднення результатів оцінки, голосування за оприлюдненими стандартами; додаткові принципи 1.4.1 і 1.4.2.'
+
+  - id: fsa-cgc-revisions-2021
+    type: web
+    title: Revisions of Japan’s Corporate Governance Code and Guidelines for Investor and Company Engagement (06.04.2021)
+    authors: [Financial Services Agency of Japan]
+    year: 2021
+    language: en
+    url: https://www.fsa.go.jp/en/news/2021/20210406.html
+    checkedAt: '2026-09-16'
+    note: 'Пропозиції до перегляду 2021 р.: щонайменше третина незалежних директорів для ринку Prime, комітети з номінацій і винагород з більшістю незалежних, матриця навичок ради, цілі різноманіття, розкриття кліматичних ризиків за TCFD.'
+
+  - id: fsa-tse-overview-2026
+    type: web
+    title: The Revised Corporate Governance Code to Promote Growth Investments (21.07.2026)
+    authors: [Financial Services Agency of Japan, Tokyo Stock Exchange]
+    year: 2026
+    language: en
+    url: https://www.jpx.co.jp/english/equities/listing/cg/tvdivq0000008jdy-att/b5b4pj0000046lke.pdf
+    checkedAt: '2026-09-17'
+    note: 'Офіційний огляд редакції 2026 р. Теза про те, що компанії ринку Prime, які конкурують глобально, зрештою мають забезпечити більшість незалежних директорів, є позицією в пояснювальному документі, а не нормою Кодексу.'
+
+  - id: toyota-industries-2026
+    type: web
+    title: Toyota Industries Corporation. Notice Concerning Share Consolidation (17.04.2026)
+    authors: [Toyota Industries Corporation]
+    year: 2026
+    language: en
+    url: https://www.toyota-industries.com/news/item/20260417_document_e01.pdf
+    checkedAt: '2026-09-16'
+    note: 'Toyota Motor володіла 24,66 % акцій компанії-засновниці групи; спеціальний комітет із трьох незалежних зовнішніх директорів через конфлікт інтересів найбільшого акціонера; делістинг 01.06.2026 (docs/research/cases.md, розд. 11).'
+
+  - id: toyota-voting-2025
+    type: web
+    title: Toyota Motor Corporation. Extraordinary Report, 121st Ordinary General Shareholders’ Meeting (12.06.2025)
+    authors: [Toyota Motor Corporation]
+    year: 2025
+    language: en
+    url: https://global.toyota/pages/global_toyota/ir/stock/2025_voting_results_en.pdf
+    checkedAt: '2026-09-16'
+    note: 'Перехід до структури «компанія з аудиторсько-наглядовим комітетом» — 98,80 % голосів «за».'
+
+  # Англо-американська модель
+  - id: hsbc-board-2026
+    type: web
+    title: HSBC Holdings plc. Board of Directors
+    authors: [HSBC Holdings plc]
+    year: 2026
+    language: en
+    url: https://www.hsbc.com/who-we-are/leadership-and-governance/board-of-directors
+    checkedAt: '2026-09-16'
+    note: 'Станом на 06.05.2026: 14 директорів, з них 11 незалежних невиконавчих; голова ради і головний виконавчий директор — різні особи.'
+
+  # Кейс Volkswagen
+  - id: vw-shareholders-2025
+    type: web
+    title: Volkswagen Group. Shareholder structure (станом на 31.12.2025)
+    authors: [Volkswagen AG]
+    year: 2026
+    language: en
+    url: https://www.volkswagen-group.com/en/shareholder-structure-15951
+    checkedAt: '2026-09-16'
+    note: 'Права голосу: Porsche Automobil Holding SE 53,3 %, земля Нижня Саксонія 20,0 %, Qatar Holding 17,0 %, вільний обіг 9,7 %. Сумарна частка трьох найбільших (CR3) 90,3 % — розрахунок за цими даними.'
+
+  - id: vw-agm-2026
+    type: web
+    title: Volkswagen Group. Прес-реліз за підсумками річних загальних зборів 18.06.2026
+    authors: [Volkswagen AG]
+    year: 2026
+    language: en
+    url: https://www.volkswagen-group.com/en/press-releases/volkswagen-shareholders-formally-approve-board-of-management-and-supervisory-board-actions-and-adopt-dividend-resolution-hans-dieter-poetsch-confirmed-as-chairman-of-the-supervisory-board-following-his-re-election-20486
+    checkedAt: '2026-09-17'
+    note: 'Нове врегулювання зі страховиками D&O схвалено 97,46 % поданих голосів, підтверджувальне рішення щодо угоди з колишнім головою правління — 99,99 %; дивіденди 5,20 євро на звичайну і 5,26 євро на привілейовану акцію; Ганса Дітера Пьоча переобрано до наглядової ради й підтверджено її головою.'
+
+  - id: vw-law-reuters-2024
+    type: web
+    title: 'Explainer: The Volkswagen law and its role in the German carmaker’s labour dispute (04.09.2024)'
+    authors: [Reuters]
+    publisher: Malay Mail (передрук матеріалу Reuters)
+    year: 2024
+    language: en
+    url: https://www.malaymail.com/news/money/2024/09/04/explainer-the-volkswagen-law-and-its-role-in-the-german-carmakers-labour-dispute/149271
+    checkedAt: '2026-09-17'
+    note: 'Додаткове джерело (не першоджерело акта): спеціальний закон про Volkswagen підвищує поріг для рішень, які зазвичай потребують трьох чвертей голосів зборів, до понад чотирьох п’ятих; наглядова рада з 20 членів, 10 з яких — представники працівників; рішення про будівництво або перенесення виробництва потребує двох третин голосів ради.'
+
+  - id: vw-bgh-2025
+    type: web
+    title: 'VW must learn its lesson: Federal Court of Justice declares approval resolutions on coverage settlement to be null and void'
+    authors: [Oppenhoff]
+    year: 2025
+    language: en
+    url: https://www.oppenhoff.eu/en/news/detail/vw-must-learn-its-lesson-federal-court-of-justice-declares-approval-resolutions-on-coverage-settlement-to-be-null-and-void/
+    checkedAt: '2026-09-17'
+    note: 'Додаткове джерело: рішення Федерального верховного суду Німеччини від 30.09.2025 (справа II ZR 154/23) про нікчемність рішень загальних зборів 2021 р. через невідповідність порядку денного і недостатню інформацію; самі угоди з посадовими особами нікчемними не визнано.'
+
+  # Українське право і реформа державного сектору
+  - id: law-2465-ix
+    type: law
+    title: Закон України «Про акціонерні товариства» від 27.07.2022 № 2465-IX
+    authors: [Верховна Рада України]
+    year: 2022
+    url: https://zakon.rada.gov.ua/laws/show/2465-20
+    checkedAt: '2026-09-15'
+    note: 'Ст. 4 (однорівнева і дворівнева структура, legal-baseline AT-03), ст. 6 (типи товариств, AT-01), ст. 72 ч. 4 (незалежні директори, AT-49).'
+
+  - id: law-3480-iv
+    type: law
+    title: Закон України «Про ринки капіталу та організовані товарні ринки» від 23.02.2006 № 3480-IV
+    authors: [Верховна Рада України]
+    year: 2006
+    url: https://zakon.rada.gov.ua/laws/show/3480-15
+    checkedAt: '2026-09-15'
+    note: 'Ст. 127 ч. 3 — звіт про корпоративне управління і пояснення відхилень від кодексу (legal-baseline RK-13); нова редакція і назва — за Законом № 738-IX, основна частина якого набрала чинності 01.07.2021.'
+
+  - id: law-185-v
+    type: law
+    title: Закон України «Про управління об’єктами державної власності» від 21.09.2006 № 185-V
+    authors: [Верховна Рада України]
+    year: 2006
+    url: https://zakon.rada.gov.ua/laws/show/185-16
+    checkedAt: '2026-09-15'
+    note: 'Ст. 11-2 ч. 2 — наглядова рада з 5–9 осіб, більшість незалежних, строк три роки (legal-baseline DP-03).'
+
+  - id: law-3587-ix
+    type: law
+    title: Закон України «Про внесення змін до деяких законодавчих актів України щодо вдосконалення корпоративного управління» від 22.02.2024 № 3587-IX
+    authors: [Верховна Рада України]
+    year: 2024
+    url: https://zakon.rada.gov.ua/laws/show/3587-20
+    checkedAt: '2026-09-15'
+    note: 'Набрав чинності 08.03.2024; змінив Цивільний кодекс, закони про акціонерні товариства, про управління об’єктами державної власності, про товариства з обмеженою та додатковою відповідальністю і про аудит (legal-baseline DP-01).'
+
+  - id: law-4196-ix
+    type: law
+    title: Закон України «Про особливості регулювання діяльності юридичних осіб окремих організаційно-правових форм у перехідний період та об’єднань юридичних осіб» від 09.01.2025 № 4196-IX
+    authors: [Верховна Рада України]
+    year: 2025
+    url: https://zakon.rada.gov.ua/laws/show/4196-20
+    checkedAt: '2026-09-15'
+    note: 'Ст. 17 ч. 3 — Господарський кодекс втратив чинність з дня введення закону в дію, 28.08.2025 (legal-baseline GK-01).'
+
+  - id: nssmc-cg-code-2020
+    type: regulation
+    title: 'Кодекс корпоративного управління: ключові вимоги і рекомендації (рішення НКЦПФР від 12.03.2020 № 118)'
+    authors: [НКЦПФР]
+    year: 2020
+    url: https://www.nssmc.gov.ua/wp-content/uploads/2020/03/corporate-governance-code_final_ukr.pdf
+    checkedAt: '2026-09-14'
+    note: 'Рекомендаційний документ у режимі «дотримуйся або пояснюй» (legal-baseline KKU-03); сім розділів (KKU-04); розроблено відповідно до Принципів КУ ОЕСР і G20 з урахуванням звіту IOSCO, настанов UNCTAD і методики IFC (KKU-05). Відображає законодавство станом на 01.01.2020.'
+
+  - id: rada-law-3587-2024
+    type: web
+    title: Підписано Закон України, який запускає реформу корпоративного управління
+    authors: [Верховна Рада України]
+    year: 2024
+    url: https://www.rada.gov.ua/news/news_kom/247273.html
+    checkedAt: '2026-09-17'
+    note: 'Повідомлення від 06.03.2024: закон ухвалено 22.02.2024 і розроблявся у координації з Кабінетом Міністрів, посольством США, представництвом ЄС, ЄБРР, МВФ і ОЕСР; мета — впровадження кращих практик корпоративного управління і гармонізація з правом ЄС.'
+
+  - id: nabu-midas-2025
+    type: web
+    title: 'Операція «Мідас»: НАБУ повідомило про викриття корупції в енергетиці'
+    authors: [Детектор медіа]
+    year: 2025
+    url: https://detector.media/infospace/article/245494/2025-11-10-operatsiya-midas-nabu-povidomylo-pro-vykryttya-koruptsii-v-energetytsi/
+    checkedAt: '2026-09-14'
+    note: 'Повідомлення НАБУ і САП від 10.11.2025 про схему впливу на НАЕК «Енергоатом» з відкатами 10–15 % вартості контрактів. Позиція сторони обвинувачення, а не встановлений судом факт.'
+
+  - id: lb-energoatom-board-2025
+    type: web
+    title: Уряд достроково припинив повноваження Наглядової ради Енергоатому
+    authors: [LB.ua]
+    year: 2025
+    url: https://lb.ua/society/2025/11/11/706387_uryad_dostrokovo_pripiniv.html
+    checkedAt: '2026-09-17'
+    note: 'Повідомлення від 11.11.2025: уряд достроково припинив повноваження наглядової ради «Енергоатому», Міністерству економіки доручено протягом тижня подати новий склад, Держаудитслужбі — терміновий аудит, зокрема закупівель.'
+
+  - id: lb-energy-boards-plan-2025
+    type: web
+    title: Кабмін затвердив план оновлення наглядових рад і виконавчих органів енергетичних компаній
+    authors: [LB.ua]
+    year: 2025
+    url: https://lb.ua/economics/2025/11/17/707261_kabmin_zatverdiv_plan_onovlennya.html
+    checkedAt: '2026-09-14'
+    note: 'Повідомлення від 17.11.2025 про план оновлення наглядових рад і виконавчих органів державних енергокомпаній: «Енергоатом», Нафтогаз, Укргідроенерго, Оператор ГТС, Укренерго, Гарантований покупець, Центренерго та інші.'
+
+  - id: lb-nomination-committee-2025
+    type: web
+    title: 'Свириденко: номінаційний комітет затвердив чотирьох незалежних членів НР «Енергоатому»'
+    authors: [LB.ua]
+    year: 2025
+    url: https://lb.ua/news/2025/12/31/714627_sviridenko_nominatsiyniy_komitet.html
+    checkedAt: '2026-09-17'
+    note: 'Повідомлення від 31.12.2025: номінаційний комітет одноголосно відібрав чотирьох незалежних членів наглядової ради «Енергоатому»; незалежні спостерігачі — від ЄС, ЄБРР, IFC і Бізнес-омбудсмена.'
+
+  - id: rbc-energoatom-board-2026
+    type: web
+    title: '«Енергоатом» отримав нову наглядову раду після справи «Мідас»'
+    authors: [РБК-Україна]
+    year: 2026
+    url: https://www.rbc.ua/rus/news/energoatom-otrimav-novu-naglyadovu-radu-pislya-1769625900.html
+    checkedAt: '2026-09-17'
+    note: 'Повідомлення від 28.01.2026: наглядова рада з семи осіб — чотири незалежні члени і три представники держави; перші завдання — нове керівництво та аудит договорів, закупівель і аукціонів.'
+
+  - id: kmu-energoatom-gts-2026
+    type: web
+    title: Уряд завершив формування наглядових рад «Енергоатому» та «Оператора ГТС України»
+    authors: [Кабінет Міністрів України]
+    year: 2026
+    url: https://www.kmu.gov.ua/news/uriad-zavershyv-formuvannia-nahliadovykh-rad-enerhoatomu-ta-operatora-hts-ukrainy
+    checkedAt: '2026-09-17'
+    note: 'Повідомлення від 03.07.2026: 01.07.2026 уряд призначив двох незалежних членів наглядової ради «Енергоатому» замість тих, хто склав повноваження у травні 2026 р. (номінаційний комітет обрав їх з одинадцяти кандидатів), і завершив формування наглядової ради Оператора ГТС; добір орієнтований на стандарти ОЕСР щодо державних підприємств.'

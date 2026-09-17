@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t02-4" class="scheme" viewBox="0 0 520 580" role="img" aria-labelledby="fig-t02-4-title fig-t02-4-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t02-4-title">Рисунок 4. Етапи розвитку корпоративного управління в Україні</title>
+  <desc id="fig-t02-4-desc">Вертикальний таймлайн з восьми позначок. 1991 рік — Закон «Про господарські товариства» № 1576-XII, перші господарські товариства; для акціонерних товариств і товариств з обмеженою відповідальністю він уже не застосовується. 2008 рік — Закон «Про акціонерні товариства» № 514-VI: публічні й приватні товариства замість відкритих і закритих. 2011 рік — Державну комісію з цінних паперів та фондового ринку перейменовано на Національну комісію Законом № 3610-VI. 2020 рік — рішенням № 118 затверджено Кодекс корпоративного управління НКЦПФР, рекомендаційний документ у режимі «дотримуйся або пояснюй». 2021 рік — набрала чинності нова редакція Закону про ринки капіталу № 3480-IV, яка зробила звіт про корпоративне управління складовою річної інформації емітента. 2023 рік, виділений карміновим, — набрав чинності Закон «Про акціонерні товариства» № 2465-IX: товариство обирає однорівневу або дворівневу структуру управління. 2024 рік — Закон № 3587-IX: реформа корпоративного управління, більшість незалежних членів у наглядових радах товариств з державною часткою. 2025 рік — Закон № 4196-IX: Господарський кодекс втратив чинність 28 серпня 2025 року.</desc>
+  <style>
+    #fig-t02-4 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-4 .t { fill: var(--ink, #0f1c2e); font-size: 14.5px; font-weight: 650; }
+    #fig-t02-4 .s { fill: var(--ink-2, #445570); font-size: 12.5px; }
+    #fig-t02-4 .yr { fill: var(--ink, #0f1c2e); font-size: 15.5px; font-weight: 700; text-anchor: end; font-variant-numeric: tabular-nums; }
+    #fig-t02-4 .cap { fill: var(--ink-2, #445570); font-size: 12.5px; font-weight: 650; }
+    #fig-t02-4 .rail { stroke: var(--line-strong, #c9d2de); stroke-width: 2; fill: none; }
+    #fig-t02-4 .dot { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 2; }
+    #fig-t02-4 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t02-4 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t02-4 .exam { stroke: var(--err, #b42318); }
+    #fig-t02-4 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 12.5px; font-weight: 600; }
+    #fig-t02-4 .exam-n { fill: var(--err-ink, #8f1d14); }
+  </style>
+
+  <text class="cap" x="40" y="18">Від перших господарських товариств до чинної бази й ОЕСР</text>
+  <path class="rail" d="M100 40 V 556"/>
+
+  <circle class="dot" cx="100" cy="54" r="7"/>
+  <text class="yr" x="88" y="59">1991</text>
+  <text class="t" x="120" y="50">Закон «Про господарські товариства» № 1576-XII</text>
+  <text class="s" x="120" y="70">перші господарські товариства; для АТ і ТОВ не діє</text>
+  <circle class="refc" cx="22" cy="54" r="11"/><text class="refn" x="22" y="58">1</text>
+
+  <circle class="dot" cx="100" cy="122" r="7"/>
+  <text class="yr" x="88" y="127">2008</text>
+  <text class="t" x="120" y="118">Закон «Про акціонерні товариства» № 514-VI</text>
+  <text class="s" x="120" y="138">публічні й приватні АТ замість відкритих і закритих</text>
+  <circle class="refc" cx="22" cy="122" r="11"/><text class="refn" x="22" y="126">2</text>
+
+  <circle class="dot" cx="100" cy="190" r="7"/>
+  <text class="yr" x="88" y="195">2011</text>
+  <text class="t" x="120" y="186">ДКЦПФР стає НКЦПФР</text>
+  <text class="s" x="120" y="206">нова назва регулятора за Законом № 3610-VI від 07.07.2011</text>
+
+  <circle class="dot" cx="100" cy="258" r="7"/>
+  <text class="yr" x="88" y="263">2020</text>
+  <text class="t" x="120" y="254">Кодекс корпоративного управління НКЦПФР</text>
+  <text class="s" x="120" y="274">рішення № 118: рекомендації, «дотримуйся або пояснюй»</text>
+  <circle class="refc" cx="22" cy="258" r="11"/><text class="refn" x="22" y="262">3</text>
+
+  <circle class="dot" cx="100" cy="326" r="7"/>
+  <text class="yr" x="88" y="331">2021</text>
+  <text class="t" x="120" y="322">Закон про ринки капіталу № 3480-IV</text>
+  <text class="s" x="120" y="342">звіт про КУ — складова річної інформації емітента</text>
+
+  <circle class="dot exam" cx="100" cy="394" r="7"/>
+  <text class="yr" x="88" y="399">2023</text>
+  <text class="t" x="120" y="390">Закон «Про акціонерні товариства» № 2465-IX</text>
+  <text class="exam-t" x="120" y="410">товариство обирає однорівневу або дворівневу структуру</text>
+  <circle class="refc exam" cx="22" cy="394" r="11"/><text class="refn exam-n" x="22" y="398">4</text>
+
+  <circle class="dot" cx="100" cy="462" r="7"/>
+  <text class="yr" x="88" y="467">2024</text>
+  <text class="t" x="120" y="458">Закон № 3587-IX: реформа державного сектору</text>
+  <text class="s" x="120" y="478">більшість незалежних у радах компаній з державою</text>
+  <circle class="refc" cx="22" cy="496" r="11"/><text class="refn" x="22" y="500">5</text>
+
+  <circle class="dot" cx="100" cy="530" r="7"/>
+  <text class="yr" x="88" y="535">2025</text>
+  <text class="t" x="120" y="526">Закон № 4196-IX</text>
+  <text class="s" x="120" y="546">Господарський кодекс втратив чинність 28.08.2025</text>
+</svg>
