@@ -1,0 +1,9 @@
+/* scorm.css — сторінка тренажера в плеєрі SCORM: без шапки й футера сайту, лише заголовок і острів. */
+
+.scorm-page { padding-bottom: var(--s-8); }
+.scorm-page .topic-head { padding-block: var(--s-5) var(--s-6); }
+.scorm-section { margin-top: var(--s-7); }
+.scorm-section > .h2 { margin-bottom: var(--s-4); }
+.scorm-section > .lead { margin-bottom: var(--s-5); max-width: 70ch; }
+.scorm-notice { margin-top: var(--s-5); padding: var(--s-3) var(--s-4); border: 1px solid var(--line-strong); border-radius: var(--r-2); background: var(--bg-sunken); color: var(--ink); font-size: var(--text-sm); }
+.scorm-notice[hidden] { display: none; }

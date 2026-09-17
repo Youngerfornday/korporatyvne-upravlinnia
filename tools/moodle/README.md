@@ -46,6 +46,7 @@
 | `write-readme.mjs` | `README-import.md` поруч із пакетом: кроки для викладача й обмеження пакета |
 | `verify-course.sh`, `course-helper.php` | перевірка пакета: відновлення викладачем у verify + Playwright |
 | `e2e/tests-course/`, `e2e/playwright.course.config.mjs` | перевірки відновленого курсу (звіт `out/build-verify.json`) |
+| `scorm-check.sh`, `scorm-helper.php`, `e2e/tests-scorm/` | пакет SCORM тренажера в живому Moodle: спроба студента, журнал, повторний вхід (звіт `out/scorm-check.json`) |
 | `.data/`, `out/` | дані Docker і результати (у `.gitignore`); `out/evidence/` скидання не чіпає |
 
 ## Швидкий старт
@@ -86,6 +87,7 @@ cd tools/moodle
 | Сайт | `npm run build` | `dist/temy/<slug>/index.html` |
 | Питання й глосарій | `npm run export:moodle` (окремим прогоном на кожен контрольний банк) | `questions-*.xml`, `glossary-*.xml`, `manifest.json` |
 | Глави Книги | `npm run export:book` | `books/tNN.zip` + `books.json` |
+| SCORM-тренажери | `npm run export:scorm` | `scorm/<пакет>.zip` + `scorm.json` (у курсі — після завдання практичної, категорія журналу «Тренажери (поза підсумком)» з вагою 0) |
 | План курсу | `build-plan.mjs` | `plan.json`: розділи, елементи, слоти тестів, ваги журналу, попередження |
 | Курс у Moodle | `build-course.php` | курс в інстансі build + `out/build-course.json` |
 | Пакет | `backup.sh` + `write-readme.mjs` | `dist-export/moodle/<пакет>.mbz`, `glossary.xml`, `README-import.md` |
@@ -314,6 +316,28 @@ grade_regrade_final_grades($courseid);
 перетин і без обходу малоймовірний, але обхід нічого не коштує і робить перевірку у verify чесною.
 Відтворити дефекти: `SPIKE_NO_ID_FLOOR=1 ./verify.sh` (очікувано - падіння перевірки банку).
 Звернення в трекер Moodle не створювалось.
+
+## SCORM-тренажери (tools/export/scorm)
+
+`npm run export:scorm` збирає окрему Vite-збірку тих самих React-островів (`base: './'`, скрипт IIFE, стилі й
+шрифти сайту всередині пакета, без CDN) і пакує `imsmanifest.xml` SCORM 1.2 з `adlcp:masteryscore`: для матриці —
+нижня межа найвищого рівня рубрики (90), для калькуляторів — 100. Прогрес острова пише `ProgressStore` над API LMS
+(`src/engines/progress/scorm-store.ts`). Модуль у курсі створює `ku_create_scorm()` (`lib/content.php`):
+`grademethod` = найвищий бал, `maxgrade` 100, `skipview` = 2, `hidetoc` = 3, `forcenewattempt` = 0.
+
+`./scorm-check.sh` (≈40 с на піднятому verify) доводить у Moodle 5.2.2 (прогін 2026-09-17, пакет П1, 690 737 байт):
+
+| Перевірка | Результат |
+|---|---|
+| Запуск у плеєрі | `LMSInitialize`, трек `lesson_status = incomplete` одразу після відкриття |
+| Навчальна (44 з 44) і оцінювана спроба (42 з 44) | `score.raw = 95.45`, `min 0`, `max 100`, `lesson_status = passed`, `exit = suspend`, `suspend_data` 343 символи |
+| Журнал оцінок | 95,45 у категорії «Тренажери (поза підсумком)», внесок у підсумок 0 %, підсумок курсу не змінився |
+| Вихід і повторний вхід | `cmi.core.entry = resume`, спроба та сама (1), тренажер показує «42 з 44 (95,45 %) — 1 бал з 1» із suspend_data; `total_time` записано (LMSFinish дійшов) |
+| Викладач | звіт SCORM і журнал оцінювача показують бал студента |
+
+Скріншоти: `out/screens/scorm-check-*.png`. Повторний вхід Moodle відкриває в «Режимі перегляду» (статус passed) —
+записи треків у ньому однаково зберігаються. Калькулятори (кворум, кумулятивне голосування, дивіденди) у Moodle
+скриптово не проходились: їх запуск без помилок перевірено у фейковому LMS, спільний код збереження — той самий.
 
 ## Що не перевірено або не працює
 

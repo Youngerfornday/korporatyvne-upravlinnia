@@ -47,7 +47,9 @@ SCORM:
 
 ## `progress/` — сховище прогресу (схема v2)
 
-- Інтерфейс `ProgressStore` лишився тим самим: `load`, `save`, `clear`, `flush`, `isPersistent`. Реалізації — localStorage, пам'ять, а SCORM робить F4.
+- Інтерфейс `ProgressStore` лишився тим самим: `load`, `save`, `clear`, `flush`, `isPersistent`. Реалізації — localStorage, пам'ять і SCORM 1.2 (`scorm-store.ts`).
+- **SCORM** (`createScormProgressStore({ activityId, masteryPercent, onNotice })`): API шукається за алгоритмом ADL (`findScormApi`: предки вікна до 7 рівнів, потім `opener`). Увесь стан — у `cmi.suspend_data` (≤ 4096 символів): короткий JSON як є, довгий — `z1:` + base64(deflate), а якщо й так не вміщається — відкидаються найстаріші `recentEventIds` з повідомленням `history-trimmed` (`suspend-data.ts`). Бал `cmi.core.score.raw` = найкращий результат `activities[activityId]` × 100, `lesson_status` — `passed`/`failed` за прохідним балом (перевага в `cmi.student_data.mastery_score` від LMS), без результату — `incomplete`. Кожне `save` одразу робить `LMSCommit`; `terminate` (на `pagehide` через `attachScormLifecycle`) пише `exit = suspend`, `session_time` і `LMSFinish`. Без API або після збою LMS стан живе в пам'яті, а `scormNoticeText(notice)` дає пояснення українською.
+- Острови підставляють сховище через `installProgressStore(store)` з `components/progress/client.ts` до першого `getProgressClient()`; сайт цю функцію не викликає.
 - **Версія 2** додала `xpLedger` (уже нараховані XP за сутністю), `badges` як запис `{ [id]: { awardedAt } }` (раніше це був масив), `recentEventIds` (останні 100 ID подій) і необов'язкове `activities[id].solvedVariants`.
 - Міграція 1 → 2 (`migrate-v1-to-v2.ts`) перевіряє дані за замороженою схемою `schema-v1.ts`, відновлює журнал XP із записаного прогресу, ніколи не зменшує XP і ставить бейджам дату останнього оновлення v1.
 - `exportProgressCode(state)` тепер повертає `{ ok: true, code }` або `{ ok: false, error: 'too-large' | 'invalid-state' }`. Повідомлення лежать у `PROGRESS_CODE_EXPORT_ERROR_MESSAGES`.

@@ -122,6 +122,15 @@ foreach ($plan['sections'] as $section) {
                 $created[$ref] = $report->step($label, fn() => ku_create_assign($gen, $course, $number, $activity, $report));
                 $modules[$ref] = ['assign', $created[$ref]->id];
                 break;
+            case 'scorm':
+                $zip = "{$artifacts}/{$activity['zip']}";
+                if (!is_readable($zip)) {
+                    $report->warn("SCORM «{$activity['name']}»: немає пакета {$activity['zip']} — пропущено");
+                    break;
+                }
+                $created[$ref] = $report->step($label, fn() => ku_create_scorm($gen, $course, $number, $activity, $zip, $report));
+                $modules[$ref] = ['scorm', $created[$ref]->id];
+                break;
             case 'quiz':
                 $created[$ref] = $report->step($label, function () use ($gen, $course, $number, $activity, $bank, $report) {
                     $quiz = ku_create_quiz($gen, $course, $number, $activity);

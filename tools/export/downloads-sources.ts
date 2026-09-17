@@ -39,7 +39,7 @@ function issuesText(file: string, error: z.ZodError): string {
   return `${file} не проходить валідацію:\n${error.issues.map((issue) => `  - ${issue.path.join('.') || '(корінь)'}: ${issue.message}`).join('\n')}`;
 }
 
-async function parseDataFile<T>(file: string, schema: z.ZodType<T>): Promise<T> {
+export async function parseDataFile<T>(file: string, schema: z.ZodType<T>): Promise<T> {
   const raw: unknown = file.endsWith('.json') ? JSON.parse(await readFile(file, 'utf8')) : parse(await readFile(file, 'utf8'));
   const result = schema.safeParse(raw);
   if (!result.success) throw new Error(issuesText(file, result.error));
@@ -51,7 +51,7 @@ async function listNames(dir: string, pattern: RegExp): Promise<string[]> {
   return names.filter((name) => pattern.test(name)).sort();
 }
 
-async function loadPracticals(dir: string, course: Course): Promise<PracticalFile[]> {
+export async function loadPracticals(dir: string, course: Course): Promise<PracticalFile[]> {
   const files = await listNames(dir, /^p\d{2}\.ya?ml$/);
   const practicals = await Promise.all(files.map((name) => parseDataFile(join(dir, name), PracticalFileSchema)));
   const unknown = practicals.filter((file) => !course.practicals.some((practical) => practical.id === file.id));

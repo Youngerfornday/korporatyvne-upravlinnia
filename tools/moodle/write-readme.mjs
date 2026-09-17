@@ -93,7 +93,7 @@ function render({ plan, report, packageName }) {
 ${sections.map((section) => `- Розділ ${section}`).join('\n')}
 
 Елементів курсу: ${(report?.modules ?? []).length} (Книг ${countByType(report, 'book')}, Сторінок ${countByType(report, 'page')},
-посилань ${countByType(report, 'url')}, завдань ${countByType(report, 'assign')}, тестів ${countByType(report, 'quiz')}, глосарій ${countByType(report, 'glossary')}).
+посилань ${countByType(report, 'url')}, завдань ${countByType(report, 'assign')}, тестів ${countByType(report, 'quiz')}, SCORM-тренажерів ${countByType(report, 'scorm')}, глосарій ${countByType(report, 'glossary')}).
 ${bankLine(plan, report)}
 Журнал оцінок: ${Object.entries(report?.gradebook?.categories ?? {}).map(([name, category]) => `${name} — ${category.weight}`).join('; ')}; підсумок 0–100.
 

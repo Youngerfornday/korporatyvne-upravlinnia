@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Збирає резервну копію курсу .mbz для eln з наших даних:
-#   npm run build -> Moodle XML питань і глосарію -> ZIP глав Книги -> план курсу -> build-course.php
+#   npm run build -> Moodle XML питань і глосарію -> ZIP глав Книги -> пакети SCORM -> план курсу -> build-course.php
 #   в інстансі build -> admin/cli/backup.php -> dist-export/moodle/<пакет>.mbz + README-import.md.
 #
 # ./build-mbz.sh                       контрольні банки з ../korporatyvne-upravlinnia-control (якщо є)
@@ -70,6 +70,9 @@ fi
 
 stamp "4. ZIP глав Книги з dist/"
 node_run tools/export/book-cli.ts --out "$BUILD_DIR/books"
+
+stamp "4a. Пакети SCORM 1.2 тренажерів"
+node_run tools/export/scorm/cli.ts --out "$BUILD_DIR/scorm"
 
 stamp "5. План курсу"
 plan_args=(--artifacts "$BUILD_DIR")

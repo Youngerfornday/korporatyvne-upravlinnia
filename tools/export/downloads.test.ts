@@ -11,6 +11,7 @@ import type { PrintJob, PrintOptions } from './pdf.ts';
 import { loadCourse } from './test-support/docx-xml.ts';
 import { parseXml, type XmlNode } from './test-support/xml-tree.ts';
 import { readZip, readZipText } from './unzip.ts';
+import { createZip } from './zip.ts';
 
 /**
  * Оркестратор на реальному content/ з підробленими збіркою сайту й друком PDF: справжні експортери
@@ -46,6 +47,18 @@ const fakeDeps: DownloadsDeps = {
         return { outFile: job.outFile, bytes: Buffer.byteLength(FAKE_PDF, 'latin1'), pages: 2 };
       }),
     );
+  },
+  buildScorm: async ({ root, outDir }) => {
+    expect(root).toBe(ROOT);
+    const zip = createZip([{ path: 'imsmanifest.xml', data: Buffer.from('<manifest/>', 'utf8') }]);
+    await mkdir(outDir, { recursive: true });
+    await writeFile(join(outDir, 'p01-matrytsia-modelei.zip'), zip);
+    const pkg = { id: 'p01-matrytsia-modelei', file: 'p01-matrytsia-modelei.zip', kind: 'matrix', title: 'П1. Матриця моделей корпоративного управління' } as const;
+    return {
+      schemaVersion: 1,
+      generator: 'fake',
+      packages: [{ ...pkg, registryId: 'model-matrix', practical: 'p01', module: 'm1', activityId: 'p01-model-matrix', masteryPercent: 90, bytes: zip.length, sha256: '0'.repeat(64), files: ['imsmanifest.xml'] }],
+    };
   },
 };
 
@@ -106,6 +119,16 @@ describe('генерація матеріалів', () => {
     expect(byId.get('work-program')).toMatchObject({ kind: 'work-program', format: 'docx', audience: 'teacher', path: 'downloads/course/work-program.docx' });
     expect(byId.get('questions-training-m1')).toMatchObject({ kind: 'question-bank', format: 'xml', path: 'downloads/moodle/questions-training-m1.xml' });
     expect(byId.get('book-t01')).toMatchObject({ kind: 'book', format: 'zip', module: 'm1', topic: 't01', path: 'downloads/moodle/book-t01.zip' });
+    expect(byId.get('scorm-p01-matrytsia-modelei')).toMatchObject({
+      kind: 'scorm',
+      format: 'zip',
+      audience: 'teacher',
+      module: 'm1',
+      practical: 'p01',
+      title: 'SCORM 1.2. П1. Матриця моделей корпоративного управління',
+      path: 'downloads/scorm/p01-matrytsia-modelei.zip',
+    });
+    expect(ids.indexOf('scorm-p01-matrytsia-modelei')).toBeLessThan(ids.indexOf('bundle-m1'));
     const backup = JSON.parse(await readFile(join(ROOT, 'tools/export/course-backup.json'), 'utf8')) as { url: string; bytes: number };
     expect(byId.get('backup-course')).toMatchObject({ kind: 'backup', format: 'mbz', url: backup.url, bytes: backup.bytes });
     expect(byId.get('backup-course')?.path).toBeUndefined();
@@ -141,7 +164,7 @@ describe('генерація матеріалів', () => {
     const paths = readZip(zip).map((entry) => entry.path);
     const members = manifest.items.filter((item) => item.module === 'm1' && item.kind !== 'bundle').map((item) => `korporatyvne-upravlinnia-m1/${item.path?.slice('downloads/'.length)}`);
     expect(paths).toEqual(['korporatyvne-upravlinnia-m1/README.txt', ...members]);
-    expect(paths).toEqual(expect.arrayContaining(['korporatyvne-upravlinnia-m1/m1/lecture-t01.pdf', 'korporatyvne-upravlinnia-m1/moodle/glossary-m1.xml']));
+    expect(paths).toEqual(expect.arrayContaining(['korporatyvne-upravlinnia-m1/m1/lecture-t01.pdf', 'korporatyvne-upravlinnia-m1/moodle/glossary-m1.xml', 'korporatyvne-upravlinnia-m1/scorm/p01-matrytsia-modelei.zip']));
     const readme = readZipText(zip, 'korporatyvne-upravlinnia-m1/README.txt');
     expect(readme).toContain('Корпоративне управління — Модуль 1 — усі матеріали');
     expect(readme).toContain('m1/lecture-t01.pdf');
@@ -149,6 +172,7 @@ describe('генерація матеріалів', () => {
     expect(readme).toContain('Репозиторій: https://github.com/Youngerfornday/korporatyvne-upravlinnia');
     expect(readme).toContain('releases/download/course-backup-2026-09/korporatyvne-upravlinnia.mbz');
     expect(readme).toContain('Контрольні тести');
+    expect(readme).toContain('діяльність «Пакет SCORM»');
     expect(readZipText(zip, 'korporatyvne-upravlinnia-m1/m1/lecture-t01.pdf')).toBe(FAKE_PDF);
   });
 

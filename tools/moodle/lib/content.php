@@ -1,5 +1,5 @@
 <?php
-// Навчальні матеріали курсу: розділи, Книга з ZIP глав, Сторінка, Посилання, Глосарій, Завдання з рубрикою.
+// Навчальні матеріали курсу: розділи, Книга з ZIP глав, Сторінка, Посилання, Глосарій, Завдання з рубрикою, SCORM.
 // Кожна функція отримує опис елемента з plan.json і повертає дані створеного модуля для звіту.
 
 defined('MOODLE_INTERNAL') || die();
@@ -165,6 +165,48 @@ function ku_create_assign(testing_data_generator $gen, stdClass $course, int $se
         return (object)['cmid' => (int)$assign->cmid, 'id' => (int)$assign->id, 'criteria' => [], 'rubricstatus' => null];
     }
     return ku_add_rubric($gen, $assign, $activity['name'], $rubric, $report);
+}
+
+/**
+ * Тренажер SCORM 1.2 з ZIP-пакета. Генератор приймає `packagefilepath` лише всередині dirroot, тому пакет іде
+ * через чернетку. Найвищий бал спроби з максимумом 100, плеєр одразу (skipview = 2) без змісту (hidetoc = 3);
+ * нова спроба не примушується, тож при повторному вході тренажер відновлює прогрес із cmi.suspend_data.
+ */
+function ku_create_scorm(testing_data_generator $gen, stdClass $course, int $section, array $activity, string $zippath, ku_report $report): stdClass {
+    global $DB;
+
+    [$draftitemid] = ku_file_to_draft($zippath);
+    $scorm = $gen->create_module('scorm', [
+        'course' => $course->id,
+        'section' => $section,
+        'name' => $activity['name'],
+        'intro' => ku_value($activity, 'intro', ''),
+        'introformat' => FORMAT_HTML,
+        'packagefile' => $draftitemid,
+        'grademethod' => GRADEHIGHEST,
+        'maxgrade' => (float)ku_value($activity, 'maxgrade', 100),
+        'maxattempt' => 0,
+        'whatgrade' => 0,
+        'forcenewattempt' => 0,
+        'masteryoverride' => 1,
+        'popup' => 0,
+        'skipview' => 2,
+        'hidetoc' => 3,
+    ]);
+    $scoes = $DB->count_records_select('scorm_scoes', "scorm = ? AND scormtype = 'sco'", [$scorm->id]);
+    if ($scoes !== 1) {
+        $report->warn("SCORM «{$activity['name']}»: у пакеті {$scoes} SCO замість одного");
+    }
+    $mastery = $DB->get_field_sql(
+        "SELECT d.value FROM {scorm_scoes_data} d JOIN {scorm_scoes} s ON s.id = d.scoid
+          WHERE s.scorm = ? AND d.name = 'masteryscore'", [$scorm->id], IGNORE_MULTIPLE);
+    $expected = ku_value($activity, 'masteryPercent');
+    if ($expected !== null && ($mastery === false || (float)$mastery !== (float)$expected)) {
+        $report->warn(sprintf('SCORM «%s»: прохідний бал у Moodle %s, у плані %s', $activity['name'], var_export($mastery, true), $expected));
+    }
+    return (object)['cmid' => (int)$scorm->cmid, 'id' => (int)$scorm->id, 'scoes' => $scoes,
+        'version' => $DB->get_field('scorm', 'version', ['id' => $scorm->id]),
+        'masteryscore' => $mastery === false ? null : (float)$mastery];
 }
 
 /**

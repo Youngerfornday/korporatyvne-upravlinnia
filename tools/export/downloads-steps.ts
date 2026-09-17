@@ -23,6 +23,7 @@ import {
   orderItems,
   practicalItem,
   questionBankItem,
+  scormItem,
   syllabusItem,
   workProgramItem,
   type XmlScope,
@@ -31,6 +32,7 @@ import type { DownloadSources } from './downloads-sources.ts';
 import type { ExportManifest } from './export-files.ts';
 import type { PrintJob, PrintOptions, PrintedPdf } from './pdf.ts';
 import { extractHead, renderPracticalPage } from './practical-page.ts';
+import type { BuildScormOptions, ScormPackagesIndex } from './scorm/build.ts';
 import { createZip } from './zip.ts';
 
 /**
@@ -218,6 +220,15 @@ export async function pdfStep(ctx: StepContext, print: PrintPdfs): Promise<Downl
       return practicalItem(course, practical, { file: practicalFile(practical), bytes: pdf.bytes });
     }),
   ];
+}
+
+export type BuildScorm = (options: BuildScormOptions) => Promise<ScormPackagesIndex>;
+
+/** Пакети SCORM 1.2 тренажерів (окрема Vite-збірка островів) — у `downloads/scorm/`. */
+export async function scormStep(ctx: StepContext, buildScorm: BuildScorm): Promise<DownloadItem[]> {
+  const outDir = join(ctx.workDir, 'scorm');
+  const index = await buildScorm({ root: ctx.root, outDir });
+  return Promise.all(index.packages.map(async (pkg) => scormItem(pkg, await writeStaged(ctx, `scorm/${pkg.file}`, await readFile(join(outDir, pkg.file))))));
 }
 
 /** Силабус і робоча програма DOCX з course.yaml. */

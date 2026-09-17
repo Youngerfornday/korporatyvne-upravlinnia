@@ -9,15 +9,16 @@ import { pluralUk } from '../../src/lib/plural.ts';
 import { formatSize } from './downloads-bundle.ts';
 import { orderItems } from './downloads-items.ts';
 import { loadDownloadSources, type DownloadSources } from './downloads-sources.ts';
-import { booksStep, bundlesStep, docxStep, moodleXmlStep, pdfStep, topicXmlStep, type PrintPdfs, type StepContext } from './downloads-steps.ts';
+import { booksStep, bundlesStep, docxStep, moodleXmlStep, pdfStep, scormStep, topicXmlStep, type BuildScorm, type PrintPdfs, type StepContext } from './downloads-steps.ts';
 import { checkDownloadsDir, MANIFEST_FILE } from './downloads-verify.ts';
 import { printPdfs } from './pdf.ts';
+import { buildScormPackages } from './scorm/build.ts';
 import { readSiteUrl } from './site-url.ts';
 
 /**
  * npm run build:downloads — матеріали для вивантаження в `public/downloads/`:
  * PDF лекцій і практичних, силабус і робоча програма DOCX, Moodle XML питань і глосарію, ZIP глав Книги,
- * пакети модуля й курсу, посилання на резервну копію `.mbz` у GitHub Releases і `manifest.json` за схемою.
+ * пакети SCORM 1.2 тренажерів, пакети модуля й курсу, посилання на резервну копію `.mbz` у GitHub Releases і `manifest.json` за схемою.
  *   --dist <каталог>  готовий зібраний сайт (типово сайт збирається в тимчасовий каталог)
  *   --out <каталог>   куди писати (типово public/downloads)
  * Усе генерується в тимчасовий каталог і переноситься в --out лише після перевірки маніфесту, тож при
@@ -38,6 +39,8 @@ export interface DownloadsDeps {
   /** Збирає сайт у каталог; типово `astro build --outDir`. */
   readonly buildSite: (root: string, outDir: string) => Promise<void>;
   readonly printPdfs: PrintPdfs;
+  /** Пакети SCORM тренажерів; типово — Vite-збірка tools/export/scorm. */
+  readonly buildScorm: BuildScorm;
 }
 
 export interface DownloadsOptions {
@@ -75,7 +78,7 @@ export async function astroBuild(root: string, outDir: string): Promise<void> {
   }
 }
 
-const defaultDeps: DownloadsDeps = { buildSite: astroBuild, printPdfs };
+const defaultDeps: DownloadsDeps = { buildSite: astroBuild, printPdfs, buildScorm: buildScormPackages };
 
 function manifestOf(sources: DownloadSources, items: readonly DownloadItem[]): DownloadManifest {
   const parsed = DownloadManifestSchema.safeParse({ schemaVersion: 1, generatedAt: sources.date.toISOString(), items: orderItems(sources.course, items) });
@@ -106,7 +109,8 @@ export async function generateDownloads(options: DownloadsOptions, io: Downloads
     const books = await step('ZIP глав Книги', io, () => booksStep(ctx));
     const pdfs = await step('PDF лекцій і практичних (Playwright)', io, () => pdfStep(ctx, deps.printPdfs));
     const docs = await step('Силабус і робоча програма DOCX', io, () => docxStep(ctx));
-    const files = [...docs, ...pdfs, ...books, ...xml, ...topicXml];
+    const scorm = await step('Пакети SCORM 1.2 тренажерів (Vite)', io, () => scormStep(ctx, deps.buildScorm));
+    const files = [...docs, ...pdfs, ...books, ...xml, ...topicXml, ...scorm];
     const bundles = await step('Пакети модулів і курсу', io, () => bundlesStep(ctx, files));
     const manifest = await step('Маніфест', io, async () => {
       const built = manifestOf(sources, [...files, ...bundles]);

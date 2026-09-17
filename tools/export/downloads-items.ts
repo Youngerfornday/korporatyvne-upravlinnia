@@ -161,6 +161,30 @@ export function workProgramItem(course: Course, produced: ProducedFile): Downloa
   };
 }
 
+/** Пакет SCORM тренажера (з індексу `scorm.json` збирача tools/export/scorm). */
+export interface ScormPackageRef {
+  readonly id: string;
+  readonly title: string;
+  readonly practical: string;
+  readonly module: string;
+  readonly masteryPercent: number;
+}
+
+export function scormItem(pkg: ScormPackageRef, produced: ProducedFile): DownloadItem {
+  return {
+    id: `scorm-${pkg.id}`,
+    title: `SCORM 1.2. ${pkg.title}`,
+    description: `Тренажер для діяльності «Пакет SCORM» у Moodle: бал 0–100 і статус (зараховано від ${pkg.masteryPercent}) потрапляють у журнал оцінок, прогрес зберігається між входами.`,
+    kind: 'scorm',
+    format: 'zip',
+    audience: 'teacher',
+    module: pkg.module,
+    practical: pkg.practical,
+    path: sitePath(produced.file),
+    bytes: produced.bytes,
+  };
+}
+
 export const COURSE_BUNDLE_TITLE = 'Курс повністю';
 
 export function moduleBundleTitle(course: Course, moduleId: string): string {

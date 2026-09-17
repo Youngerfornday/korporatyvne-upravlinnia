@@ -114,12 +114,29 @@ export function createProgressClient(store: ProgressStore, now: () => Date = () 
   return client;
 }
 
+function clientHolder(): Record<string, ProgressClient | undefined> {
+  return globalThis as unknown as Record<string, ProgressClient | undefined>;
+}
+
 /** Один клієнт на сторінку, спільний для скриптів лейауту й React-островів (різні чанки, той самий об’єкт). */
 export function getProgressClient(): ProgressClient {
-  const holder = globalThis as unknown as Record<string, ProgressClient | undefined>;
+  const holder = clientHolder();
   const existing = holder[GLOBAL_KEY];
   if (existing) return existing;
   const created = createProgressClient(createLocalStorageProgressStore());
+  holder[GLOBAL_KEY] = created;
+  return created;
+}
+
+/**
+ * Підставляє інше сховище до першого `getProgressClient()`: пакет SCORM дає сховище над API LMS замість
+ * localStorage, а острови лишаються без змін. Сайт її не викликає. Підміна вже створеного клієнта
+ * розвела б острови по різних станах, тому це помилка програміста.
+ */
+export function installProgressStore(store: ProgressStore): ProgressClient {
+  const holder = clientHolder();
+  if (holder[GLOBAL_KEY]) throw new Error('Клієнт прогресу вже створено: сховище підставляють до першого getProgressClient().');
+  const created = createProgressClient(store);
   holder[GLOBAL_KEY] = created;
   return created;
 }

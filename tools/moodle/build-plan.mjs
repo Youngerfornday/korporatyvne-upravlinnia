@@ -8,7 +8,7 @@
  *
  * Запуск: node --import ./tools/export/register-ts.mjs tools/moodle/build-plan.mjs --artifacts <каталог> --out <файл>
  *   --course <файл>      реєстр курсу (типово content/course.yaml)
- *   --artifacts <кат.>   каталог з questions-*.xml, glossary-*.xml, manifest.json і books/
+ *   --artifacts <кат.>   каталог з questions-*.xml, glossary-*.xml, manifest.json, books/ і scorm/ (scorm.json)
  *   --out <файл>         куди писати план (типово <artifacts>/plan.json)
  *   --shortname <код>    коротке ім'я курсу в копії (типово KU-KURS)
  *   --start <YYYY-MM-DD> понеділок першого навчального тижня для дат закриття тестів
@@ -51,6 +51,9 @@ const SCHEMA_VERSION = 1;
 const DEFAULT_SHORTNAME = 'KU-KURS';
 const BANK_NAME = 'Банк питань курсу';
 const GLOSSARY_NAME = 'Глосарій курсу';
+/** SCORM-тренажери: окрема категорія журналу з вагою 0 — бал видно, підсумок курсу не змінюється. */
+const TRAINERS_CATEGORY = 'Тренажери (поза підсумком)';
+const SCORM_MAX_GRADE = 100;
 
 /** Рубрика Moodle: критерій → рівні (назва рівня → бали). Назви рівнів мають бути унікальні в критерії. */
 function rubricCriteria(rubric, warnings, label) {
@@ -140,6 +143,22 @@ function practicalActivity({ practical, site, points, warnings }) {
       description: 'Критерії оцінювання практичної роботи з реєстру курсу.',
       criteria: rubricCriteria(practical.rubric, warnings, name),
     },
+  };
+}
+
+/** Пакет SCORM тренажера практичної (індекс scorm.json з tools/export/scorm). */
+function scormActivity(pkg) {
+  return {
+    type: 'scorm',
+    ref: `scorm:${pkg.id}`,
+    name: `${pkg.title} (SCORM)`,
+    intro:
+      `<p>Інтерактивний тренажер практичної роботи. Бал 0–${SCORM_MAX_GRADE} і статус (зараховано від ${escapeHtml(String(pkg.masteryPercent))} балів) ` +
+      `потрапляють у журнал оцінок у категорію «${escapeHtml(TRAINERS_CATEGORY)}» і на підсумок курсу не впливають. ` +
+      'Прогрес зберігається між входами.</p>',
+    zip: join('scorm', pkg.file),
+    maxgrade: SCORM_MAX_GRADE,
+    masteryPercent: pkg.masteryPercent,
   };
 }
 
@@ -237,17 +256,23 @@ function gradebookPlan(grading, refs) {
     'case-project': refs.filter((ref) => ref === 'assign:case'),
     'final-test': refs.filter((ref) => ref === 'quiz:final'),
   };
+  const trainers = refs.filter((ref) => ref.startsWith('scorm:'));
   return grading.categories
     .map((category) => ({
       name: category.title,
       weight: category.items * category.pointsPerItem,
       refs: byCategory[category.id] ?? [],
     }))
-    .filter((category) => category.refs.length > 0);
+    .filter((category) => category.refs.length > 0)
+    .concat(trainers.length > 0 ? [{ name: TRAINERS_CATEGORY, weight: 0, refs: trainers }] : []);
 }
 
-export function buildPlan({ course, exportManifest, booksManifest, site, shortname, start }) {
+export function buildPlan({ course, exportManifest, booksManifest, scormIndex = null, site, shortname, start }) {
   const warnings = [];
+  const scormPackages = scormIndex?.packages ?? [];
+  if (scormPackages.length === 0) {
+    warnings.push('Пакетів SCORM немає: тренажери в курс не додано — зберіть їх командою npm run export:scorm -- --out <artifacts>/scorm');
+  }
   const books = bookByTopic(booksManifest);
   const files = questionFiles(exportManifest);
   const control = files.filter((file) => file.kind === 'control');
@@ -302,7 +327,10 @@ export function buildPlan({ course, exportManifest, booksManifest, site, shortna
         summary: `<p>Теми: ${escapeHtml(topics.map((topic) => topicNumber(topic.id)).join(', '))}.</p>`,
         activities: [
           ...topics.flatMap((topic) => topicActivities({ topic, book: books.get(topic.id), site, warnings })),
-          ...practicals.map((practical) => practicalActivity({ practical, site, points: practicalPoints, warnings })),
+          ...practicals.flatMap((practical) => [
+            practicalActivity({ practical, site, points: practicalPoints, warnings }),
+            ...scormPackages.filter((pkg) => pkg.practical === practical.id).map(scormActivity),
+          ]),
           moduleQuizActivity({
             module,
             topics,
@@ -348,6 +376,7 @@ export function buildPlan({ course, exportManifest, booksManifest, site, shortna
       topics: course.topics.length,
       topicsWithBook: books.size,
       practicals: course.practicals.length,
+      scormPackages: scormPackages.length,
     },
     sections,
     gradebook: { categories: gradebookPlan(course.grading, refs) },
@@ -419,6 +448,7 @@ async function main(argv) {
     course: parsed.data,
     exportManifest: await readManifests(artifacts),
     booksManifest: await readJsonOrNull(join(artifacts, 'books', 'books.json')),
+    scormIndex: await readJsonOrNull(join(artifacts, 'scorm', 'scorm.json')),
     site: values.site ?? (await readSiteUrl(join(ROOT, 'astro.config.mjs'))),
     shortname: values.shortname ?? DEFAULT_SHORTNAME,
     start,

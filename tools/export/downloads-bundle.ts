@@ -43,6 +43,7 @@ const MOODLE_HINTS: ReadonlyArray<readonly [DownloadItem['kind'], string]> = [
   ['question-bank', 'questions-*.xml — Банк питань → Імпорт → формат «Moodle XML».'],
   ['glossary', 'glossary-*.xml — модуль «Глосарій» → Імпорт записів (позначте «Імпортувати категорії»).'],
   ['book', 'book-*.zip — модуль «Книга» → Імпорт глав (ZIP).'],
+  ['scorm', 'scorm/*.zip — діяльність «Пакет SCORM» → завантажити ZIP тренажера; у журналі оцінок задайте вазі тренажерів 0, щоб підсумок курсу не змінився.'],
 ];
 
 export function readmeText(input: ReadmeInput): string {
