@@ -1,0 +1,10 @@
+{
+  "$comment": "Резервна копія курсу в GitHub Releases. Збирається локально (потрібен Docker): tools/moodle/build-mbz.sh --no-control, далі gh release upload course-backup-2026-09 korporatyvne-upravlinnia.mbz --clobber; після кожного перезавантаження оновіть bytes, sha256 і builtAt.",
+  "tag": "course-backup-2026-09",
+  "asset": "korporatyvne-upravlinnia.mbz",
+  "url": "https://github.com/Youngerfornday/korporatyvne-upravlinnia/releases/download/course-backup-2026-09/korporatyvne-upravlinnia.mbz",
+  "bytes": 98841,
+  "sha256": "91926f5f05c2e52a97cef3cefc2812894e9511efbaa805289e7fe8373a869298",
+  "moodle": "5.2.2",
+  "builtAt": "2026-09-17"
+}

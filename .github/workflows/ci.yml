@@ -44,6 +44,18 @@ jobs:
         run: npm run lint:content
         continue-on-error: true
 
+      # Chromium друкує PDF лекцій і практичних; poppler-utils (pdftotext) перевіряє в тестах кирилицю в PDF.
+      - name: Встановити Chromium для PDF і poppler-utils
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y --no-install-recommends poppler-utils
+
+      # PDF, силабус і РП DOCX, Moodle XML, ZIP глав, пакети й manifest.json у public/downloads/ —
+      # до збірки сайту, щоб astro build скопіював їх у dist/downloads/. Резервна копія .mbz тут не збирається
+      # (потрібен Docker): маніфест посилається на актив GitHub Release з tools/export/course-backup.json.
+      - name: Згенерувати матеріали для вивантаження
+        run: npm run build:downloads
+
       - name: Зібрати сайт (лінт контенту + astro check + build)
         run: npm run build
 
@@ -52,6 +64,9 @@ jobs:
 
       - name: Перевірити dist і репозиторій (base, canary)
         run: npm run check:dist
+
+      - name: Перевірити, що матеріали потрапили в dist
+        run: cmp public/downloads/manifest.json dist/downloads/manifest.json
 
       - name: Завантажити артефакт для GitHub Pages
         if: env.IS_MAIN_PUSH == 'true'
