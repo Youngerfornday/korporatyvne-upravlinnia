@@ -34,7 +34,11 @@ describe('course.yaml: references to docs/research', () => {
   });
 
   it('quotes programme outcomes and special competences verbatim from the standard', () => {
-    const standard = researchDoc('education-standard').replace(/\s+/g, ' ').replace(/'/g, '’');
+    // Прибираємо розмітку цитат і таблиць: формулювання мають збігатися за текстом, а не за версткою.
+    const standard = researchDoc('education-standard')
+      .replace(/^[ \t]*[>|][ \t]?/gm, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/'/g, '’');
     const course = CourseSchema.parse(loadCourse());
     // Формулювання звіряємо дослівно, а код — окремо: у дослідженні він може стояти в таблиці, а не перед текстом.
     const items = [...course.learningOutcomes, ...course.competences.filter((c) => c.source === 'standard')];
