@@ -77,14 +77,14 @@ function publishedTopics(pages: readonly TopicPage[]): Topic[] {
   return pages.filter((page) => page.html.includes(ARTICLE_MARKER)).map((page) => page.topic);
 }
 
-async function writeStaged(ctx: StepContext, file: string, data: Uint8Array): Promise<{ file: string; bytes: number }> {
+export async function writeStaged(ctx: StepContext, file: string, data: Uint8Array): Promise<{ file: string; bytes: number }> {
   const target = join(ctx.stagingDir, file);
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, data);
   return { file, bytes: data.length };
 }
 
-async function captured(run: (io: { stdout: (line: string) => void; stderr: (line: string) => void }) => Promise<number>): Promise<{ code: number; output: string[] }> {
+export async function captured(run: (io: { stdout: (line: string) => void; stderr: (line: string) => void }) => Promise<number>): Promise<{ code: number; output: string[] }> {
   const output: string[] = [];
   const code = await run({ stdout: (line) => output.push(line), stderr: (line) => output.push(line) });
   return { code, output };

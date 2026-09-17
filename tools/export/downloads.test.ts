@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import type { DownloadManifest } from '../../src/content/schemas/downloads.ts';
 import { astroBuild, generateDownloads, runDownloads, type DownloadsDeps } from './downloads.ts';
+import { buildSlideDecks, type BuildSlidesOptions } from './downloads-slides.ts';
 import { checkDownloadsDir } from './downloads-verify.ts';
 import type { PrintJob, PrintOptions } from './pdf.ts';
 import { loadCourse } from './test-support/docx-xml.ts';
@@ -22,6 +23,8 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const FAKE_PDF = "%PDF-1.4\n<< /Type /Pages /Count 2 >>\n<< /CreationDate (D:20260916000000+00'00') >>\n";
 
 const printed: Array<{ jobs: readonly PrintJob[]; options: PrintOptions }> = [];
+const slideRuns: BuildSlidesOptions[] = [];
+const FAKE_SLIDES_PDF = "%PDF-1.4\n<< /Type /Pages /Count 12 >>\n<< /CreationDate (D:20260101120000+00'00') /ModDate (D:20260101120000+00'00') >>\n";
 
 async function fakeSite(root: string, outDir: string): Promise<void> {
   const course = await loadCourse();
@@ -59,6 +62,15 @@ const fakeDeps: DownloadsDeps = {
       generator: 'fake',
       packages: [{ ...pkg, registryId: 'model-matrix', practical: 'p01', module: 'm1', activityId: 'p01-model-matrix', masteryPercent: 90, bytes: zip.length, sha256: '0'.repeat(64), files: ['imsmanifest.xml'] }],
     };
+  },
+  buildSlides: async (options) => {
+    slideRuns.push(options);
+    await mkdir(options.outDir, { recursive: true });
+    const pptxFile = join(options.outDir, 't01-korporatsiia-i-korporatyvne-upravlinnia.pptx');
+    const pdfFile = join(options.outDir, 't01-korporatsiia-i-korporatyvne-upravlinnia.pdf');
+    await writeFile(pptxFile, createZip([{ path: 'ppt/presentation.xml', data: Buffer.from('<p:presentation/>', 'utf8') }]));
+    await writeFile(pdfFile, FAKE_SLIDES_PDF, 'latin1');
+    return [{ topic: 't01', pptxFile, pdfFile }];
   },
 };
 
@@ -129,10 +141,52 @@ describe('генерація матеріалів', () => {
       path: 'downloads/scorm/p01-matrytsia-modelei.zip',
     });
     expect(ids.indexOf('scorm-p01-matrytsia-modelei')).toBeLessThan(ids.indexOf('bundle-m1'));
+    expect(byId.get('slides-t01-pptx')).toEqual({
+      id: 'slides-t01-pptx',
+      title: 'Презентація лекції. Тема 1. Корпорація і корпоративне управління',
+      description: 'Презентація лекції в брендингу університету з нотатками доповідача.',
+      kind: 'slides',
+      format: 'pptx',
+      audience: 'student',
+      module: 'm1',
+      topic: 't01',
+      path: 'downloads/m1/slides-t01.pptx',
+      bytes: expect.any(Number),
+    });
+    expect(byId.get('slides-t01-pdf')).toMatchObject({
+      kind: 'slides',
+      format: 'pdf',
+      audience: 'student',
+      module: 'm1',
+      topic: 't01',
+      description: 'Слайди лекції для перегляду й друку.',
+      path: 'downloads/m1/slides-t01.pdf',
+    });
+    expect(ids.indexOf('lecture-t01') + 1).toBe(ids.indexOf('slides-t01-pptx'));
     const backup = JSON.parse(await readFile(join(ROOT, 'tools/export/course-backup.json'), 'utf8')) as { url: string; bytes: number };
     expect(byId.get('backup-course')).toMatchObject({ kind: 'backup', format: 'mbz', url: backup.url, bytes: backup.bytes });
     expect(byId.get('backup-course')?.path).toBeUndefined();
     expect(ids.some((id) => id.includes('control'))).toBe(false);
+  });
+
+  test('презентації: дата збірки передається генератору, дати Chromium у PDF замінюються нею', async () => {
+    expect(slideRuns[0]).toMatchObject({ root: ROOT, basePath: '/korporatyvne-upravlinnia/', date: manifest.generatedAt.slice(0, 10) });
+    expect(slideRuns[0]?.siteDir).toBeTruthy();
+    const pdf = await readFile(join(outDir, 'm1/slides-t01.pdf'), 'latin1');
+    const stamp = `D:${manifest.generatedAt.slice(0, 10).replace(/-/g, '')}000000+00'00'`;
+    expect(pdf).toContain(`/CreationDate (${stamp}) /ModDate (${stamp})`);
+    expect(pdf.length).toBe(FAKE_SLIDES_PDF.length);
+    expect(readZip(await readFile(join(outDir, 'm1/slides-t01.pptx'))).map((entry) => entry.path)).toEqual(['ppt/presentation.xml']);
+  });
+
+  test('без slides.yaml типова збірка презентацій нічого не запускає', async () => {
+    const empty = await mkdtemp(join(tmpdir(), 'ku-slides-empty-'));
+    try {
+      const course = await loadCourse();
+      await expect(buildSlideDecks({ root: empty, course, siteDir: empty, basePath: '/korporatyvne-upravlinnia/', outDir: join(empty, 'out'), date: '2026-09-17' })).resolves.toEqual([]);
+    } finally {
+      await rm(empty, { recursive: true, force: true });
+    }
   });
 
   test('Moodle XML теми містить лише питання й терміни цієї теми', async () => {
@@ -173,6 +227,10 @@ describe('генерація матеріалів', () => {
     expect(readme).toContain('releases/download/course-backup-2026-09/korporatyvne-upravlinnia.mbz');
     expect(readme).toContain('Контрольні тести');
     expect(readme).toContain('діяльність «Пакет SCORM»');
+    expect(paths).toEqual(expect.arrayContaining(['korporatyvne-upravlinnia-m1/m1/slides-t01.pptx', 'korporatyvne-upravlinnia-m1/m1/slides-t01.pdf']));
+    expect(readme).toContain('Презентації набрано шрифтом Open Sans');
+    expect(readme).toContain('https://fonts.google.com/specimen/Open+Sans');
+    expect(readme).toContain('SIL Open Font License');
     expect(readZipText(zip, 'korporatyvne-upravlinnia-m1/m1/lecture-t01.pdf')).toBe(FAKE_PDF);
   });
 
@@ -181,6 +239,10 @@ describe('генерація матеріалів', () => {
     expect(paths).toContain('course/syllabus.docx');
     expect(paths).toContain('course/work-program.docx');
     expect(paths).toContain('moodle/questions-training-course.xml');
+    expect(paths).toEqual(expect.arrayContaining(['m1/slides-t01.pptx', 'm1/slides-t01.pdf']));
+    const readme = readZipText(await readFile(join(outDir, 'course/korporatyvne-upravlinnia.zip')), 'korporatyvne-upravlinnia/README.txt');
+    expect(readme).toContain('Офіційна сторінка шрифту (Google Fonts, ліцензія SIL Open Font License 1.1): https://fonts.google.com/specimen/Open+Sans');
+    expect(paths.some((path) => path.includes('Шрифти') || path.endsWith('.woff2'))).toBe(false);
     expect(paths.some((path) => path.endsWith('.zip') && path.includes('korporatyvne-upravlinnia'))).toBe(false);
   });
 

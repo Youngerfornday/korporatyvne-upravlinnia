@@ -28,7 +28,7 @@ describe.skipIf(!generated)('згенеровані матеріали public/do
 
   test.skipIf(!hasPoppler)('PDF лекцій і практичних: A4, теги, кирилиця шрифтом сайту', async () => {
     const { manifest } = await checkDownloadsDir(DOWNLOADS);
-    const pdfs = manifest?.items.filter((item) => item.format === 'pdf') ?? [];
+    const pdfs = manifest?.items.filter((item) => item.format === 'pdf' && (item.kind === 'lecture' || item.kind === 'practical')) ?? [];
     expect(pdfs.length).toBeGreaterThanOrEqual(2);
     for (const item of pdfs) {
       const file = join(DOWNLOADS, item.path?.replace(/^downloads\//, '') ?? '');
@@ -41,6 +41,22 @@ describe.skipIf(!generated)('згенеровані матеріали public/do
       for (const word of titleWords) expect(text, `${item.id}: ${word}`).toContain(word);
       expect(text).toContain('Чернігівська політехніка');
       expect(execFileSync('pdffonts', [file], { encoding: 'utf8' })).toContain('OpenSans');
+    }
+  });
+
+  test.skipIf(!hasPoppler)('презентації: PDF слайдів із кирилицею шрифтом сайту і PPTX-архів на кожну тему', async () => {
+    const { manifest } = await checkDownloadsDir(DOWNLOADS);
+    const slides = manifest?.items.filter((item) => item.kind === 'slides') ?? [];
+    for (const item of slides.filter((candidate) => candidate.format === 'pdf')) {
+      const file = join(DOWNLOADS, item.path?.replace(/^downloads\//, '') ?? '');
+      expect(execFileSync('pdfinfo', [file], { encoding: 'utf8' })).toMatch(/Tagged:\s+yes/);
+      const text = execFileSync('pdftotext', ['-enc', 'UTF-8', '-l', '2', file, '-'], { encoding: 'utf8' }).replace(/\s+/g, ' ');
+      expect(text, item.id).toMatch(/[А-ЯІЇЄҐа-яіїєґ]{6,}/);
+      expect(execFileSync('pdffonts', [file], { encoding: 'utf8' })).toContain('OpenSans');
+      const pptx = slides.find((candidate) => candidate.topic === item.topic && candidate.format === 'pptx');
+      expect(pptx, `PPTX до ${item.id}`).toBeDefined();
+      const entries = readZip(await readFile(join(DOWNLOADS, pptx?.path?.replace(/^downloads\//, '') ?? ''))).map((entry) => entry.path);
+      expect(entries).toContain('ppt/presentation.xml');
     }
   });
 

@@ -53,6 +53,26 @@ export function lectureItem(course: Course, topic: Topic, produced: ProducedFile
   };
 }
 
+const SLIDES_TEXT = {
+  pptx: { title: 'Презентація лекції', description: 'Презентація лекції в брендингу університету з нотатками доповідача.' },
+  pdf: { title: 'Слайди лекції', description: 'Слайди лекції для перегляду й друку.' },
+} as const;
+
+export function slidesItem(course: Course, topic: Topic, format: 'pptx' | 'pdf', produced: ProducedFile): DownloadItem {
+  return {
+    id: `slides-${topic.id}-${format}`,
+    title: `${SLIDES_TEXT[format].title}. ${topicLabel(course, topic)}`,
+    description: SLIDES_TEXT[format].description,
+    kind: 'slides',
+    format,
+    audience: 'student',
+    module: topic.module,
+    topic: topic.id,
+    path: sitePath(produced.file),
+    bytes: produced.bytes,
+  };
+}
+
 export function practicalItem(course: Course, practical: Practical, produced: ProducedFile): DownloadItem {
   const number = course.practicals.findIndex((candidate) => candidate.id === practical.id) + 1;
   return {
@@ -237,7 +257,9 @@ export function backupItem(release: BackupRelease): DownloadItem {
   };
 }
 
-const KIND_ORDER: readonly DownloadItem['kind'][] = ['syllabus', 'work-program', 'lecture', 'practical', 'book', 'question-bank', 'glossary', 'scorm', 'bundle', 'backup'];
+/** Для однієї теми й виду першим іде редагований оригінал: PPTX перед PDF слайдів. */
+const FORMAT_ORDER: readonly DownloadItem['format'][] = ['pptx', 'docx', 'pdf', 'xml', 'zip', 'mbz'];
+const KIND_ORDER: readonly DownloadItem['kind'][] = ['syllabus', 'work-program', 'lecture', 'slides', 'practical', 'book', 'question-bank', 'glossary', 'scorm', 'bundle', 'backup'];
 
 /**
  * Сталий порядок маніфесту: документи курсу; далі модулі за порядком (матеріали за видом, у межах виду — спершу
@@ -250,6 +272,7 @@ export function orderItems(course: Course, items: readonly DownloadItem[]): Down
     moduleIndex(item),
     KIND_ORDER.indexOf(item.kind),
     item.topic === undefined ? 0 : topicNumber(course, item.topic),
+    FORMAT_ORDER.indexOf(item.format),
   ];
   return [...items].sort((left, right) => {
     const a = rank(left);

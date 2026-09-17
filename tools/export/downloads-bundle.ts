@@ -9,6 +9,8 @@ import { DOWNLOADS_DIR } from './downloads-items.ts';
 
 export const REPOSITORY_URL = 'https://github.com/Youngerfornday/korporatyvne-upravlinnia';
 const LICENSE_TEXT = 'Навчальний контент — CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.uk); логотип університету — поза ліцензією.';
+/** PPTX набрано шрифтом сайту; woff2 PowerPoint не читає, тому в пакеті — посилання на офіційну сторінку шрифту. */
+export const OPEN_SANS_URL = 'https://fonts.google.com/specimen/Open+Sans';
 const MEGABYTE = 1024 * 1024;
 const KILOBYTE = 1024;
 
@@ -54,6 +56,15 @@ export function readmeText(input: ReadmeInput): string {
   const kinds = new Set(members.map((item) => item.kind));
   const hints = MOODLE_HINTS.filter(([kind]) => kinds.has(kind)).map(([, hint]) => `  ${hint}`);
   const backup = input.backup?.url === undefined ? [] : [`  Резервна копія всього курсу (.mbz, ${formatSize(input.backup.bytes)}): ${input.backup.url}`];
+  const slides = members.some((item) => item.kind === 'slides' && item.format === 'pptx')
+    ? [
+        'Презентації PPTX',
+        '  Презентації набрано шрифтом Open Sans. Щоб слайди виглядали точно як задумано, встановіть шрифт на комп’ютер,',
+        '  де відкриваєте PPTX (інакше PowerPoint підставить інший шрифт і текст може зсунутися).',
+        `  Офіційна сторінка шрифту (Google Fonts, ліцензія SIL Open Font License 1.1): ${OPEN_SANS_URL}`,
+        '',
+      ]
+    : [];
   const lines = [
     `${course.title} — ${input.title}`,
     course.institution,
@@ -61,6 +72,7 @@ export function readmeText(input: ReadmeInput): string {
     'Зміст архіву',
     ...contents,
     '',
+    ...slides,
     ...(hints.length + backup.length > 0 ? ['Як використати в Moodle', ...hints, ...backup, ''] : []),
     'Контрольні тести (модульні й підсумковий) сюди не входять: їхні банки зберігаються в приватному репозиторії.',
     '',

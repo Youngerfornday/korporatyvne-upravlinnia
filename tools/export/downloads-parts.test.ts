@@ -15,6 +15,7 @@ import {
   orderItems,
   practicalItem,
   questionBankItem,
+  slidesItem,
   syllabusItem,
   workProgramItem,
 } from './downloads-items.ts';
@@ -60,6 +61,8 @@ function allItems(): DownloadItem[] {
     bookItem(course, topic('t01'), file('moodle/book-t01.zip')),
     lectureItem(course, topic('t02'), file('m1/lecture-t02.pdf')),
     lectureItem(course, topic('t01'), file('m1/lecture-t01.pdf')),
+    slidesItem(course, topic('t01'), 'pdf', file('m1/slides-t01.pdf')),
+    slidesItem(course, topic('t01'), 'pptx', file('m1/slides-t01.pptx')),
     workProgramItem(course, file('course/work-program.docx')),
     syllabusItem(course, file('course/syllabus.docx')),
   ];
@@ -72,7 +75,7 @@ describe('елементи маніфесту', () => {
 
   test('прив’язка для кабінету: module у всіх файлах модулів і тем, topic у файлах тем, practical у PDF практичної', () => {
     const items = new Map(allItems().map((item) => [item.id, item]));
-    for (const id of ['lecture-t01', 'book-t01', 'questions-training-t01', 'glossary-t01']) {
+    for (const id of ['lecture-t01', 'slides-t01-pptx', 'slides-t01-pdf', 'book-t01', 'questions-training-t01', 'glossary-t01']) {
       expect(items.get(id), id).toMatchObject({ module: 'm1', topic: 't01' });
     }
     for (const id of ['questions-training-m1', 'glossary-m1', 'bundle-m1']) {
@@ -109,6 +112,8 @@ describe('елементи маніфесту', () => {
       'work-program',
       'lecture-t01',
       'lecture-t02',
+      'slides-t01-pptx',
+      'slides-t01-pdf',
       'book-t01',
       'book-t02',
       'questions-training-m1',
@@ -148,6 +153,8 @@ describe('пакети', () => {
       'questions-training-m1',
       'questions-training-t01',
       'questions-training-t02',
+      'slides-t01-pdf',
+      'slides-t01-pptx',
     ]);
     const courseMembers = bundleMembers(items, undefined).map((item) => item.id);
     expect(courseMembers).toContain('syllabus');
@@ -155,6 +162,15 @@ describe('пакети', () => {
     expect(courseMembers).not.toContain('backup-course');
     expect(memberPath(items.find((item) => item.id === 'syllabus') as DownloadItem)).toBe('course/syllabus.docx');
     expect(() => memberPath(items.find((item) => item.id === 'backup-course') as DownloadItem)).toThrow('не має файлу на сайті');
+  });
+
+  test('README з презентаціями PPTX радить установити Open Sans; PDF-слайди без PPTX поради не потребують', () => {
+    const slides = allItems().filter((item) => item.kind === 'slides');
+    const withPptx = readmeText({ course, title: 'Презентації', members: slides, siteUrl: 'https://example.com/', generatedAt: new Date('2026-09-17T00:00:00Z'), backup: undefined });
+    expect(withPptx).toContain('Презентації набрано шрифтом Open Sans');
+    expect(withPptx).toContain('https://fonts.google.com/specimen/Open+Sans');
+    const pdfOnly = readmeText({ course, title: 'Слайди', members: slides.filter((item) => item.format === 'pdf'), siteUrl: 'https://example.com/', generatedAt: new Date('2026-09-17T00:00:00Z'), backup: undefined });
+    expect(pdfOnly).not.toContain('Open Sans');
   });
 
   test('README без Moodle-файлів і резервної копії не показує розділ про Moodle', () => {
