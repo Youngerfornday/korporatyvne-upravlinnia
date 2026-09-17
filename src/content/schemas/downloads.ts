@@ -8,6 +8,7 @@ import { HttpUrlSchema, KebabIdSchema, ModuleIdSchema, NonEmptyTextSchema, Topic
  */
 export const DownloadKindSchema = z.enum([
   'lecture',
+  'slides',
   'practical',
   'syllabus',
   'work-program',
@@ -19,7 +20,7 @@ export const DownloadKindSchema = z.enum([
   'bundle',
 ]);
 
-export const DownloadFormatSchema = z.enum(['pdf', 'docx', 'xml', 'zip', 'mbz']);
+export const DownloadFormatSchema = z.enum(['pdf', 'docx', 'pptx', 'xml', 'zip', 'mbz']);
 
 /** Файл лежить у `public/downloads/` (шлях від base сайту) або, як резервна копія курсу, у GitHub Releases. */
 export const DownloadItemSchema = z
