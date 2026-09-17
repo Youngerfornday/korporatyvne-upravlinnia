@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { readFile, rm, mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { parse } from 'yaml';
@@ -18,7 +19,7 @@ const course: Course = CourseSchema.parse(parse(readFileSync(join(ROOT, 'content
 
 let tempDir: string;
 beforeAll(async () => {
-  tempDir = await mkdtemp(join('/private/tmp', 'cpnu-slides-'));
+  tempDir = await mkdtemp(join(tmpdir(), 'cpnu-slides-'));
 });
 afterAll(async () => {
   await rm(tempDir, { recursive: true, force: true });

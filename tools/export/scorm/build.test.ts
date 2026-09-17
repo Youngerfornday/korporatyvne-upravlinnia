@@ -112,7 +112,9 @@ describe.each(['p01-matrytsia-modelei', 'p03-kvorum', 'p03-kumuliatyvne-holosuva
     const js = text(entries(), APP_SCRIPT);
     expect(css).not.toMatch(/url\(|@import/);
     expect(js).not.toMatch(NETWORK_API);
-    expect(js).not.toMatch(/\/_astro\/|\/korporatyvne-upravlinnia\//);
+    // У повідомленні — фрагменти навколо знахідок, а не початок мініфікованого скрипта.
+    const absolutePaths = [...js.matchAll(/.{0,80}(?:\/_astro\/|\/korporatyvne-upravlinnia\/).{0,40}/g)].map((match) => match[0]);
+    expect(absolutePaths).toEqual([]);
     const urls = [...new Set(js.match(URL_IN_CODE) ?? [])];
     const unexpected = urls.filter((url) => !IDENTIFIER_URLS.some((pattern) => pattern.test(url)) && !NORM_URLS.has(url.replace(/#.*$/, '')));
     expect(unexpected).toEqual([]);
