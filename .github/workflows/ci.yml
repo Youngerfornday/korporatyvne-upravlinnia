@@ -37,7 +37,14 @@ jobs:
       - name: Встановити залежності
         run: npm ci
 
-      - name: Зібрати сайт (astro check + build)
+      # Знахідки лінту контенту виправляє автор теми; поки їх не прибрано, крок не блокує конвеєр.
+      # Коли `npm run lint:content` стане зеленим — прибрати continue-on-error, а зі `scripts.build`
+      # прибрати прапорець --warn-only, щоб збірка падала на помилках фактів.
+      - name: Лінт контенту (факти проти legal-baseline.md)
+        run: npm run lint:content
+        continue-on-error: true
+
+      - name: Зібрати сайт (лінт контенту + astro check + build)
         run: npm run build
 
       - name: Модульні тести з покриттям

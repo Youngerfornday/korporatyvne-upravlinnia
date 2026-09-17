@@ -254,7 +254,7 @@ questions:
     lawRef:
       - act: G20/OECD Principles of Corporate Governance 2023 (OECD Publishing)
         article: розділи I–VI (MS-01)
-        checkedAt: '2026-09-15'
+        checkedAt: '2026-09-14'
         url: https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en.html
 
   - id: t01-q009
@@ -291,7 +291,7 @@ questions:
     lawRef:
       - act: G20/OECD Principles of Corporate Governance 2023 (OECD Publishing)
         article: розділи I–VI (MS-01)
-        checkedAt: '2026-09-15'
+        checkedAt: '2026-09-14'
         url: https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en.html
 
   - id: t01-q010
