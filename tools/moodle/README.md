@@ -40,6 +40,12 @@
 | `fixtures/` | `questions.xml`, `glossary-entries.xml`, джерела й ZIP Книги та SCORM, `make-zips.sh` |
 | `e2e/` | Playwright (`@playwright/test` 1.63.0): `01-restore-as-teacher`, `02-restored-course` |
 | `import-check.sh`, `import-check.php` | перевірка імпорту згенерованого `tools/export` XML (питання, глосарій, розділення видів банків) |
+| `build-plan.mjs`, `plan/*.mjs` | план курсу з `content/course.yaml` і артефактів експорту → `plan.json` |
+| `build-course.php`, `lib/*.php` | збирання справжнього курсу за планом в інстансі build |
+| `build-mbz.sh` | увесь конвеєр: сайт → XML і ZIP → план → курс → `.mbz` у `dist-export/moodle/` |
+| `write-readme.mjs` | `README-import.md` поруч із пакетом: кроки для викладача й обмеження пакета |
+| `verify-course.sh`, `course-helper.php` | перевірка пакета: відновлення викладачем у verify + Playwright |
+| `e2e/tests-course/`, `e2e/playwright.course.config.mjs` | перевірки відновленого курсу (звіт `out/build-verify.json`) |
 | `.data/`, `out/` | дані Docker і результати (у `.gitignore`); `out/evidence/` скидання не чіпає |
 
 ## Швидкий старт
@@ -61,6 +67,32 @@ docker compose --env-file env/build.env exec -T moodle php /work/spike/build-spi
 ```
 
 Облікові дані в `env/*.env` - лише для локальних контейнерів, прив'язаних до 127.0.0.1.
+
+## Збирання справжнього курсу
+
+Спайк доводив можливість; конвеєр нижче збирає курс із `content/`.
+
+```bash
+cd tools/moodle
+./build-mbz.sh                 # сайт -> XML і ZIP глав -> план -> курс -> dist-export/moodle/<пакет>.mbz
+./build-mbz.sh --no-control    # публічний варіант: тести з тренувального банку (з попередженням)
+./verify-course.sh             # відновлення пакета викладачем у verify + перевірки Playwright
+```
+
+Порядок кроків і хто за що відповідає:
+
+| Крок | Чим | Результат |
+|---|---|---|
+| Сайт | `npm run build` | `dist/temy/<slug>/index.html` |
+| Питання й глосарій | `npm run export:moodle` (окремим прогоном на кожен контрольний банк) | `questions-*.xml`, `glossary-*.xml`, `manifest.json` |
+| Глави Книги | `npm run export:book` | `books/tNN.zip` + `books.json` |
+| План курсу | `build-plan.mjs` | `plan.json`: розділи, елементи, слоти тестів, ваги журналу, попередження |
+| Курс у Moodle | `build-course.php` | курс в інстансі build + `out/build-course.json` |
+| Пакет | `backup.sh` + `write-readme.mjs` | `dist-export/moodle/<пакет>.mbz`, `glossary.xml`, `README-import.md` |
+
+Уся предметна логіка (що і як потрапляє в курс) живе в `build-plan.mjs`: PHP лише виконує план засобами
+Moodle. Чого ще немає в контенті — ненаписана тема, порожній банк модуля — те пропускається з попередженням
+у `plan.json` і у звіті збирання, а не ламає збірку.
 
 ## Що підтверджено і де докази
 
@@ -249,7 +281,7 @@ grade_regrade_final_grades($courseid);
    (на скріншоті - засічковий запасний шрифт): задавати `font-family` системними шрифтами або переводити текст у криві.
 10. **Імпорт глав Книги.** Назва глави береться з `<title>`, а Книга сама додає нумерацію («1. 1. ...») і виводить назву
     над текстом (заголовок у `<body>` дублюється): у `<title>` без номера, у тілі без `h1/h2` з назвою. Файли й
-    посилання між главами переписуються лише для атрибутів у подвійних лапках. `<style>` з `<head>` копіюється в главу.
+    посилання між главами переписуються лише для атрибутів у подвійних лапках. `<style>` з `<head>` у главу НЕ переноситься (імпорт бере лише `<link rel="stylesheet">`), тому оформлення глав задається атрибутами `style` — так робить `tools/export/book-style.ts`.
 11. **Правильні відповіді «після закриття»** з'являються лише якщо в тесту задано дату закриття; без неї - ніколи.
 12. **Сторінка входу 5.2 у Playwright.** Відправка форми до завершення фонових запитів дає «Unable to log in»
     (logintoken не збігається із сесією): чекати `networkidle`. Filepicker перемальовує форму асинхронно - перед

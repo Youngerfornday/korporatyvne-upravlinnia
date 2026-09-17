@@ -243,13 +243,14 @@ function ku_draw_idnumbers(array $filter, int $draws): array {
 }
 
 /**
- * Змішаний сценарій: обидва види банків в одному курсі. Доводить, що випадковий слот із фільтром
- * «категорія теми + тег Блума» бере лише питання свого виду (idnumber tNN-qNNN проти tNN-kNNN).
+ * Змішаний сценарій: усі курсові банки (тренувальний, контрольний модульний, контрольний підсумковий)
+ * в одному банку одного курсу. Доводить, що випадковий слот із фільтром «категорія теми + тег Блума»
+ * бере лише питання свого виду й свого пулу: модульний тест не тягне питань підсумкового пулу і навпаки.
  */
 function ku_check_mixed_bank(testing_data_generator $gen, string $dir, array $manifest, string $prefix): ?array {
-    $files = array_values(array_filter($manifest['questions'], fn($file) => $file['scope'] === 'course'));
-    $kinds = array_unique(array_map(fn($file) => $file['kind'], $files));
-    if (count($kinds) < 2) {
+    $files = array_values(array_filter($manifest['questions'],
+        fn($file) => in_array($file['scope'], ['course', 'final'], true)));
+    if (count($files) < 2) {
         return null;
     }
     $shortname = strtoupper("{$prefix}-MIX");
@@ -258,6 +259,7 @@ function ku_check_mixed_bank(testing_data_generator $gen, string $dir, array $ma
     $bank = spike_create_question_bank($course);
 
     $expected = [];
+    $inbank = 0;
     foreach ($files as $file) {
         try {
             $import = spike_import_questions($course, $bank, $dir . '/' . $file['file']);
@@ -265,7 +267,10 @@ function ku_check_mixed_bank(testing_data_generator $gen, string $dir, array $ma
             $result['errors'][] = "{$file['file']}: import failed: " . $e->getMessage();
             return $result;
         }
-        $expected[$file['kind']] = $file;
+        $expected["{$file['kind']}-{$file['pool']}"] = $file;
+        // spike_import_questions повертає всі питання банку, тож додане цим файлом рахуємо як приріст.
+        $result['imported']["{$file['kind']}-{$file['pool']}"] = count($import['questions']) - $inbank;
+        $inbank = count($import['questions']);
     }
     // Після другого імпорту в банку мають лежати питання обох видів.
     $total = array_sum(array_map(fn($file) => $file['total'], $files));
@@ -274,42 +279,48 @@ function ku_check_mixed_bank(testing_data_generator $gen, string $dir, array $ma
         $result['errors'][] = "questions in shared bank {$result['questionsinbank']} != {$total}";
     }
 
-    foreach ($expected as $kind => $file) {
+    foreach ($expected as $group => $file) {
         [$categoryidnumber, $tag, $wanted] = ku_pick_probe($file);
         if ($tag === null) {
-            $result['errors'][] = "{$kind}: у маніфесті немає питань з тегом bloom-*";
+            $result['errors'][] = "{$group}: у маніфесті немає питань з тегом bloom-*";
             continue;
         }
-        $topic = explode('-', $categoryidnumber, 2)[1] ?? $categoryidnumber;
-        $otherkind = $kind === 'training' ? 'control' : 'training';
-        $sameTopicOtherKind = isset($expected[$otherkind])
-            ? ku_sorted(array_values(array_map(fn($q) => $q['idnumber'], array_filter(
-                $expected[$otherkind]['questions'],
-                fn($q) => str_ends_with($q['category'], $topic) && in_array($tag, $q['tags'], true)
-            ))))
-            : [];
+        // Тема з idnumber категорії: tr-t04, ct-t04, ct-final-t04 → t04.
+        $topic = substr($categoryidnumber, strrpos($categoryidnumber, '-') + 1);
+        $sameTopicOthers = [];
+        foreach ($expected as $othergroup => $otherfile) {
+            if ($othergroup === $group) {
+                continue;
+            }
+            foreach ($otherfile['questions'] as $question) {
+                if (str_ends_with($question['category'], $topic) && in_array($tag, $question['tags'], true)) {
+                    $sameTopicOthers[] = $question['idnumber'];
+                }
+            }
+        }
+        $sameTopicOthers = ku_sorted($sameTopicOthers);
 
         $category = spike_category_by_idnumber($bank, $categoryidnumber);
-        $quiz = spike_create_quiz($gen, $course, 0, "Тест ({$kind})", 6);
+        $quiz = spike_create_quiz($gen, $course, 0, "Тест ({$group})", 6);
         spike_add_random_slots($quiz, $category, [$tag]);
         $filter = spike_random_slot_filters($quiz->cmid)[0] ?? [];
         $pool = ku_pool_idnumbers($filter);
         $draws = ku_draw_idnumbers($filter, 10);
         $foreign = array_values(array_unique(array_filter(array_merge($pool, $draws),
             fn($idnumber) => !in_array($idnumber, $wanted, true))));
-        $result['filters'][$kind] = ['category' => $categoryidnumber, 'tag' => $tag, 'expected' => $wanted,
-            'pool' => $pool, 'draws' => $draws, 'sametopicotherkind' => $sameTopicOtherKind];
+        $result['filters'][$group] = ['category' => $categoryidnumber, 'tag' => $tag, 'expected' => $wanted,
+            'pool' => $pool, 'draws' => $draws, 'sametopicothergroups' => $sameTopicOthers];
         if ($pool !== $wanted) {
-            $result['errors'][] = "{$kind}: пул фільтра " . json_encode($pool) . ' != ' . json_encode($wanted);
+            $result['errors'][] = "{$group}: пул фільтра " . json_encode($pool) . ' != ' . json_encode($wanted);
         }
         if (!$draws) {
-            $result['errors'][] = "{$kind}: випадковий слот не дав жодного питання";
+            $result['errors'][] = "{$group}: випадковий слот не дав жодного питання";
         }
         if ($foreign) {
-            $result['errors'][] = "{$kind}: у вибірку потрапили чужі питання " . json_encode(array_values($foreign));
+            $result['errors'][] = "{$group}: у вибірку потрапили чужі питання " . json_encode(array_values($foreign));
         }
-        if (!$sameTopicOtherKind) {
-            $result['errors'][] = "{$kind}: у другого виду немає питань тієї самої теми й тегу — перевірка нічого не доводить";
+        if (!$sameTopicOthers) {
+            $result['errors'][] = "{$group}: інші банки не мають питань тієї самої теми й тегу — перевірка нічого не доводить";
         }
     }
     return $result;
