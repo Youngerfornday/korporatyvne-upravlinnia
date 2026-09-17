@@ -4,6 +4,7 @@ import { ERROR } from './finding.mjs';
 export const RULE_TITLES = {
   'law-number': 'Номери законів — лише ті, що є в legal-baseline.md',
   'law-code': 'Коди норм і статті — як записано в legal-baseline.md',
+  'lawref-consistency': 'Коди норм: узгодженість тексту, слайдів і frontmatter lawRef',
   'unconfirmed-zone': 'Заборонена зона: розділ «Не підтверджено»',
   'checked-date': 'Дати перевірки норм і джерел',
   'case-caveat': 'Застереження кейсів (caveat у course.yaml)',
@@ -16,6 +17,9 @@ export const RULE_TITLES = {
   'slide-norm-code': 'Презентації: норма без коду legal-baseline',
   'slide-case': 'Презентації: кейс не з реєстру теми',
   'slide-figure': 'Презентації: схема не з лонгріда теми',
+  'selfcheck-answer-position': 'Самоперевірка: розподіл позицій правильних відповідей',
+  'selfcheck-answer-length': 'Самоперевірка: довжина правильних відповідей і дистракторів',
+  'bank-answer-position': 'Банки питань: розподіл позицій правильних відповідей',
 };
 
 const LEVEL_LABEL = { error: 'ПОМИЛКА', warning: 'УВАГА  ' };

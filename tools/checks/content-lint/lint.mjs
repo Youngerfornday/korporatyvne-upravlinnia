@@ -7,8 +7,11 @@ import { checkCaseCaveats } from './rules/case-caveats.mjs';
 import { checkCheckedDates, todayIso } from './rules/checked-dates.mjs';
 import { checkLawCodes } from './rules/law-codes.mjs';
 import { checkLawNumbers } from './rules/law-numbers.mjs';
+import { checkLawrefConsistency } from './rules/lawref-consistency.mjs';
 import { checkNumbersWithoutSource } from './rules/numbers.mjs';
+import { checkBankAnswerPosition } from './rules/bank-answer-position.mjs';
 import { checkSlides } from './rules/slides.mjs';
+import { checkSelfcheckAnswerLength, checkSelfcheckAnswerPosition } from './rules/selfcheck.mjs';
 import { checkSourceUsage } from './rules/sources.mjs';
 import { checkSvgSafety } from './rules/svg-safety.mjs';
 import { checkTerms } from './rules/terms.mjs';
@@ -22,6 +25,7 @@ export function lintContent({ files, baseline, course, today = todayIso() }) {
   return [
     ...checkLawNumbers(files, baseline),
     ...checkLawCodes(files, baseline),
+    ...checkLawrefConsistency(files),
     ...checkUnconfirmedZone(files, baseline),
     ...checkCheckedDates(files, baseline, today),
     ...checkCaseCaveats(files, course?.cases ?? []),
@@ -30,5 +34,8 @@ export function lintContent({ files, baseline, course, today = todayIso() }) {
     ...checkNumbersWithoutSource(files),
     ...checkSlides(files, course ?? {}),
     ...checkSvgSafety(files),
+    ...checkSelfcheckAnswerPosition(files),
+    ...checkSelfcheckAnswerLength(files),
+    ...checkBankAnswerPosition(files),
   ];
 }

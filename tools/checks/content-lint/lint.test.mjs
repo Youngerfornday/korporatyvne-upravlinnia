@@ -26,6 +26,7 @@ describe('lintContent', () => {
       'case-caveat',
       'checked-date',
       'law-number',
+      'lawref-consistency',
       'number-without-source',
       'term',
     ]);
