@@ -91,6 +91,28 @@ sources:
     checkedAt: '2026-09-16'
     note: 'Розділи 1.5–1.6 і табл. 1.1: концентрація власності лістингових компаній на кінець 2022 р.; дані про власність — по 44 з 49 юрисдикцій.'
 
+  - id: oecd-factbook-2025
+    type: report
+    title: OECD Corporate Governance Factbook 2025
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2025
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/10/oecd-corporate-governance-factbook-2025_56febc0d/f4f43735-en.pdf
+    checkedAt: '2026-09-17'
+    note: 'Розд. 1.2.1 (с. 29–31): 46 086 лістингових компаній з 98 ринків на кінець 2024 р.; у 44 % компаній три найбільші власники — понад 50 % капіталу (Європа 53 %, США 17 %); стратегічні фізичні особи й родини — 7 % світової капіталізації; розд. 4.1.1 — горизонтальна агентська проблема в контрольованих компаніях.'
+
+  - id: oecd-ukraine-2025
+    type: report
+    title: Mapping Ukraine’s Financial Markets and Corporate Governance Framework for a Sustainable Recovery
+    authors: [OECD]
+    publisher: OECD Publishing
+    year: 2025
+    language: en
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/01/mapping-ukraine-s-financial-markets-and-corporate-governance-framework-for-a-sustainable-recovery_ba6fc369/866c5c44-en.pdf
+    checkedAt: '2026-09-17'
+    note: 'Розд. 3.2.1: понад 60 % компаній, акції яких торгувалися на біржах України, мають єдиного власника з пакетом понад 50 % (проти близько 32 % у юрисдикціях Factbook 2022 р.); дані про групи компаній в Україні відсутні (docs/research/data-sources.md, розд. 5.4).'
+
   # Право України (за legal-baseline)
   - id: law-2465-ix
     type: law
@@ -112,7 +134,7 @@ sources:
 
   - id: law-755-iv
     type: law
-    title: Закон України «Про державну реєстрацію юридичних осіб, фізичних осіб — підприємців та громадських формувань» від 15.05.2003 № 755-IV
+    title: Закон України «Про державну реєстрацію юридичних осіб, фізичних осіб - підприємців та громадських формувань» від 15.05.2003 № 755-IV
     authors: [Верховна Рада України]
     year: 2003
     url: https://zakon.rada.gov.ua/laws/show/755-15
@@ -186,6 +208,15 @@ sources:
     checkedAt: '2026-09-16'
     note: 'Заява банку про остаточність рішення і початок стягнення активів — позиція сторони.'
 
+  - id: privatbank-fs-2017
+    type: report
+    title: ПАТ КБ «ПриватБанк». Окрема фінансова звітність за 2017 рік (порівняльні дані на 31.12.2016; аудитор EY)
+    authors: [ПриватБанк]
+    year: 2018
+    url: https://static.privatbank.ua/files/year_zvit_05_05.pdf
+    checkedAt: '2026-09-17'
+    note: 'Активи на 31.12.2016 — 205 183 млн грн; кошти клієнтів 181 133 млн грн, з них фізичних осіб 151 203 млн грн (84 % — розрахунок за звітністю, docs/research/cases.md, розд. 1).'
+
   # Кейс Enron (docs/research/cases.md, розд. 7)
   - id: crs-enron-chronology
     type: report
@@ -214,6 +245,26 @@ sources:
     language: en
     url: https://www.justice.gov/archive/opa/pr/2006/May/06_crm_328.html
     checkedAt: '2026-09-16'
+
+  - id: enron-proxy-2001
+    type: report
+    title: Enron Corp. Proxy Statement (DEF 14A), подано 27.03.2001, дані на 15.02.2001
+    authors: [Enron Corp., U.S. SEC EDGAR]
+    year: 2001
+    language: en
+    url: https://www.sec.gov/Archives/edgar/data/1024401/000095012901001669/h84664ddef14a.txt
+    checkedAt: '2026-09-17'
+    note: 'Усі директори й посадові особи разом (30 осіб) — 3,44 % голосуючих акцій; єдиний власник понад 5 % — Janus Capital Corporation, 5,43 %. Сервер EDGAR віддає 403 на автоматизовані запити; перевірено дослідником 2026-09-17 (cases.md, розд. 7).'
+
+  - id: gao-enron-401k-2002
+    type: report
+    title: 'Private Pensions: Key Issues to Consider Following the Enron Collapse (GAO-02-480T, 27.02.2002)'
+    authors: [U.S. Government Accountability Office]
+    year: 2002
+    language: en
+    url: https://www.gao.gov/assets/gao-02-480t.pdf
+    checkedAt: '2026-09-17'
+    note: '63 % активів плану 401(k) Enron на кінець 2000 р. — акції компанії; внесок роботодавця — лише акціями Enron. Сервер GAO віддає 403 на автоматизовані запити; перевірено дослідником 2026-09-17.'
 
   - id: crs-sox-2002
     type: report
