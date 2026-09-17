@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t03-1" class="scheme" viewBox="0 0 600 396" role="img" aria-labelledby="fig-t03-1-title fig-t03-1-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t03-1-title">Рисунок 1. Організаційно-правові форми господарських товариств після 28.08.2025</title>
+  <desc id="fig-t03-1-desc">Угорі блок «Господарські товариства»: юридична особа, статутний капітал поділено на частки учасників. Від нього дві гілки. Ліва гілка — акціонерне товариство за Законом № 2465-IX: капітал поділено на акції, акції іменні й електронні, мінімальний статутний капітал 200 мінімальних зарплат; під ним блок «Два типи АТ»: публічне, щодо акцій якого була публічна пропозиція або допуск до торгів, і приватне — решта товариств. Права гілка — товариство з обмеженою відповідальністю за Законом № 2275-VIII: мінімального статутного капіталу немає, учасник ризикує лише вкладом, кількість учасників не обмежена; під ним блок «Товариство з додатковою відповідальністю» за тим самим законом, учасники якого відповідають ще й власним майном у розмірі за статутом. Унизу карміновий блок: з 28 серпня 2025 року не можна створювати державні, комунальні, приватні, дочірні та іноземні підприємства, а наявні працюють у перехідний період до 28 серпня 2028 року.</desc>
+  <style>
+    #fig-t03-1 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t03-1 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t03-1 .t { fill: var(--ink, #0f1c2e); font-size: 14.5px; font-weight: 650; }
+    #fig-t03-1 .s { fill: var(--ink-2, #445570); font-size: 11.5px; }
+    #fig-t03-1 .arrow { stroke: var(--ink-2, #445570); stroke-width: 1.25; fill: none; }
+    #fig-t03-1 .arrow-head { fill: var(--ink-2, #445570); }
+    #fig-t03-1 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t03-1 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t03-1 .exam { stroke: var(--err, #b42318); }
+    #fig-t03-1 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 11.5px; font-weight: 600; }
+    #fig-t03-1 .refn.exam-n { fill: var(--err-ink, #8f1d14); }
+  </style>
+
+  <rect class="box box-owner" x="150" y="12" width="300" height="46" rx="6"/>
+  <text class="t" x="300" y="33" text-anchor="middle">Господарські товариства</text>
+  <text class="s" x="300" y="50" text-anchor="middle">капітал поділено на частки учасників</text>
+
+  <path class="arrow" d="M300 58 L300 74 M160 74 L440 74 M160 74 L160 84 M440 74 L440 84"/>
+  <polygon class="arrow-head" points="160,92 156,84 164,84"/>
+  <polygon class="arrow-head" points="440,92 436,84 444,84"/>
+
+  <rect class="box" x="30" y="94" width="260" height="92" rx="6"/>
+  <text class="t" x="46" y="117">Акціонерне товариство</text>
+  <text class="s" x="46" y="138">Закон № 2465-IX</text>
+  <text class="s" x="46" y="155">капітал поділено на акції, вони іменні</text>
+  <text class="s" x="46" y="172">мінімум — 200 мінімальних зарплат</text>
+
+  <rect class="box" x="310" y="94" width="260" height="92" rx="6"/>
+  <text class="t" x="326" y="117">Товариство з обмеженою</text>
+  <text class="t" x="326" y="134">відповідальністю (ТОВ)</text>
+  <text class="s" x="326" y="155">Закон № 2275-VIII; мінімуму капіталу немає</text>
+  <text class="s" x="326" y="172">учасник ризикує лише вкладом</text>
+
+  <path class="arrow" d="M160 186 L160 200"/>
+  <polygon class="arrow-head" points="160,208 156,200 164,200"/>
+  <path class="arrow" d="M440 186 L440 200"/>
+  <polygon class="arrow-head" points="440,208 436,200 444,200"/>
+
+  <rect class="box box-owner" x="30" y="210" width="260" height="84" rx="6"/>
+  <text class="t" x="46" y="232">Два типи АТ</text>
+  <text class="s" x="46" y="252">Публічне — була публічна пропозиція</text>
+  <text class="s" x="46" y="268">або допуск акцій до торгів</text>
+  <text class="s" x="46" y="284">Приватне — решта товариств</text>
+
+  <rect class="box box-owner" x="310" y="210" width="260" height="84" rx="6"/>
+  <text class="t" x="326" y="232">Товариство з додатковою</text>
+  <text class="t" x="326" y="249">відповідальністю (ТДВ)</text>
+  <text class="s" x="326" y="269">той самий Закон № 2275-VIII</text>
+  <text class="s" x="326" y="285">учасники відповідають ще й майном</text>
+
+  <rect class="box exam" x="30" y="316" width="540" height="66" rx="6"/>
+  <text class="t" x="46" y="339">Форми, яких більше не створюють</text>
+  <text class="exam-t" x="46" y="358">з 28.08.2025 не можна створювати державні, комунальні, приватні, дочірні</text>
+  <text class="exam-t" x="46" y="374">та іноземні підприємства; наявні працюють у перехідний період до 28.08.2028</text>
+
+  <circle class="refc" cx="136" cy="34" r="11"/><text class="refn" x="136" y="38">1</text>
+  <circle class="refc" cx="16" cy="112" r="11"/><text class="refn" x="16" y="116">2</text>
+  <circle class="refc" cx="584" cy="112" r="11"/><text class="refn" x="584" y="116">3</text>
+  <circle class="refc" cx="16" cy="228" r="11"/><text class="refn" x="16" y="232">4</text>
+  <circle class="refc" cx="584" cy="228" r="11"/><text class="refn" x="584" y="232">5</text>
+  <circle class="refc exam" cx="16" cy="334" r="11"/><text class="refn exam-n" x="16" y="338">6</text>
+</svg>

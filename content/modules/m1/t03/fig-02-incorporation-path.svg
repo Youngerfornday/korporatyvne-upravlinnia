@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="fig-t03-2" class="scheme" viewBox="0 0 600 424" role="img" aria-labelledby="fig-t03-2-title fig-t03-2-desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <title id="fig-t03-2-title">Рисунок 2. Шлях створення ТОВ і акціонерного товариства</title>
+  <desc id="fig-t03-2-desc">Дві паралельні колонки — ТОВ ліворуч і акціонерне товариство праворуч — і п’ять спільних кроків. Крок 1: рішення засновників про створення і затвердження статуту; для АТ статут одразу визначає тип товариства і вид структури управління. Крок 2: статутний капітал — для ТОВ мінімуму немає, вклад вноситься протягом шести місяців з реєстрації, для АТ мінімум становить 200 мінімальних зарплат на день створення, тобто 1 729 400 гривень у 2026 році. Крок 3: державна реєстрація в Єдиному державному реєстрі з поданням відомостей про кінцевого бенефіціарного власника і структуру власності — однаково для обох форм. Крок 4: органи управління — у ТОВ загальні збори учасників і директор, наглядова рада лише якщо її передбачив статут; в АТ статут обирає дворівневу структуру із загальними зборами, наглядовою радою і виконавчим органом або однорівневу з радою директорів. Крок 5 відрізняється: у ТОВ акцій немає, частку продають з дотриманням переважного права інших учасників, а в АТ акції іменні й електронні, обліковуються в депозитарній системі, і публічне товариство додатково має пройти допуск акцій до торгів на організованому ринку. Останній крок для АТ позначено карміновим як найбільшу відмінність між формами.</desc>
+  <style>
+    #fig-t03-2 .box { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t03-2 .box-owner { fill: var(--surface-tint, #eef4fa); }
+    #fig-t03-2 .t { fill: var(--ink, #0f1c2e); font-size: 13.5px; font-weight: 650; }
+    #fig-t03-2 .head { fill: var(--ink, #0f1c2e); font-size: 15px; font-weight: 650; }
+    #fig-t03-2 .s { fill: var(--ink-2, #445570); font-size: 11.5px; }
+    #fig-t03-2 .arrow { stroke: var(--ink-2, #445570); stroke-width: 1.25; fill: none; }
+    #fig-t03-2 .arrow-head { fill: var(--ink-2, #445570); }
+    #fig-t03-2 .refc { fill: var(--surface, #ffffff); stroke: var(--ink, #0f1c2e); stroke-width: 1.25; }
+    #fig-t03-2 .refn { fill: var(--ink, #0f1c2e); font-size: 11.5px; font-weight: 700; text-anchor: middle; }
+    #fig-t03-2 .exam { stroke: var(--err, #b42318); }
+    #fig-t03-2 .exam-t { fill: var(--err-ink, #8f1d14); font-size: 11.5px; font-weight: 600; }
+    #fig-t03-2 .refn.exam-n { fill: var(--err-ink, #8f1d14); }
+  </style>
+
+  <rect class="box box-owner" x="36" y="10" width="258" height="32" rx="6"/>
+  <text class="head" x="165" y="31" text-anchor="middle">ТОВ і ТДВ</text>
+  <rect class="box box-owner" x="306" y="10" width="258" height="32" rx="6"/>
+  <text class="head" x="435" y="31" text-anchor="middle">Акціонерне товариство</text>
+
+  <rect class="box" x="36" y="54" width="258" height="58" rx="6"/>
+  <text class="t" x="52" y="75">Рішення засновників</text>
+  <text class="s" x="52" y="95">створення і затвердження статуту</text>
+  <rect class="box" x="306" y="54" width="258" height="58" rx="6"/>
+  <text class="t" x="322" y="75">Рішення про створення</text>
+  <text class="s" x="322" y="95">статут одразу визначає тип і структуру</text>
+
+  <rect class="box" x="36" y="124" width="258" height="58" rx="6"/>
+  <text class="t" x="52" y="145">Статутний капітал</text>
+  <text class="s" x="52" y="165">мінімуму немає; вклад — 6 місяців</text>
+  <rect class="box" x="306" y="124" width="258" height="58" rx="6"/>
+  <text class="t" x="322" y="145">Статутний капітал</text>
+  <text class="s" x="322" y="165">200 МЗП — 1 729 400 грн у 2026 р.</text>
+
+  <rect class="box box-owner" x="36" y="194" width="528" height="58" rx="6"/>
+  <text class="t" x="52" y="215">Державна реєстрація — однакова для обох форм</text>
+  <text class="s" x="52" y="235">ЄДР: статут, відомості про кінцевого бенефіціарного власника і структуру власності</text>
+
+  <rect class="box" x="36" y="264" width="258" height="58" rx="6"/>
+  <text class="t" x="52" y="285">Органи</text>
+  <text class="s" x="52" y="305">збори учасників і директор; НР — за статутом</text>
+  <rect class="box" x="306" y="264" width="258" height="58" rx="6"/>
+  <text class="t" x="322" y="285">Органи</text>
+  <text class="s" x="322" y="305">збори + НР + ВО або рада директорів</text>
+
+  <rect class="box" x="36" y="334" width="258" height="64" rx="6"/>
+  <text class="t" x="52" y="355">Акцій немає — лише частки</text>
+  <text class="s" x="52" y="374">частку продають з дотриманням</text>
+  <text class="s" x="52" y="390">переважного права інших учасників</text>
+  <rect class="box exam" x="306" y="334" width="258" height="64" rx="6"/>
+  <text class="t" x="322" y="355">Акції та депозитарна система</text>
+  <text class="exam-t" x="322" y="374">акції іменні й лише електронні; ПАТ</text>
+  <text class="exam-t" x="322" y="390">проходить допуск акцій до торгів</text>
+
+  <path class="arrow" d="M165 112 L165 118 M435 112 L435 118 M165 182 L165 188 M435 182 L435 188 M300 252 L300 258 M165 322 L165 328 M435 322 L435 328"/>
+  <polygon class="arrow-head" points="165,124 161,116 169,116"/>
+  <polygon class="arrow-head" points="435,124 431,116 439,116"/>
+  <polygon class="arrow-head" points="165,194 161,186 169,186"/>
+  <polygon class="arrow-head" points="435,194 431,186 439,186"/>
+  <polygon class="arrow-head" points="165,264 161,256 169,256"/>
+  <polygon class="arrow-head" points="435,264 431,256 439,256"/>
+  <polygon class="arrow-head" points="165,334 161,326 169,326"/>
+  <polygon class="arrow-head" points="435,334 431,326 439,326"/>
+
+  <circle class="refc" cx="20" cy="72" r="11"/><text class="refn" x="20" y="76">1</text>
+  <circle class="refc" cx="20" cy="142" r="11"/><text class="refn" x="20" y="146">2</text>
+  <circle class="refc" cx="20" cy="212" r="11"/><text class="refn" x="20" y="216">3</text>
+  <circle class="refc" cx="20" cy="282" r="11"/><text class="refn" x="20" y="286">4</text>
+  <circle class="refc exam" cx="20" cy="352" r="11"/><text class="refn exam-n" x="20" y="356">5</text>
+</svg>
