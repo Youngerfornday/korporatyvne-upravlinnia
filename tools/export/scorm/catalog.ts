@@ -1,6 +1,6 @@
 import { CALCULATOR_TRAINERS, practicalLabel, type CalculatorKey } from '../../../src/components/trainers/catalog.ts';
 import type { Course } from '../../../src/content/schemas/course.ts';
-import type { PracticalFile } from '../../../src/content/schemas/practical.ts';
+import { matrixTrainerOf, type PracticalFile } from '../../../src/content/schemas/practical.ts';
 import { rubricBandsFromLevels, matrixActivityId, type RubricBand } from '../../../src/engines/matrix/index.ts';
 import { typo } from '../../../src/lib/typography/index.ts';
 import type { ScormPackageData, ScormPackageKind } from './app/data.ts';
@@ -60,7 +60,7 @@ function kickerOf(course: Course, practical: Practical): string {
 
 function matrixSpec(course: Course, file: PracticalFile): ScormPackageSpec {
   const practical = registryPractical(course, file.id);
-  const trainer = file.trainer;
+  const trainer = matrixTrainerOf(file);
   const rubric = matrixCriterion(practical);
   const masteryPercent = rubric.bands[0]?.minPercent ?? CALCULATOR_MASTERY_PERCENT;
   const cells = trainer.features.reduce((total, feature) => total + feature.cells.length, 0);

@@ -10,7 +10,8 @@
  * Відмінність від Moodle: окрім звичайного пробілу прибираємо ще нерозривний (U+00A0),
  * вузький нерозривний (U+202F) і тонкий (U+2009) — їх ставить `Intl.NumberFormat('uk-UA')`,
  * тож число, скопійоване із сайту, має читатися. Moodle прибирає лише пробіл і розділювач
- * тисяч мовного пакета.
+ * тисяч мовного пакета. З тієї самої причини знак мінуса (U+2212), яким друкуються від’ємні
+ * значення в розборі, читається як звичайний дефіс-мінус.
  */
 export interface ParsedNumber {
   /** Значення або null, якщо на початку рядка немає числа. */
@@ -20,13 +21,14 @@ export interface ParsedNumber {
 }
 
 const SPACES = /[ \u00A0\u202F\u2009]/g;
+const MINUS_SIGN = /\u2212/g;
 const EXPONENT_FORMS = /(?:e|E|(?:x|\*|×)10(?:\^|\*\*))([+-]?\d+)/g;
 const NUMBER_AT_START = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?/;
 
 export function parseMoodleNumber(input: string): ParsedNumber {
   if (input.trim() === '') return { value: null, rest: '' };
 
-  let text = input.replace(SPACES, '').replace(EXPONENT_FORMS, 'e$1');
+  let text = input.replace(SPACES, '').replace(MINUS_SIGN, '-').replace(EXPONENT_FORMS, 'e$1');
   const commaCount = text.split(',').length - 1;
   text = text.includes('.') || commaCount > 1 ? text.replaceAll(',', '') : text.replaceAll(',', '.');
 

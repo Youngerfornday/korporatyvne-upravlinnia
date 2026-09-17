@@ -1,0 +1,34 @@
+---
+import type { MatrixModel } from '../../content/schemas/practical';
+import Icon from '../site/Icon.astro';
+import { formatDate } from '../../lib/course-data-pure';
+import { typo } from '../../lib/typography';
+
+/** Довідка практичної з матрицею: картки моделей із перевіреними прикладами компаній. */
+interface Props {
+  models: readonly MatrixModel[];
+}
+
+const { models } = Astro.props;
+---
+
+<div class="models-grid">
+  {
+    models.map((model) => (
+      <article class="card model-card" aria-labelledby={`model-${model.id}`}>
+        <h3 id={`model-${model.id}`}>{typo(model.title)}</h3>
+        <span class="faint">{typo(model.countries.join(', '))}</span>
+        <p>{typo(model.summary)}</p>
+        {model.examples.map((example) => (
+          <p class="example small">
+            <b>{typo(example.company)}</b> ({typo(example.country)}). {typo(example.note)}{' '}
+            <a href={example.url} target="_blank" rel="noopener">
+              Джерело <Icon name="external" size="sm" />
+            </a>{' '}
+            <span class="verified">перевірено {formatDate(example.checkedAt)}</span>
+          </p>
+        ))}
+      </article>
+    ))
+  }
+</div>

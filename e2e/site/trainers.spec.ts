@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { DEFAULT_MEETING_RULES, distributeProfit, guaranteedSeats, minimumAbove, minimumStakeForSeats, type MajorityKind } from '../../src/engines/calculators';
 import { expectNoHorizontalScroll, expectNoSeriousAxeViolations } from './helpers';
 import { formatPercent } from '../../src/engines/shared/number-format';
-import { P01_PATH, answerCurrentFeature, chip, matrix, matrixTotals, openTaskMode, taskPanel, taskValue, uk } from './trainers-helpers';
+import { P01_PATH, P02_PATH, answerCurrentFeature, chip, matrix, matrixTotals, openTaskMode, registryGeneration, taskPanel, taskValue, uk } from './trainers-helpers';
 
 const { features: FEATURES, items: MATRIX_ITEMS } = matrixTotals();
 const GRADED_WRONG = 4;
@@ -288,6 +288,88 @@ test.describe('тренажер «Дивіденди й чисті активи�
   });
 });
 
+test.describe('практична 2: вибір форми бізнесу', () => {
+  test('конструктор: набір параметрів стартапу лишає ТОВ і закриває ПАТ, а зміна відповіді змінює вердикт', async ({ page }) => {
+    await page.goto(P02_PATH);
+    const constructor = page.locator('[data-constructor]');
+    await expect(constructor).toBeVisible();
+
+    await constructor.locator('[data-preset="agro-saas"]').click();
+    await expect(constructor.locator('[data-form="tov"]')).toHaveAttribute('data-status', 'fits');
+    await expect(constructor.locator('[data-form="prat"]')).toHaveAttribute('data-status', 'costly');
+    await expect(constructor.locator('[data-form="pat"]')).toHaveAttribute('data-status', 'blocked');
+    await expect(constructor.locator('[data-form="pp"]')).toHaveAttribute('data-status', 'blocked');
+    await expect(constructor.locator('[data-constructor-summary]')).toContainText('Підходить: ТОВ');
+
+    // Кожен наслідок підписаний нормою з прямим посиланням на текст закону.
+    const blocking = constructor.locator('[data-form="pat"] [data-effect="blocks"]').first();
+    await expect(blocking.locator('[data-norm] a')).toHaveAttribute('href', /^https:\/\/zakon\.rada\.gov\.ua\//);
+    await expect(blocking.locator('[data-norm] .verified')).toContainText('перевірено');
+
+    // Публічна пропозиція закриває ТОВ: вердикт перераховується без перезавантаження.
+    await constructor.getByRole('radio', { name: 'Публічна пропозиція цінних паперів' }).check();
+    await expect(constructor.locator('[data-form="tov"]')).toHaveAttribute('data-status', 'blocked');
+    await expect(constructor.locator('[data-preset="agro-saas"]')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('задача на динаміку ЄДРПОУ: хибна відповідь без XP, новий варіант з правильною — 60 XP', async ({ page }) => {
+    await page.goto(P02_PATH);
+    await page.getByRole('tab', { name: 'Конструктор' }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('tab', { name: 'Задача' })).toBeFocused();
+    await expect(taskPanel(page)).toBeVisible();
+
+    const solve = async (correct: boolean) => {
+      const fabula = taskPanel(page).locator('[data-task-form]');
+      const from = (await fabula.getAttribute('data-task-from')) ?? '';
+      const to = (await fabula.getAttribute('data-task-to')) ?? '';
+      const previous = await taskValue(page, 'previous');
+      const current = await taskValue(page, 'current');
+      const absolute = current - previous;
+      const rate = Math.round((current / previous - 1) * 10_000) / 100;
+      const comparable = registryGeneration(from) === registryGeneration(to);
+      await taskPanel(page).getByLabel('Абсолютна зміна, одиниць').fill(String(correct ? absolute : absolute + 1));
+      await taskPanel(page).getByLabel('Темп приросту, %').fill(uk(rate));
+      await taskPanel(page).getByRole('radio', { name: comparable ? 'Так' : 'Ні' }).check();
+      await taskPanel(page).locator('[data-task-check]').click();
+    };
+
+    await solve(false);
+    await expect(taskPanel(page).locator('[data-task-result]')).toHaveAttribute('data-solved', 'false');
+    await expect(taskPanel(page).locator('[data-part="absoluteChange"]')).toHaveAttribute('data-state', 'err');
+    await expect(taskPanel(page).locator('[data-task-outcome]')).toContainText('XP не нараховано');
+    await expect(taskPanel(page).locator('[data-steps="solution"]')).toBeVisible();
+    await expect(chip(page)).toHaveAttribute('data-xp', '0');
+
+    await taskPanel(page).locator('[data-task-next]').click();
+    await expect(taskPanel(page).locator('[data-task-heading]')).toHaveText('Варіант 2');
+    await solve(true);
+    await expect(taskPanel(page).locator('[data-task-result]')).toHaveAttribute('data-solved', 'true');
+    await expect(taskPanel(page).locator('[data-task-outcome]')).toContainText('+60');
+    await expect(chip(page)).toHaveAttribute('data-xp', '60');
+  });
+
+  test('сторінка П2: ряд ЄДРПОУ, стартапи, п’ять ризиків договору; axe без serious і без горизонтального скролу', async ({ page }) => {
+    await page.goto(P02_PATH);
+    await expect(page.locator('[data-practical-page]')).toHaveAttribute('data-trainer-kind', 'legal-form-choice');
+    await expect(page.locator('table.rubric[data-registry-table] tbody tr')).toHaveCount(8);
+    await expect(page.locator('[data-registry-value="2020-01-01:tov"]')).toHaveText(/674\s437/);
+    await expect(page.locator('[data-startup]')).toHaveCount(3);
+    await expect(page.locator('[data-agreement-risk]')).toHaveCount(5);
+    await expect(page.locator('[data-norm-list] li')).toHaveCount(17);
+
+    // Орієнтир до стартапу схований, доки студент не напише власне обґрунтування.
+    const hint = page.locator('[data-startup-hint="agro-saas"]');
+    await expect(hint.locator('p')).toBeHidden();
+    await hint.locator('summary').click();
+    await expect(hint.locator('p')).toBeVisible();
+
+    await expect(page.locator('#ese .essay-prompt')).toContainText('№ 2275-VIII');
+    await expectNoHorizontalScroll(page);
+    await expectNoSeriousAxeViolations(page);
+  });
+});
+
 test.describe('каталоги й інтеграція', () => {
   test('головна: картки тренажерів ведуть на тренажери, «незабаром» немає', async ({ page }) => {
     await page.goto('');
@@ -306,13 +388,13 @@ test.describe('каталоги й інтеграція', () => {
 
     await page.goto('praktychni/');
     await expect(page.locator('[data-practical]')).toHaveCount(8);
-    await expect(page.locator('[data-practical][data-status="published"]')).toHaveCount(1);
+    await expect(page.locator('[data-practical][data-status="published"]')).toHaveCount(2);
     await expect(page.locator('[data-practical="p03"] [data-trainer-link="quorum"]')).toHaveAttribute('href', /\/trenazhery\/kvorum\/$/);
     await expectNoHorizontalScroll(page);
     await expectNoSeriousAxeViolations(page);
 
     await page.goto('trenazhery/');
-    await expect(page.locator('[data-trainer-card]')).toHaveCount(4);
+    await expect(page.locator('[data-trainer-card]')).toHaveCount(5);
     await expectNoHorizontalScroll(page);
     await expectNoSeriousAxeViolations(page);
   });

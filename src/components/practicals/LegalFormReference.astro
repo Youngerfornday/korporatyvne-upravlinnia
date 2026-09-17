@@ -1,0 +1,69 @@
+---
+import type { LegalFormTrainer as LegalFormTrainerData } from '../../content/schemas/practical';
+import Icon from '../site/Icon.astro';
+import { formatDate } from '../../lib/course-data-pure';
+import { typo } from '../../lib/typography';
+
+/**
+ * Довідка практичної з вибором форми: ряд ЄДРПОУ (числа, з яких студент рахує динаміку) і перелік норм
+ * з кодом рядка legal-baseline, статтею, актом і датою перевірки.
+ */
+interface Props {
+  trainer: LegalFormTrainerData;
+}
+
+const { trainer } = Astro.props;
+const { statistics, norms } = trainer;
+const numberFormat = new Intl.NumberFormat('uk-UA');
+const dateLabel = (iso: string) => formatDate(iso);
+const GENERATION_LABEL: Record<string, string> = {
+  'pre-2022': 'стара форма таблиці',
+  'since-2022': 'нова форма таблиці',
+};
+---
+
+<h3 class="h4" id="riad-edrpou">{typo(statistics.title)}</h3>
+<div class="rubric-wrap" tabindex="0" role="region" aria-labelledby="riad-edrpou">
+  <table class="rubric" data-registry-table>
+    <caption>{typo(statistics.note)}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Станом на</th>
+        {statistics.forms.map((form) => <th scope="col">{typo(form.short)}</th>)}
+        <th scope="col">Таблиця</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        statistics.points.map((point) => (
+          <tr data-registry-point={point.date}>
+            <th scope="row">{dateLabel(point.date)}</th>
+            {statistics.forms.map((form) => (
+              <td class="num" data-registry-value={`${point.date}:${form.key}`}>
+                {numberFormat.format(point.values[form.key] ?? 0)}
+              </td>
+            ))}
+            <td class="small">
+              <a href={`#src-${point.source}`}>{GENERATION_LABEL[point.generation] ?? point.generation}</a>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<h3 class="h4">Норми, за якими працює конструктор</h3>
+<ul class="data-list" data-norm-list>
+  {
+    norms.map((norm) => (
+      <li id={`norm-${norm.id}`} data-norm={norm.code}>
+        <a href={norm.url} target="_blank" rel="noopener">
+          {typo(norm.article)} {typo(norm.law)} <Icon name="external" size="sm" />
+        </a>
+        <span class="faint">{typo(norm.summary)}</span>
+        <span class="verified">перевірено {formatDate(norm.checkedAt)}</span>
+      </li>
+    ))
+  }
+</ul>

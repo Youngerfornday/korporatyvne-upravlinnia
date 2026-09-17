@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PracticalFileSchema, matrixCellCount, matrixIssues, sourceRefIssues } from './practical';
+import { PracticalFileSchema, matrixCellCount, matrixIssues, matrixTrainerOf, sourceRefIssues } from './practical';
 
 const MODELS = ['anglo-american', 'german'] as const;
 const FEATURES = [
@@ -72,7 +72,7 @@ describe('PracticalFileSchema', () => {
   it('accepts a complete model matrix and applies the default status', () => {
     const parsed = PracticalFileSchema.parse(file());
     expect(parsed.status).toBe('draft');
-    expect(matrixCellCount(parsed.trainer)).toBe(MODELS.length * FEATURES.length);
+    expect(matrixCellCount(matrixTrainerOf(parsed))).toBe(MODELS.length * FEATURES.length);
   });
 
   it('rejects a matrix with fewer than ten features', () => {
@@ -101,7 +101,7 @@ describe('PracticalFileSchema', () => {
   it('requires every cell and company task to cite a described source', () => {
     const data = file();
     const parsed = PracticalFileSchema.parse(data);
-    expect(sourceRefIssues(parsed.trainer, new Set(['other']))).toHaveLength(MODELS.length * FEATURES.length + 1);
+    expect(sourceRefIssues(matrixTrainerOf(parsed), new Set(['other']))).toHaveLength(MODELS.length * FEATURES.length + 1);
     const [first, ...rest] = data.trainer.features;
     const extra = { ...first!, cells: first!.cells.map((cell) => ({ ...cell, alsoSources: ['ghost-law'] })) };
     expect(issues({ ...data, trainer: { ...data.trainer, features: [extra, ...rest] } })).toContainEqual(expect.stringMatching(/джерело «ghost-law»/));
@@ -110,10 +110,10 @@ describe('PracticalFileSchema', () => {
   });
 
   it('checks company tasks against models and features', () => {
-    const parsed = PracticalFileSchema.parse(file());
+    const trainer = matrixTrainerOf(PracticalFileSchema.parse(file()));
     const broken = {
-      ...parsed.trainer,
-      companyTasks: [{ ...parsed.trainer.companyTasks[0]!, answer: 'family', keyFeatures: ['ownership-structure', 'ghost-feature'] }],
+      ...trainer,
+      companyTasks: [{ ...trainer.companyTasks[0]!, answer: 'family', keyFeatures: ['ownership-structure', 'ghost-feature'] }],
     };
     const messages = matrixIssues(broken).map((issue) => issue.message);
     expect(messages).toContainEqual(expect.stringMatching(/невідома модель «family»/));

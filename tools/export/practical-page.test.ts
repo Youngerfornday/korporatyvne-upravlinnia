@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { parse } from 'yaml';
 import { beforeAll, describe, expect, test } from 'vitest';
 import type { Course } from '../../src/content/schemas/course.ts';
-import { PracticalFileSchema, type PracticalFile } from '../../src/content/schemas/practical.ts';
+import { PracticalFileSchema, matrixTrainerOf, type PracticalFile } from '../../src/content/schemas/practical.ts';
 import { typo } from '../../src/lib/typography/index.ts';
 import { escapeHtmlText } from './html-tree.ts';
 import { extractHead, practicalTitle, renderPracticalPage, reuseHead } from './practical-page.ts';
@@ -35,7 +35,7 @@ describe('сторінка практичної', () => {
     const shown = (text: string): string => escapeHtmlText(typo(text));
     for (const task of practical().tasks) expect(html).toContain(shown(task));
     for (const criterion of practical().rubric) expect(html).toContain(shown(criterion.title));
-    for (const company of file.trainer.companyTasks) expect(html).toContain(shown(company.description));
+    for (const company of matrixTrainerOf(file).companyTasks) expect(html).toContain(shown(company.description));
     expect(html).toContain(shown(file.trainer.essay.prompt));
     expect(html).toContain('Максимум</th><th class="points">3</th>');
     expect(html).toContain('0,5');
@@ -45,7 +45,7 @@ describe('сторінка практичної', () => {
   test('відповіді й пояснення тренажера в умови не потрапляють', () => {
     const html = renderPracticalPage({ course, practical: practical(), file, head: HEAD });
     const shown = (text: string): string => escapeHtmlText(typo(text));
-    for (const company of file.trainer.companyTasks) expect(html).not.toContain(shown(company.explanation));
+    for (const company of matrixTrainerOf(file).companyTasks) expect(html).not.toContain(shown(company.explanation));
     for (const hint of file.trainer.essay.hints) expect(html).not.toContain(shown(hint));
   });
 

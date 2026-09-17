@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { PracticalIdSchema } from './course-shared';
+import { EssayTaskSchema } from './practical-essay';
+import { LegalFormChoiceSchema, legalFormIssues, legalFormSourceIssues } from './practical-legal-form';
 import {
   CheckedAtSchema,
   HttpUrlSchema,
@@ -15,12 +17,12 @@ import { SourceSchema } from './sources';
 /**
  * Файл `content/practicals/pNN.yaml` — дані тренажера практичної роботи.
  * Реєстр практичних (мета, результати, рубрика, ПРН) живе в course.yaml; тут — лише зміст тренажера.
- * Перший тренажер — матриця моделей корпоративного управління (`kind: model-matrix`).
+ * Вид тренажера обирає поле `kind`: матриця моделей (`model-matrix`, П1) або вибір форми бізнесу
+ * (`legal-form-choice`, П2, схема в `practical-legal-form.ts`).
  */
 
 const MIN_MODELS = 2;
 const MIN_FEATURES = 10;
-const MIN_ESSAY_WORDS = 100;
 
 /** Перевірений приклад компанії для моделі: з посиланням на джерело й датою перевірки. */
 export const CompanyExampleSchema = z.object({
@@ -83,15 +85,6 @@ export const CompanyTaskSchema = z.object({
   keyFeatures: uniqueArray(KebabIdSchema, 'Ключові ознаки').min(2),
   explanation: NonEmptyTextSchema,
   source: KebabIdSchema,
-});
-
-export const EssayTaskSchema = z.object({
-  prompt: NonEmptyTextSchema,
-  maxWords: z.int().min(MIN_ESSAY_WORDS),
-  /** Що має бути в есе, щоб отримати вищий рівень за рубрикою course.yaml. */
-  expectations: z.array(NonEmptyTextSchema).min(2),
-  /** Підказки для розбору: на які розділи Принципів G20/ОЕСР 2023 і норми спиратися. */
-  hints: z.array(NonEmptyTextSchema).default([]),
 });
 
 export const ModelMatrixSchema = z.object({
@@ -158,19 +151,35 @@ export const PracticalFileSchema = z
     status: z.enum(['draft', 'review', 'verified']).default('draft'),
     updatedAt: IsoDateSchema,
     sources: z.array(SourceSchema).min(1),
-    trainer: ModelMatrixSchema,
+    trainer: z.discriminatedUnion('kind', [ModelMatrixSchema, LegalFormChoiceSchema]),
   })
   .superRefine((file, ctx) => {
     for (const id of findDuplicates(file.sources.map((source) => source.id))) {
       ctx.addIssue({ code: 'custom', message: `Дублікат ID джерела «${id}»`, path: ['sources'] });
     }
     const sourceIds = new Set(file.sources.map((source) => source.id));
-    for (const issue of [...matrixIssues(file.trainer), ...sourceRefIssues(file.trainer, sourceIds)]) {
+    const issues =
+      file.trainer.kind === 'model-matrix'
+        ? [...matrixIssues(file.trainer), ...sourceRefIssues(file.trainer, sourceIds)]
+        : [...legalFormIssues(file.trainer), ...legalFormSourceIssues(file.trainer, sourceIds)];
+    for (const issue of issues) {
       ctx.addIssue({ code: 'custom', message: issue.message, path: ['trainer', ...issue.path] });
     }
   });
 
+export { EssayTaskSchema } from './practical-essay';
+export type { EssayTask } from './practical-essay';
+export { LegalFormChoiceSchema, legalFormIssues, legalFormSourceIssues } from './practical-legal-form';
+export type { AgreementLimit, AgreementRisk, FormCriterion, FormRule, LegalFormEntry, LegalFormTrainer, PracticalNorm, RegistrySeries, StartupCase } from './practical-legal-form';
+
 export type PracticalFile = z.infer<typeof PracticalFileSchema>;
+export type ModelMatrixTrainer = Extract<PracticalFile['trainer'], { kind: 'model-matrix' }>;
+
+/** Звуження до матриці для сторінок і експорту: інший вид тренажера тут — помилка даних. */
+export function matrixTrainerOf(file: PracticalFile): ModelMatrixTrainer {
+  if (file.trainer.kind !== 'model-matrix') throw new Error(`Практична ${file.id}: тренажер «${file.trainer.kind}» не є матрицею моделей`);
+  return file.trainer;
+}
 export type MatrixModel = z.infer<typeof MatrixModelSchema>;
 export type MatrixFeature = z.infer<typeof MatrixFeatureSchema>;
 export type MatrixCell = z.infer<typeof MatrixCellSchema>;

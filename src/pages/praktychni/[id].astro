@@ -1,7 +1,10 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { CompanyTasks } from '../../components/trainers/CompanyTasks';
-import { MatrixTrainer } from '../../components/trainers/MatrixTrainer';
+import LegalFormReference from '../../components/practicals/LegalFormReference.astro';
+import LegalFormSections from '../../components/practicals/LegalFormSections.astro';
+import MatrixReference from '../../components/practicals/MatrixReference.astro';
+import MatrixSections from '../../components/practicals/MatrixSections.astro';
+import { legalFormConditionNote, matrixConditionNote, practicalSections, practicalXpChip } from '../../components/practicals/view';
 import { practicalLabel } from '../../components/trainers/catalog';
 import Crumbs from '../../components/site/Crumbs.astro';
 import Icon from '../../components/site/Icon.astro';
@@ -17,7 +20,10 @@ import '../../styles/topic.css';
 import '../../components/quiz/quiz.css';
 import '../../components/trainers/trainers.css';
 
-/** Сторінка практичної з тренажером-матрицею: дані — content/practicals/pNN.yaml, мета й рубрика — реєстр course.yaml. */
+/**
+ * Сторінка практичної: спільна частина (мета, умова, рубрика, дані й джерела) плюс розділи того тренажера,
+ * який описано у `content/practicals/pNN.yaml` → trainer.kind. Мета й рубрика — з реєстру course.yaml.
+ */
 export async function getStaticPaths() {
   const files = await getCollection('practicals');
   return files.map((entry) => ({ params: { id: entry.data.id }, props: { entry } }));
@@ -29,6 +35,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const file = entry.data;
+const trainer = file.trainer;
 const { course, modules, topics } = await loadCourseData();
 const practical = course.practicals.find((candidate) => candidate.id === file.id);
 if (!practical) throw new Error(`Практичної ${file.id} немає в реєстрі course.yaml`);
@@ -46,25 +53,29 @@ function matrixCriterion(): { title: string; bands: readonly RubricBand[] } {
   throw new Error(`Практична ${file.id}: у рубриці немає критерію з порогами у відсотках для матриці`);
 }
 
-const trainer = file.trainer;
-const rubric = matrixCriterion();
-const matrix = {
-  models: trainer.models.map((model) => ({ id: model.id, title: typo(model.title), short: typo(model.short) })),
-  features: trainer.features.map((feature) => ({
-    id: feature.id,
-    title: typo(feature.title),
-    cells: feature.cells.map((cell) => ({
-      model: cell.model,
-      statement: typo(cell.statement),
-      explanation: typo(cell.explanation),
-      source: cell.source,
-      alsoSources: cell.alsoSources,
-    })),
-  })),
-};
+const isMatrix = trainer.kind === 'model-matrix';
+const matrixData = isMatrix
+  ? {
+      rubric: matrixCriterion(),
+      matrix: {
+        models: trainer.models.map((model) => ({ id: model.id, title: typo(model.title), short: typo(model.short) })),
+        features: trainer.features.map((feature) => ({
+          id: feature.id,
+          title: typo(feature.title),
+          cells: feature.cells.map((cell) => ({
+            model: cell.model,
+            statement: typo(cell.statement),
+            explanation: typo(cell.explanation),
+            source: cell.source,
+            alsoSources: cell.alsoSources,
+          })),
+        })),
+      },
+      companyTasks: trainer.companyTasks.map((task) => ({ ...task, company: typo(task.company), description: typo(task.description), explanation: typo(task.explanation) })),
+      cellCount: trainer.features.reduce((total, feature) => total + feature.cells.length, 0),
+    }
+  : null;
 const sources = Object.fromEntries(file.sources.map((source) => [source.id, { title: typo(source.title), url: source.url, checkedAt: source.checkedAt }]));
-const companyTasks = trainer.companyTasks.map((task) => ({ ...task, company: typo(task.company), description: typo(task.description), explanation: typo(task.explanation) }));
-const cellCount = trainer.features.reduce((total, feature) => total + feature.cells.length, 0);
 
 const label = practicalLabel(practical.id);
 const hoursLabel = pluralUk(practical.hours, { one: 'година', few: 'години', many: 'годин', other: 'години' });
@@ -72,27 +83,37 @@ const totalPoints = rubricTotal(practical.rubric);
 const pointColumns = [...new Set(practical.rubric.flatMap((criterion) => criterion.levels.map((level) => level.points)))].sort((a, b) => b - a);
 const maxCriterionPoints = Math.max(...practical.rubric.map((criterion) => criterion.points));
 const outcomes = practical.prn.map((id) => ({ id, code: outcomeLabel(course, id), statement: course.learningOutcomes.find((outcome) => outcome.id === id)?.statement ?? '' }));
-const toc = [
-  { id: 'meta', label: 'Мета і результати' },
-  { id: 'umova', label: 'Умова' },
-  { id: 'trenazher', label: 'Тренажер-матриця' },
-  { id: 'kompanii', label: 'Визначте модель компанії' },
-  { id: 'ese', label: 'Есе' },
-  { id: 'rubryka', label: 'Рубрика' },
-  { id: 'dani', label: 'Моделі, дані й джерела' },
-];
-const bandMax = rubric.bands[0]?.points ?? 0;
-const bandLines = rubric.bands.map((band, index) => {
-  const previous = rubric.bands[index - 1];
-  const range = band.minPercent > 0 ? `від ${band.minPercent}\u00A0%` : `менше ${previous?.minPercent ?? 0}\u00A0%`;
-  return `${range} — ${marksOfText(band.points, bandMax)}`;
-});
+const toc = practicalSections(trainer.kind);
+const conditionNote =
+  matrixData !== null && trainer.kind === 'model-matrix'
+    ? matrixConditionNote({ features: trainer.features.length, models: trainer.models.length, cells: matrixData.cellCount, rubricTitle: matrixData.rubric.title })
+    : trainer.kind === 'legal-form-choice'
+      ? legalFormConditionNote({
+          criteria: trainer.criteria.length,
+          forms: trainer.forms.length,
+          points: trainer.statistics.points.length,
+          registryForms: trainer.statistics.forms.length,
+        })
+      : '';
+
+const bandLines =
+  matrixData === null
+    ? []
+    : matrixData.rubric.bands.map((band, index) => {
+        const previous = matrixData.rubric.bands[index - 1];
+        const range = band.minPercent > 0 ? `від ${band.minPercent} %` : `менше ${previous?.minPercent ?? 0} %`;
+        return `${range} — ${marksOfText(band.points, matrixData.rubric.bands[0]?.points ?? 0)}`;
+      });
 const title = `${label}. ${practical.title} — ${course.title}`;
 const statusLabel = file.status === 'verified' ? null : `${file.status === 'review' ? 'на перевірці' : 'чернетка'} · оновлено ${formatDate(file.updatedAt)}`;
+const essayNote =
+  matrixData !== null
+    ? `Обсяг — до ${trainer.essay.maxWords} слів. Есе здається в Moodle і оцінюється за критеріями рубрики, крім «${matrixData.rubric.title}».`
+    : `Обсяг — до ${trainer.essay.maxWords} слів. Есе здається в Moodle і оцінюється за критеріями рубрики нижче.`;
 ---
 
 <BaseLayout title={title} description={typo(practical.goal)} current="trainers">
-  <div class="container" data-practical-page data-practical={practical.id}>
+  <div class="container" data-practical-page data-practical={practical.id} data-trainer-kind={trainer.kind}>
     <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Практичні', href: url('praktychni/') }, { label: label }]} />
 
     <header class="topic-head">
@@ -105,7 +126,7 @@ const statusLabel = file.status === 'verified' ? null : `${file.status === 'revi
           <span>{practicalTopics.map((topic, index) => (<>{index > 0 && ', '}<a href={url(`temy/${topic.slug}/`)}>Тема {topic.number}</a></>))}</span>
         </span>
         <span><Icon name="clock" />{hoursLabel}</span>
-        <span class="chip chip-xp">до 60 XP за матрицю</span>
+        <span class="chip chip-xp">{practicalXpChip(trainer.kind)}</span>
         <span>
           ПРН
           <span class="chips">{outcomes.map((outcome) => <span class="chip chip-prn">{outcome.code}</span>)}</span>
@@ -140,38 +161,28 @@ const statusLabel = file.status === 'verified' ? null : `${file.status === 'revi
           <ol class="prac-list">
             {practical.tasks.map((task) => <li>{typo(task)}</li>)}
           </ol>
-          <p class="small muted">
-            {typo(`У тренажері — ${matrix.features.length} ознак × ${matrix.models.length} моделі = ${cellCount} формулювань. Перша спроба навчальна, оцінюється друга: бал за критерієм «${rubric.title}» рубрики нижче.`)}
-          </p>
+          <p class="small muted" data-condition-note>{typo(conditionNote)}</p>
         </section>
 
-        <section class="prac-section" id="trenazher" aria-labelledby="trenazher-title">
-          <h2 id="trenazher-title">Тренажер: матриця моделей</h2>
-          <MatrixTrainer client:only="react" practicalId={practical.id} matrix={matrix} sources={sources} rubric={rubric}>
-            <div slot="fallback" class="quiz-pending" aria-busy="true">
-              <div class="card">
-                <Icon name="clock" size="lg" />
-                <div>
-                  <p class="h3">Тренажер завантажується</p>
-                  <p class="muted">{typo('Формулювання перемішуються у вашому браузері. Якщо цей напис не зникає, увімкніть JavaScript.')}</p>
-                </div>
-              </div>
-            </div>
-          </MatrixTrainer>
-        </section>
-
-        <section class="prac-section" id="kompanii" aria-labelledby="kompanii-title">
-          <h2 id="kompanii-title">Визначте модель компанії</h2>
-          <p class="lead">{typo('Для кожного опису оберіть модель і дві ознаки, які її видають. Після перевірки — розбір ключових ознак із формулюванням для правильної моделі і джерело. Це навчальне завдання: воно не оцінюється на сайті.')}</p>
-          <CompanyTasks client:only="react" matrix={matrix} tasks={companyTasks} sources={sources}>
-            <p slot="fallback" class="muted" aria-busy="true">Завдання завантажуються…</p>
-          </CompanyTasks>
-        </section>
+        {
+          matrixData !== null && trainer.kind === 'model-matrix' ? (
+            <MatrixSections
+              practicalId={practical.id}
+              matrix={matrixData.matrix}
+              sources={sources}
+              rubric={matrixData.rubric}
+              companyTasks={matrixData.companyTasks}
+              models={trainer.models}
+            />
+          ) : trainer.kind === 'legal-form-choice' ? (
+            <LegalFormSections practicalId={practical.id} trainer={trainer} />
+          ) : null
+        }
 
         <section class="prac-section essay" id="ese" aria-labelledby="ese-title">
           <h2 id="ese-title">Есе</h2>
           <p class="essay-prompt">{typo(trainer.essay.prompt)}</p>
-          <p class="small muted">{typo(`Обсяг — до ${trainer.essay.maxWords} слів. Есе здається в Moodle і оцінюється за критеріями рубрики, крім «${rubric.title}».`)}</p>
+          <p class="small muted">{typo(essayNote)}</p>
           <h3 class="h4">Що має бути в есе</h3>
           <ul class="checklist">
             {trainer.essay.expectations.map((expectation) => (
@@ -223,25 +234,14 @@ const statusLabel = file.status === 'verified' ? null : `${file.status === 'revi
         </section>
 
         <section class="prac-section" id="dani" aria-labelledby="dani-title">
-          <h2 id="dani-title">Моделі, дані й джерела</h2>
-          <div class="models-grid">
-            {trainer.models.map((model) => (
-              <article class="card model-card" aria-labelledby={`model-${model.id}`}>
-                <h3 id={`model-${model.id}`}>{typo(model.title)}</h3>
-                <span class="faint">{typo(model.countries.join(', '))}</span>
-                <p>{typo(model.summary)}</p>
-                {model.examples.map((example) => (
-                  <p class="example small">
-                    <b>{typo(example.company)}</b> ({typo(example.country)}). {typo(example.note)}{' '}
-                    <a href={example.url} target="_blank" rel="noopener">
-                      Джерело <Icon name="external" size="sm" />
-                    </a>{' '}
-                    <span class="verified">перевірено {formatDate(example.checkedAt)}</span>
-                  </p>
-                ))}
-              </article>
-            ))}
-          </div>
+          <h2 id="dani-title">{toc.at(-1)?.label}</h2>
+          {
+            matrixData !== null && trainer.kind === 'model-matrix' ? (
+              <MatrixReference models={trainer.models} />
+            ) : trainer.kind === 'legal-form-choice' ? (
+              <LegalFormReference trainer={trainer} />
+            ) : null
+          }
           <h3 class="h4">Дані для практичної</h3>
           <ul class="data-list">
             {practical.data.map((item) => (
@@ -282,14 +282,27 @@ const statusLabel = file.status === 'verified' ? null : `${file.status === 'revi
           <dl class="kv">
             <dt>Рубрика</dt>
             <dd class="num">{pluralUk(totalPoints, { one: 'бал', few: 'бали', many: 'балів', other: 'бала' })}</dd>
-            <dt>Матриця</dt>
-            <dd>
-              <ul class="band-list">
-                {bandLines.map((line) => <li class="num">{line}</li>)}
-              </ul>
-            </dd>
-            <dt>Спроби</dt>
-            <dd>перша навчальна, друга оцінювана</dd>
+            {
+              matrixData !== null ? (
+                <>
+                  <dt>Матриця</dt>
+                  <dd>
+                    <ul class="band-list">
+                      {bandLines.map((line) => <li class="num">{line}</li>)}
+                    </ul>
+                  </dd>
+                  <dt>Спроби</dt>
+                  <dd>перша навчальна, друга оцінювана</dd>
+                </>
+              ) : (
+                <>
+                  <dt>Тренажер</dt>
+                  <dd>до 60 XP за варіанти задачі</dd>
+                  <dt>Спроби</dt>
+                  <dd>варіантів необмежено, XP — за новий правильний</dd>
+                </>
+              )
+            }
           </dl>
         </div>
       </aside>

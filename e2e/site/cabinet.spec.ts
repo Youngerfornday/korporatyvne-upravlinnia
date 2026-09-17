@@ -122,8 +122,10 @@ test.describe('кабінет викладача', () => {
     await page.getByRole('button', { name: 'Скинути фільтри' }).first().click();
     await expect(count).toHaveAttribute('data-results-count', String(total));
 
+    // Опубліковані практичні мають посилання на сторінку, ще не опубліковані — ні.
     await expect(row(page, 'practical-p01').locator('a.mat-name')).toHaveAttribute('href', `${BASE_PATH}praktychni/p01/`);
-    await expect(row(page, 'practical-p02').locator('a.mat-name')).toHaveCount(0);
+    await expect(row(page, 'practical-p02').locator('a.mat-name')).toHaveAttribute('href', `${BASE_PATH}praktychni/p02/`);
+    await expect(row(page, 'practical-p03').locator('a.mat-name')).toHaveCount(0);
 
     await page.getByLabel('Пошук матеріалів').fill('агентські витрати');
     await expect(row(page, 'lecture-t01')).toBeVisible();

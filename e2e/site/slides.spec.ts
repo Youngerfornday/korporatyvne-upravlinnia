@@ -151,10 +151,10 @@ test('кнопка «Презентація» на сторінці теми в�
 });
 
 test('тема без slides.yaml: ні кнопки, ні сторінки презентації', async ({ page }) => {
-  await page.goto('temy/modeli-ku-ta-mizhnarodni-standarty/');
+  await page.goto('temy/aktsionery-ta-zahalni-zbory/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('[data-topic-slides-link]')).toHaveCount(0);
-  const response = await page.goto('temy/modeli-ku-ta-mizhnarodni-standarty/prezentatsiia/');
+  const response = await page.goto('temy/aktsionery-ta-zahalni-zbory/prezentatsiia/');
   expect(response?.status()).toBe(404);
 });
 

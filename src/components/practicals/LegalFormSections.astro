@@ -1,0 +1,129 @@
+---
+import type { LegalFormTrainer as LegalFormTrainerData } from '../../content/schemas/practical';
+import Icon from '../site/Icon.astro';
+import { LegalFormTrainer } from '../trainers/LegalFormTrainer';
+import { typo } from '../../lib/typography';
+
+/**
+ * Розділи практичної з конструктором форми: сам тренажер (конструктор + задача), три стартапи для
+ * письмового обґрунтування і межі корпоративного договору з ризиками стартапу.
+ */
+interface Props {
+  practicalId: string;
+  trainer: LegalFormTrainerData;
+}
+
+const { practicalId, trainer } = Astro.props;
+
+const definition = {
+  forms: trainer.forms.map((form) => ({ id: form.id, title: typo(form.title), short: typo(form.short), summary: typo(form.summary) })),
+  criteria: trainer.criteria.map((criterion) => ({
+    id: criterion.id,
+    title: typo(criterion.title),
+    question: typo(criterion.question),
+    options: criterion.options.map((option) => ({ id: option.id, label: typo(option.label) })),
+  })),
+  rules: trainer.rules.map((rule) => ({ ...rule, reason: typo(rule.reason) })),
+};
+const norms = Object.fromEntries(
+  trainer.norms.map((norm) => [norm.id, { code: norm.code, article: typo(norm.article), law: typo(norm.law), url: norm.url, checkedAt: norm.checkedAt, summary: typo(norm.summary) }]),
+);
+const presets = trainer.cases.map((item) => ({ id: item.id, title: typo(item.title), description: typo(item.description), preset: item.preset }));
+const series = {
+  forms: trainer.statistics.forms.map((form) => ({ key: form.key, title: typo(form.title), short: typo(form.short) })),
+  points: trainer.statistics.points.map((point) => ({ date: point.date, generation: point.generation, source: point.source, values: point.values })),
+};
+const formTitle = (id: string) => trainer.forms.find((form) => form.id === id)?.title ?? id;
+---
+
+<section class="prac-section" id="trenazher" aria-labelledby="trenazher-title">
+  <h2 id="trenazher-title">Тренажер: конструктор форми і динаміка ЄДРПОУ</h2>
+  <p class="lead">
+    {
+      typo(
+        'У вкладці «Конструктор» відповіді на п’ять питань одразу показують, які форми лишаються і яка норма закриває решту. У вкладці «Задача» — новий варіант розрахунку динаміки щоразу; XP дає лише повністю правильна відповідь на новий варіант.',
+      )
+    }
+  </p>
+  <LegalFormTrainer client:only="react" practicalId={practicalId} definition={definition} norms={norms} presets={presets} series={series}>
+    <div slot="fallback" class="quiz-pending" aria-busy="true">
+      <div class="card">
+        <Icon name="clock" size="lg" />
+        <div>
+          <p class="h3">Тренажер завантажується</p>
+          <p class="muted">{typo('Конструктор і задача працюють у вашому браузері. Якщо цей напис не зникає, увімкніть JavaScript.')}</p>
+        </div>
+      </div>
+    </div>
+  </LegalFormTrainer>
+</section>
+
+<section class="prac-section" id="startapy" aria-labelledby="startapy-title">
+  <h2 id="startapy-title">Стартапи для обґрунтування</h2>
+  <p class="lead">
+    {
+      typo(
+        'Для кожного стартапу оберіть форму і обґрунтуйте вибір щонайменше чотирма критеріями з посиланням на норми. Параметри кожного стартапу можна підставити в конструктор кнопкою у вкладці «Конструктор».',
+      )
+    }
+  </p>
+  <div class="companies">
+    {
+      trainer.cases.map((item, index) => (
+        <article class="card company" aria-labelledby={`startup-${item.id}`} data-startup={item.id}>
+          <h3 class="h4" id={`startup-${item.id}`}>
+            <span class="faint num">{index + 1}.</span> {typo(item.title)}
+          </h3>
+          <p class="company-text">{typo(item.description)}</p>
+          <details class="hints" data-startup-hint={item.id}>
+            <summary>
+              <Icon name="chev-d" size="sm" />
+              Орієнтир: розгорніть після того, як напишете власне обґрунтування
+            </summary>
+            <p>
+              <b>{typo(formTitle(item.answer))}.</b> {typo(item.explanation)}
+            </p>
+          </details>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<section class="prac-section" id="dohovir" aria-labelledby="dohovir-title">
+  <h2 id="dohovir-title">Корпоративний договір: межі закону і ризики стартапу</h2>
+  <p class="lead">{typo(trainer.agreement.intro)}</p>
+
+  <h3 class="h4">У яких межах умова взагалі діє</h3>
+  <ul class="checklist">
+    {
+      trainer.agreement.limits.map((limit) => (
+        <li data-agreement-limit={limit.id}>
+          <Icon name="scale" />
+          <span>
+            <b>{typo(limit.title)}.</b> {typo(limit.text)} <a href={`#norm-${limit.norm}`}>норма</a>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h3 class="h4">П’ять ризиків, під які пишуть умови</h3>
+  <ol class="prac-list">
+    {
+      trainer.agreement.risks.map((risk) => (
+        <li data-agreement-risk={risk.id}>
+          <div class="lfrisk">
+            <b>{typo(risk.risk)}</b>
+            <p class="small">
+              <b>Що має врегулювати умова:</b> {typo(risk.mustSettle)}
+            </p>
+            <p class="small muted">
+              <b>Якщо умови немає:</b> {typo(risk.consequence)} <a href={`#norm-${risk.norm}`}>норма</a>
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>

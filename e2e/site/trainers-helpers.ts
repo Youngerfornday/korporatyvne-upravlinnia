@@ -89,3 +89,28 @@ export async function openTaskMode(page: Page): Promise<void> {
 export function uk(value: number): string {
   return String(value).replace('.', ',');
 }
+
+/** Ряд ЄДРПОУ практичної 2: числа для перевірки відповідей задачі на динаміку. */
+interface LegalFormYaml {
+  readonly trainer: {
+    readonly criteria: readonly { readonly id: string }[];
+    readonly forms: readonly { readonly id: string; readonly short: string }[];
+    readonly statistics: { readonly points: readonly { readonly date: string; readonly generation: string; readonly values: Readonly<Record<string, number>> }[] };
+  };
+}
+
+export const P02_PATH = 'praktychni/p02/';
+
+export function loadP02(): LegalFormYaml['trainer'] {
+  const file = fileURLToPath(new URL('../../content/practicals/p02.yaml', import.meta.url));
+  return (parse(readFileSync(file, 'utf8')) as LegalFormYaml).trainer;
+}
+
+/** Покоління таблиці ЄДРПОУ за датою: поділ ПАТ/ПрАТ порівнюють лише в межах одного покоління. */
+export function registryGeneration(date: string): string {
+  return loadP02().statistics.points.find((point) => point.date === date)?.generation ?? '';
+}
+
+export function registryValue(date: string, formKey: string): number {
+  return loadP02().statistics.points.find((point) => point.date === date)?.values[formKey] ?? 0;
+}

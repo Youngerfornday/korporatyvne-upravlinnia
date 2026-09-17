@@ -5,7 +5,7 @@ const PAGES = [
   { name: 'головна', path: '', heading: 'Корпоративне управління' },
   { name: 'модуль', path: 'moduli/m1/', heading: /Основи корпоративного управління/ },
   { name: 'тема опублікована', path: 'temy/korporatsiia-i-korporatyvne-upravlinnia/', heading: /Корпорація і корпоративне управління/ },
-  { name: 'тема-заглушка', path: 'temy/modeli-ku-ta-mizhnarodni-standarty/', heading: /Моделі корпоративного управління/ },
+  { name: 'тема-заглушка', path: 'temy/aktsionery-ta-zahalni-zbory/', heading: /Акціонери та загальні збори/ },
   { name: 'усі теми', path: 'temy/', heading: 'Теми курсу' },
   { name: 'вітрина компонентів', path: 'rozrobka/komponenty/', heading: 'Вітрина компонентів' },
   { name: 'список тестів', path: 'testy/', heading: 'Тренувальні тести' },

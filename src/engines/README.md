@@ -107,6 +107,25 @@ const event = matrixCompletedEvent(finished, summary, 'p01');                   
 - `gradeCompanyTask(task, matrix, { model, features })`: рівно дві ознаки; `right` / `partial` (модель правильна, ознаки не ключові) / `wrong`, з формулюваннями ключових ознак для правильної моделі.
 - Тексти для `aria-live`: `featureCheckText`, `matrixSummaryText`, `recordedResultText`, `itemStateLabel`.
 
+## `legal-form/` — вибір форми бізнесу і динаміка ЄДРПОУ (практична 2)
+
+Дані — `content/practicals/p02.yaml` → `trainer` (`kind: legal-form-choice`): норми з кодом рядка legal-baseline, форми, критерії з варіантами, правила «форма × критерій × варіант», стартапи-кейси і ряд ЄДРПОУ.
+
+```ts
+const verdicts = unwrap(evaluateForms({ forms, criteria, rules }, profile));  // profile: { [criterionId]: optionId }
+const summary = summarizeChoice(verdicts);                                    // { fits, costly, blocked }
+const text = choiceSummaryText(summary, titleOf);                             // рядок для aria-live
+const change = unwrap(registryChange(series, 'tov', '2020-01-01', '2026-01-01'));
+const variant = createDynamicsVariant(createSeededRandom(seed), series);      // variantId для trainer-completed
+const activityId = legalFormActivityId('p02');                                // p02-legal-form
+```
+
+- Жодної норми в коді немає: усі посилання приходять з даних через поле `norm` правила, форми чи ризику.
+- Статус форми: `blocked`, якщо спрацювало хоч одне правило `blocks`; `costly` — якщо є `burden`; інакше `fits`. Причини сортуються «заборони → ускладнення → підтвердження».
+- `profileIssues` перевіряє повноту профілю; правило з невідомим критерієм або варіантом ігнорується (дані вже перевірила схема).
+- `registryChange` рахує темпи через `growthRates` рушія калькуляторів і додає `splitComparable`: поділ АТ на ПАТ і ПрАТ порівнюють лише в межах одного покоління таблиці ЄДРПОУ (`pre-2022` / `since-2022`).
+- Перевірку відповіді й покроковий розв’язок дає шар острова (`components/trainers/model/legal-form.ts`), як і для калькуляторів.
+
 ## `simulations/`
 
 ### `auction/` — аукціон заявок

@@ -38,6 +38,11 @@ describe('parseMoodleNumber (port of qtype_numerical_answer_processor::apply_uni
     expect(parseDecimalInput(`1${separator}234${separator}567,25`)).toBe(1234567.25);
   });
 
+  it('reads the typographic minus sign used in trainer explanations', () => {
+    expect(parseMoodleNumber('−451')).toEqual({ value: -451, rest: '' });
+    expect(parseDecimalInput('−3,24')).toBe(-3.24);
+  });
+
   it('reads numbers formatted by Intl.NumberFormat uk-UA back exactly', () => {
     const formatted = new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 2 }).format(1234567.89);
     expect(parseDecimalInput(formatted)).toBe(1234567.89);

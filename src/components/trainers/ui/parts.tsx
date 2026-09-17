@@ -106,3 +106,23 @@ export function TaskValue({ name, raw, children }: { readonly name: string; read
     </b>
   );
 }
+
+/**
+ * Посилання на норму поруч із поясненням: стаття (з кодом рядка legal-baseline у дужках, якщо його там
+ * записано), акт і дата перевірки. Код додається окремо лише тоді, коли його немає в самій статті.
+ */
+export function NormRefLink({ norm }: { readonly norm: NormRef }) {
+  const article = norm.article.includes(`(${norm.code})`) ? norm.article : `${norm.article} (${norm.code})`;
+  return (
+    <span className="tnorm-src" data-norm={norm.code}>
+      <a href={norm.url} target="_blank" rel="noopener noreferrer">
+        {article} {norm.law}
+        <Icon name="external" className="icon icon-sm" label="відкривається в новій вкладці" />
+      </a>
+      <span className="verified">
+        <Icon name="check" className="icon icon-sm" />
+        перевірено {formatDate(norm.checkedAt)}
+      </span>
+    </span>
+  );
+}

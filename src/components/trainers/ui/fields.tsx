@@ -161,3 +161,44 @@ export function focusFirstInvalid(prefix: string, fields: readonly string[]): vo
     target?.focus();
   });
 }
+
+export interface RadioGroupOption<V extends string> {
+  readonly value: V;
+  readonly label: string;
+}
+
+export interface RadioGroupFieldProps<V extends string> {
+  readonly id: string;
+  readonly name: string;
+  readonly legend: ReactNode;
+  readonly value: V | '';
+  readonly options: readonly RadioGroupOption<V>[];
+  readonly onChange: (value: V) => void;
+  readonly hint?: string | undefined;
+  readonly error?: string | undefined;
+}
+
+/** Група радіокнопок з тією самою розміткою, що й «Так / Ні»: стрілки й Tab працюють як у нативній групі. */
+export function RadioGroupField<V extends string>({ id, name, legend, value, options, onChange, hint, error }: RadioGroupFieldProps<V>) {
+  const hintId = hint ? `${id}-hint` : undefined;
+  const errorId = `${id}-error`;
+  return (
+    <fieldset className="tfield yesno" id={id} data-field={name} aria-describedby={describedBy(hintId, error && errorId)} aria-invalid={error ? true : undefined}>
+      <legend>{legend}</legend>
+      <div className="yesno-options">
+        {options.map((option) => (
+          <label key={option.value} className="yesno-option" data-checked={value === option.value ? '' : undefined}>
+            <input type="radio" name={`${id}-choice`} value={option.value} checked={value === option.value} onChange={() => onChange(option.value)} />
+            <span>{option.label}</span>
+          </label>
+        ))}
+      </div>
+      {hint && (
+        <p className="tfield-hint" id={hintId}>
+          {hint}
+        </p>
+      )}
+      <FieldError id={errorId} message={error} />
+    </fieldset>
+  );
+}

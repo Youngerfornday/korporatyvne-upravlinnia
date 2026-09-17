@@ -1,0 +1,58 @@
+---
+import type { RubricBand } from '../../engines/matrix';
+import type { CompanyTask, MatrixModel } from '../../content/schemas/practical';
+import Icon from '../site/Icon.astro';
+import { CompanyTasks } from '../trainers/CompanyTasks';
+import { MatrixTrainer } from '../trainers/MatrixTrainer';
+import { typo } from '../../lib/typography';
+
+/** Розділи практичної з тренажером-матрицею: сама матриця й завдання «визнач модель компанії». */
+interface MatrixView {
+  readonly models: readonly { readonly id: string; readonly title: string; readonly short: string }[];
+  readonly features: readonly {
+    readonly id: string;
+    readonly title: string;
+    readonly cells: readonly { readonly model: string; readonly statement: string; readonly explanation: string; readonly source: string; readonly alsoSources: readonly string[] }[];
+  }[];
+}
+
+interface Props {
+  practicalId: string;
+  matrix: MatrixView;
+  sources: Record<string, { title: string; url: string; checkedAt: string }>;
+  rubric: { title: string; bands: readonly RubricBand[] };
+  companyTasks: readonly CompanyTask[];
+  models: readonly MatrixModel[];
+}
+
+const { practicalId, matrix, sources, rubric, companyTasks } = Astro.props;
+---
+
+<section class="prac-section" id="trenazher" aria-labelledby="trenazher-title">
+  <h2 id="trenazher-title">Тренажер: матриця моделей</h2>
+  <MatrixTrainer client:only="react" practicalId={practicalId} matrix={matrix} sources={sources} rubric={rubric}>
+    <div slot="fallback" class="quiz-pending" aria-busy="true">
+      <div class="card">
+        <Icon name="clock" size="lg" />
+        <div>
+          <p class="h3">Тренажер завантажується</p>
+          <p class="muted">{typo('Формулювання перемішуються у вашому браузері. Якщо цей напис не зникає, увімкніть JavaScript.')}</p>
+        </div>
+      </div>
+    </div>
+  </MatrixTrainer>
+</section>
+
+<section class="prac-section" id="kompanii" aria-labelledby="kompanii-title">
+  <h2 id="kompanii-title">Визначте модель компанії</h2>
+  <p class="lead">
+    {
+      typo(
+        'Для кожного опису оберіть модель і дві ознаки, які її видають. Після перевірки — розбір ключових ознак із формулюванням для правильної моделі і джерело. Це навчальне завдання: воно не оцінюється на сайті.',
+      )
+    }
+  </p>
+  <CompanyTasks client:only="react" matrix={matrix} tasks={companyTasks} sources={sources}>
+    <p slot="fallback" class="muted" aria-busy="true">Завдання завантажуються…</p>
+  </CompanyTasks>
+</section>

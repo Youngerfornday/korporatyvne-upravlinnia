@@ -4,6 +4,7 @@
  * course.yaml → practicals[].trainers.
  */
 import { BADGE_ACTIVITY_IDS } from '../../engines/gamification';
+import { legalFormActivityId } from '../../engines/legal-form';
 import { matrixActivityId } from '../../engines/matrix';
 
 export type CalculatorKey = 'quorum' | 'cumulative' | 'dividends';
@@ -67,7 +68,19 @@ export const CALCULATOR_TRAINERS: readonly CalculatorTrainer[] = [
 ];
 
 /** Практичні, сторінки яких уже опубліковано (`praktychni/pNN/`). */
-export const PUBLISHED_PRACTICALS: readonly string[] = ['p01'];
+export const PUBLISHED_PRACTICALS: readonly string[] = ['p01', 'p02'];
+
+export interface PracticalTrainer {
+  readonly practicalId: string;
+  readonly registryId: string;
+  readonly activityId: string;
+  /** Шлях без base — його додає сторінка через url(). */
+  readonly path: string;
+  readonly icon: string;
+  readonly title: string;
+  readonly text: string;
+  readonly formula: string;
+}
 
 export const MATRIX_TRAINER = {
   practicalId: 'p01',
@@ -78,7 +91,21 @@ export const MATRIX_TRAINER = {
   title: 'Матриця моделей корпоративного управління',
   text: 'Зіставте формулювання ознак з чотирма моделями: перша спроба навчальна з розбором кожної клітинки, друга оцінюється за рубрикою.',
   formula: 'Не менше 90\u00A0% зіставлень — 1 бал',
-} as const;
+} as const satisfies PracticalTrainer;
+
+export const LEGAL_FORM_TRAINER = {
+  practicalId: 'p02',
+  registryId: 'legal-form-choice',
+  activityId: legalFormActivityId('p02'),
+  path: 'praktychni/p02/#trenazher',
+  icon: 'scale',
+  title: 'Вибір форми бізнесу',
+  text: 'Параметри стартапу — і конструктор показує, які організаційно-правові форми лишаються, а яка норма закриває решту; задача рахує динаміку ЄДРПОУ.',
+  formula: 'Абсолютна зміна, темп приросту, порівнянність таблиць',
+} as const satisfies PracticalTrainer;
+
+/** Тренажери, що живуть на сторінці практичної (а не на власній сторінці `trenazhery/<slug>/`). */
+export const PRACTICAL_TRAINERS: readonly PracticalTrainer[] = [MATRIX_TRAINER, LEGAL_FORM_TRAINER];
 
 /** Людські назви тренажерів з реєстру course.yaml. */
 export const TRAINER_KIND_LABELS: Readonly<Record<string, string>> = {
@@ -110,9 +137,8 @@ export interface PublishedTrainerLink {
 
 /** Опубліковані тренажери за ID реєстру (без base). */
 export function publishedTrainer(registryId: string): PublishedTrainerLink | null {
-  if (registryId === MATRIX_TRAINER.registryId) {
-    return { registryId, path: MATRIX_TRAINER.path, title: MATRIX_TRAINER.title, activityId: MATRIX_TRAINER.activityId };
-  }
+  const onPractical = PRACTICAL_TRAINERS.find((trainer) => trainer.registryId === registryId);
+  if (onPractical) return { registryId, path: onPractical.path, title: onPractical.title, activityId: onPractical.activityId };
   const calculator = CALCULATOR_TRAINERS.find((trainer) => trainer.registryId === registryId);
   return calculator ? { registryId, path: calculator.path, title: calculator.title, activityId: calculator.activityId } : null;
 }

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, test } from 'vitest';
 import { CALCULATOR_TRAINERS, MATRIX_TRAINER } from '../../../src/components/trainers/catalog.ts';
 import { CourseSchema, type Course } from '../../../src/content/schemas/course.ts';
-import type { PracticalFile } from '../../../src/content/schemas/practical.ts';
+import { matrixTrainerOf, type PracticalFile } from '../../../src/content/schemas/practical.ts';
 import { loadPracticals, parseDataFile } from '../downloads-sources.ts';
 import { CALCULATOR_MASTERY_PERCENT, matrixCriterion, scormPackageSpecs } from './catalog.ts';
 
@@ -57,9 +57,9 @@ describe('scormPackageSpecs on the real course', () => {
     // Assert
     expect(matrix?.data.kind).toBe('matrix');
     if (matrix?.data.kind !== 'matrix' || !file) return;
-    expect(matrix.data.matrix.features).toHaveLength(file.trainer.features.length);
+    expect(matrix.data.matrix.features).toHaveLength(matrixTrainerOf(file).features.length);
     expect(Object.keys(matrix.data.sources)).toEqual(file.sources.map((source) => source.id));
-    expect(matrix.data.companyTasks).toHaveLength(file.trainer.companyTasks.length);
+    expect(matrix.data.companyTasks).toHaveLength(matrixTrainerOf(file).companyTasks.length);
     expect(matrix.title.replace(/\s/g, ' ')).toBe('П1. Матриця моделей корпоративного управління');
     expect(matrix.module).toBe('m1');
   });

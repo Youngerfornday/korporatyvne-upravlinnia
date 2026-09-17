@@ -19,9 +19,11 @@ interface Props {
   readonly mode: TrainerMode;
   readonly onChange: (mode: TrainerMode) => void;
   readonly label: string;
+  /** Власні підписи вкладок, якщо «Розрахунок / Задача» не описують режими тренажера. */
+  readonly labels?: Partial<Record<TrainerMode, string>> | undefined;
 }
 
-export function ModeTabs({ prefix, mode, onChange, label }: Props) {
+export function ModeTabs({ prefix, mode, onChange, label, labels }: Props) {
   const refs = useRef<Partial<Record<TrainerMode, HTMLButtonElement | null>>>({});
 
   const move = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -54,7 +56,7 @@ export function ModeTabs({ prefix, mode, onChange, label }: Props) {
           onClick={() => onChange(item.id)}
           onKeyDown={move}
         >
-          {item.label}
+          {labels?.[item.id] ?? item.label}
         </button>
       ))}
     </div>

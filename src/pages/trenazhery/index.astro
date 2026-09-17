@@ -1,5 +1,5 @@
 ---
-import { CALCULATOR_TRAINERS, MATRIX_TRAINER, PUBLISHED_PRACTICALS, practicalLabel, practicalPath } from '../../components/trainers/catalog';
+import { CALCULATOR_TRAINERS, PRACTICAL_TRAINERS, PUBLISHED_PRACTICALS, practicalLabel, practicalPath } from '../../components/trainers/catalog';
 import Crumbs from '../../components/site/Crumbs.astro';
 import Icon from '../../components/site/Icon.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -29,16 +29,16 @@ const cards = [
     activityId: trainer.activityId,
     practicalId: trainer.practicalId,
   })),
-  {
-    key: 'matrix',
-    href: url(MATRIX_TRAINER.path),
-    icon: MATRIX_TRAINER.icon,
-    title: MATRIX_TRAINER.title,
-    text: MATRIX_TRAINER.text,
-    formula: MATRIX_TRAINER.formula,
-    activityId: MATRIX_TRAINER.activityId,
-    practicalId: MATRIX_TRAINER.practicalId,
-  },
+  ...PRACTICAL_TRAINERS.map((trainer) => ({
+    key: trainer.registryId,
+    href: url(trainer.path),
+    icon: trainer.icon,
+    title: trainer.title,
+    text: trainer.text,
+    formula: trainer.formula,
+    activityId: trainer.activityId,
+    practicalId: trainer.practicalId,
+  })),
 ];
 ---
 
