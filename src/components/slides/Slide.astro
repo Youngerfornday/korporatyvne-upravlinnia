@@ -1,0 +1,120 @@
+---
+import type { Course } from '../../content/schemas/course';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import type { SlideView } from './load-slides';
+import Orbits from './Orbits.astro';
+import SlideBody from './SlideBody.astro';
+import { notesParagraphs, sourceLabel } from './slides-pure';
+
+/**
+ * Один слайд 16:9 з нотатками доповідача. Титул і розділи — на синьому з орбітальними колами й білим логотипом;
+ * змістові слайди — «документ»: рядок розділу, заголовок під лінійкою, колонтитул з логотипом, джерелами й номером.
+ */
+export interface DeckMeta {
+  readonly count: number;
+  readonly topicId: string;
+  readonly topicNumber: number;
+  readonly topicTitle: string;
+  readonly moduleNumber: number;
+  readonly moduleTitle: string;
+  readonly courseTitle: string;
+  readonly institution: string;
+  readonly lectureHours: string;
+}
+
+interface Props {
+  view: SlideView;
+  meta: DeckMeta;
+  course: Course;
+}
+
+const { view, meta, course } = Astro.props;
+const { slide } = view;
+const number = view.index + 1;
+const isBand = slide.type === 'title' || slide.type === 'section';
+const label = `Слайд ${number} з ${meta.count}: ${view.heading}`;
+const logo = url('brand/logo-cpnu-uk.png');
+const logoWhite = url('brand/logo-cpnu-uk-white.png');
+const sourcesText = view.sources.length === 0 ? undefined : `${view.sources.length === 1 ? 'Джерело' : 'Джерела'}: ${view.sources.map(sourceLabel).join('; ')}`;
+const notes = slide.notes ? notesParagraphs(slide.notes) : [];
+const notesId = `slide-${number}-notes`;
+const topicLine = typo(`Тема ${meta.topicNumber}. ${meta.topicTitle}`);
+---
+
+<div class="slide-frame" id={`slide-frame-${number}`} data-slide data-slide-heading={view.heading} data-slide-type={slide.type}>
+  <section class:list={['slide-box', `is-${slide.type}`, { 'is-band': isBand }]} aria-roledescription="слайд" aria-label={label} tabindex="-1">
+    {
+      isBand && (
+        <div class="slide-decor" aria-hidden="true">
+          <Orbits />
+        </div>
+      )
+    }
+    <div class="slide">
+      {
+        slide.type === 'title' ? (
+          <>
+            <img class="slide-band-logo" src={logoWhite} width="760" height="459" alt={meta.institution} />
+            <div class="slide-band-main">
+              <p class="slide-band-kicker">{typo(`Модуль ${meta.moduleNumber} · ${meta.moduleTitle}`)}</p>
+              <p class="slide-band-topic">Тема {meta.topicNumber}</p>
+              <h2 class="slide-band-title">{typo(meta.topicTitle)}</h2>
+              {slide.subtitle && <p class="slide-band-sub">{typo(slide.subtitle)}</p>}
+            </div>
+            {sourcesText && <p class="slide-src">{typo(sourcesText, { keepSpacedHyphens: true })}</p>}
+            <footer class="slide-band-foot">
+              <span>Лекція · {meta.lectureHours}</span>
+              <span>{typo(meta.courseTitle)}</span>
+              <span>{meta.institution}</span>
+            </footer>
+          </>
+        ) : slide.type === 'section' ? (
+          <>
+            <div class="slide-band-main">
+              {slide.number !== undefined && <p class="slide-section-no num">{meta.topicNumber}.{slide.number}</p>}
+              <h2 class="slide-band-title">{typo(slide.title)}</h2>
+            </div>
+            {sourcesText && <p class="slide-src">{typo(sourcesText, { keepSpacedHyphens: true })}</p>}
+            <footer class="slide-band-foot">
+              <img class="slide-foot-logo" src={logoWhite} width="760" height="459" alt="" />
+              <span class="slide-foot-topic">{topicLine}</span>
+              <span class="slide-foot-no num">{number} / {meta.count}</span>
+            </footer>
+          </>
+        ) : (
+          <>
+            <header class="slide-head">
+              {view.kicker && <p class="slide-kicker">{typo(view.kicker)}</p>}
+              {slide.type === 'question' ? (
+                <h2 class="slide-title is-prompt">{typo(slide.prompt)}</h2>
+              ) : slide.type === 'quote' ? (
+                <h2 class="visually-hidden">{view.heading}</h2>
+              ) : (
+                <h2 class="slide-title">{typo(view.heading)}</h2>
+              )}
+            </header>
+            <div class="slide-body">
+              <SlideBody view={view} course={course} topicId={meta.topicId} />
+            </div>
+            {sourcesText && <p class="slide-src">{typo(sourcesText, { keepSpacedHyphens: true })}</p>}
+            <footer class="slide-foot">
+              <img class="slide-foot-logo is-light" src={logo} width="760" height="459" alt="" />
+              <img class="slide-foot-logo is-dark" src={logoWhite} width="760" height="459" alt="" />
+              <span class="slide-foot-topic">{topicLine}</span>
+              <span class="slide-foot-no num">{number} / {meta.count}</span>
+            </footer>
+          </>
+        )
+      }
+    </div>
+  </section>
+  {
+    notes.length > 0 && (
+      <aside class="slide-notes" aria-labelledby={notesId} data-slide-notes>
+        <h3 id={notesId}>Нотатки доповідача · слайд {number}</h3>
+        {notes.map((paragraph) => <p>{typo(paragraph)}</p>)}
+      </aside>
+    )
+  }
+</div>

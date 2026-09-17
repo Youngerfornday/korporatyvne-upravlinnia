@@ -1,0 +1,63 @@
+---
+import type { Course } from '../../content/schemas/course';
+import { typo } from '../../lib/typography';
+import Icon from '../site/Icon.astro';
+import type { DeckView } from './load-slides';
+import Slide, { type DeckMeta } from './Slide.astro';
+import './slides.css';
+
+/**
+ * Веб-режим презентації: сцена зі слайдами 16:9, панель керування, оголошення номера слайда.
+ * Без JavaScript слайди йдуть один під одним разом із нотатками — це й «документна» версія.
+ * Поведінку (клавіші, свайп, нотатки, повний екран, друк) додає deck.ts і ставить data-deck-ready.
+ */
+interface Props {
+  deck: DeckView;
+  meta: DeckMeta;
+  course: Course;
+}
+
+const { deck, meta, course } = Astro.props;
+const label = typo(`Презентація: Тема ${meta.topicNumber}. ${meta.topicTitle}`);
+---
+
+<section class="deck" aria-roledescription="презентація" aria-label={label} data-deck data-count={meta.count}>
+  <div class="deck-bar" role="group" aria-label="Керування презентацією" data-deck-bar hidden>
+    <div class="deck-nav">
+      <button type="button" class="btn btn-secondary deck-arrow" aria-label="Попередній слайд" data-deck-prev>
+        <Icon name="chev-l" />
+      </button>
+      <span class="deck-count num" aria-hidden="true" data-deck-count>1 / {meta.count}</span>
+      <button type="button" class="btn btn-secondary deck-arrow" aria-label="Наступний слайд" data-deck-next>
+        <Icon name="chev-r" />
+      </button>
+    </div>
+    <div class="deck-tools">
+      <button type="button" class="btn btn-secondary btn-sm" aria-pressed="false" aria-keyshortcuts="N" data-deck-notes>
+        <Icon name="list" size="sm" />
+        Нотатки доповідача
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" aria-pressed="false" aria-keyshortcuts="F" data-deck-fullscreen>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
+        На весь екран
+      </button>
+      <button type="button" class="btn btn-ghost btn-sm" data-deck-print>
+        <Icon name="print" size="sm" />
+        Друк
+      </button>
+      <button type="button" class="btn btn-ghost btn-sm" data-deck-print-notes>Друк з нотатками</button>
+    </div>
+  </div>
+
+  <div class="deck-stage" data-deck-stage>
+    {deck.slides.map((view) => <Slide view={view} meta={meta} course={course} />)}
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-deck-live></p>
+  <p class="deck-hint" data-deck-hint hidden>Гортати — стрілками, пробілом або свайпом; <kbd>N</kbd> — нотатки; <kbd>F</kbd> — на весь екран.</p>
+</section>
+
+<script>
+  import { initDeck } from './deck';
+  initDeck();
+</script>

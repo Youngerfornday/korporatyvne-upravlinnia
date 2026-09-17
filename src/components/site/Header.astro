@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { current, courseTitle, institution } = Astro.props;
+const isTeacher = current === 'teacher';
 const logoLight = url('brand/logo-cpnu-uk.png');
 const logoDark = url('brand/logo-cpnu-uk-white.png');
 ---
@@ -45,8 +46,8 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
 
     <div class="topbar-actions">
       <div class="seg" role="group" aria-label="Вид">
-        <a href={url()} aria-current="true">Студент</a>
-        <a href={url(CABINET_PATH)}>Викладач</a>
+        <a href={url()} aria-current={isTeacher ? undefined : 'true'}>Студент</a>
+        <a href={url(CABINET_PATH)} aria-current={isTeacher ? 'true' : undefined}>Викладач</a>
       </div>
       <button class="iconbtn search-btn" type="button" aria-label="Пошук по курсу" data-search-placeholder>
         <Icon name="search" />
@@ -96,8 +97,8 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
     <div class="menu-section">
       <h3>Вид</h3>
       <div class="seg" role="group" aria-label="Вид, меню">
-        <a href={url()} aria-current="true">Студент</a>
-        <a href={url(CABINET_PATH)}>Викладач</a>
+        <a href={url()} aria-current={isTeacher ? undefined : 'true'}>Студент</a>
+        <a href={url(CABINET_PATH)} aria-current={isTeacher ? 'true' : undefined}>Викладач</a>
       </div>
     </div>
     <div class="menu-section">

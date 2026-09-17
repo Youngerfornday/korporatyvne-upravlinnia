@@ -1,0 +1,47 @@
+---
+import { loadCourseData } from '../../lib/course-data';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import Icon from '../site/Icon.astro';
+import { PUBLISHED_PRACTICALS, practicalLabel, practicalPath, publishedTrainer } from './catalog';
+
+/**
+ * Практичні й тренажери теми: опублікована практична — посилання на її сторінку; інакше — опубліковані
+ * тренажери цієї практичної. Реєстр — course.yaml → practicals[].topics.
+ */
+interface Props {
+  topic: string;
+}
+
+const { topic } = Astro.props;
+const { course } = await loadCourseData();
+const links = course.practicals
+  .filter((practical) => practical.topics.includes(topic))
+  .flatMap((practical) => {
+    if (PUBLISHED_PRACTICALS.includes(practical.id)) {
+      return [{ href: url(practicalPath(practical.id)), label: `Практична ${practicalLabel(practical.id)}: ${typo(practical.title)}`, kind: 'practical', id: practical.id }];
+    }
+    return practical.trainers
+      .map((trainerId) => publishedTrainer(trainerId))
+      .filter((trainer) => trainer !== null)
+      .map((trainer) => ({ href: url(trainer.path), label: `Тренажер: ${typo(trainer.title)}`, kind: 'trainer', id: trainer.registryId }));
+  });
+---
+
+{
+  links.length > 0 && (
+    <div class="cta-practical" data-topic-practicals>
+      {links.map((link) => (
+        <a class="btn btn-secondary" href={link.href} data-topic-practical={link.id}>
+          <Icon name={link.kind === 'practical' ? 'pen' : 'calc'} size="sm" />
+          {link.label}
+        </a>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .cta-practical { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-3); }
+  .cta-practical .btn { white-space: normal; text-align: left; justify-content: flex-start; }
+</style>

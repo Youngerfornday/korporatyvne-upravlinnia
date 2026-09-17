@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 /**
  * E2E сторінок сайту: npm run test:e2e. Playwright сам збирає сайт у dist-e2e/ з фікстурним банком
- * тесту теми 1 (KU_E2E_BANK=1, e2e/site/astro.config.mjs) і піднімає `astro preview` на окремому порту.
+ * тесту теми 1 (KU_E2E_BANK=1, e2e/site/astro.config.mjs) і фікстурним маніфестом матеріалів кабінету (KU_E2E_DOWNLOADS=1)
+ * і піднімає `astro preview` на окремому порту.
  * Браузер — `npx playwright install chromium`.
  */
 export const PREVIEW_PORT = 4322;
@@ -23,7 +24,7 @@ export default defineConfig({
     command: `npx astro build --config ${E2E_ASTRO_CONFIG} && npx astro preview --config ${E2E_ASTRO_CONFIG} --port ${PREVIEW_PORT} --ignore-lock`,
     cwd: PROJECT_ROOT,
     // ASTRO_PREVIEW_BACKGROUND вимикає автозапуск preview у фоні (Astro робить так в агентних середовищах); --ignore-lock дозволяє другий сервер поруч із dist/.
-    env: { KU_E2E_BANK: '1', ASTRO_PREVIEW_BACKGROUND: '0' },
+    env: { KU_E2E_BANK: '1', KU_E2E_DOWNLOADS: '1', ASTRO_PREVIEW_BACKGROUND: '0' },
     url: BASE_URL,
     reuseExistingServer: !process.env['CI'],
     timeout: 180_000,

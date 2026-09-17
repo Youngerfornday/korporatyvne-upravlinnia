@@ -1,0 +1,41 @@
+---
+import CabinetIcons from '../../components/cabinet/CabinetIcons.astro';
+import { CabinetIsland } from '../../components/cabinet/CabinetIsland';
+import { loadCabinetData } from '../../components/cabinet/load-catalog';
+import { BUILD_DOWNLOADS_COMMAND } from '../../components/cabinet/load-manifest';
+import Crumbs from '../../components/site/Crumbs.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/course-data-pure';
+import { MOODLE_GUIDE_PATH } from '../../lib/site-nav';
+import { url } from '../../lib/url';
+// Крихти (.crumbs) оформлено в topic.css — як на сторінках тестів і профілю.
+import '../../styles/topic.css';
+import '../../components/cabinet/cabinet.css';
+
+/**
+ * Кабінет викладача: матеріали курсу (картки, таблиця, матриця ПРН × теми), режим вивантаження ZIP,
+ * готові пакети й пам’ятка Moodle. Режим перегляду, а не межа безпеки — тому noindex, без входу.
+ */
+const { catalog, matrix } = await loadCabinetData();
+const generatedLabel = catalog.manifestGeneratedAt ? formatDate(catalog.manifestGeneratedAt.slice(0, 10)) : undefined;
+---
+
+<BaseLayout
+  title={`Кабінет викладача — ${catalog.courseTitle}`}
+  description="Матеріали курсу таблицею, картками й матрицею ПРН × теми; вивантаження вибраних матеріалів одним ZIP і готові пакети для Moodle."
+  current="teacher"
+  noindex
+>
+  <CabinetIcons />
+  <div class="container" data-cabinet-page>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Кабінет викладача' }]} />
+    <CabinetIsland
+      client:load
+      catalog={catalog}
+      matrix={matrix}
+      moodleGuideHref={url(MOODLE_GUIDE_PATH)}
+      buildCommand={BUILD_DOWNLOADS_COMMAND}
+      generatedLabel={generatedLabel}
+    />
+  </div>
+</BaseLayout>

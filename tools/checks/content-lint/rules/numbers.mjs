@@ -3,7 +3,7 @@
  * Речення з відсотком, грошовою сумою чи співвідношенням «N з M», якщо в межах абзацу
  * (або мапи YAML) немає ні `source:`, ні коду норми, ні адреси, ні звороту зі згадкою джерела.
  */
-import { refineLine } from '../content.mjs';
+import { isSlidesFile, refineLine } from '../content.mjs';
 import { WARNING, makeFinding } from '../finding.mjs';
 import { lower, quote, splitSentences } from '../text.mjs';
 
@@ -37,7 +37,8 @@ export function hasSourceMarker(text) {
  * @returns {import('../finding.mjs').Finding[]}
  */
 export function checkNumbersWithoutSource(files) {
-  return files.flatMap((file) =>
+  // Презентації перевіряє суворіше правило slides.mjs: джерело слайда — його список `sources`.
+  return files.filter((file) => !isSlidesFile(file)).flatMap((file) =>
     file.units.flatMap((unit) => {
       if (unit.key !== null && SKIP_KEYS.has(unit.key)) return [];
       if (unit.path.some((step) => SKIP_PATHS.has(step))) return [];

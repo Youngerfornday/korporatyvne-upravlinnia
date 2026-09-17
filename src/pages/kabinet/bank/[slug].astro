@@ -1,0 +1,118 @@
+---
+import { getEntry } from 'astro:content';
+import BankQuestion from '../../../components/cabinet/BankQuestion.astro';
+import { bankQuestionView } from '../../../components/cabinet/bank-view';
+import { BLOOM_TEXT, QUESTION_FORMS, pluralUk } from '../../../components/cabinet/texts';
+import { BLOOM_LEVELS } from '../../../components/cabinet/types';
+import { loadTopicQuestions } from '../../../components/quiz/load-bank';
+import { questionTypeLabel } from '../../../components/quiz/quiz-texts';
+import Crumbs from '../../../components/site/Crumbs.astro';
+import Icon from '../../../components/site/Icon.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { loadCourseData, type TopicView } from '../../../lib/course-data';
+import { CABINET_PATH, MOODLE_GUIDE_PATH, quizPath } from '../../../lib/site-nav';
+import { typo } from '../../../lib/typography';
+import { url } from '../../../lib/url';
+// Крихти (.crumbs) оформлено в topic.css — як на сторінках тестів і профілю.
+import '../../../styles/topic.css';
+import '../../../components/cabinet/bank.css';
+
+/** Оглядач тренувального банку теми: лише для тем, у яких банк уже є. */
+export async function getStaticPaths() {
+  const { topics } = await loadCourseData();
+  const withQuestions = await Promise.all(topics.map(async (topic) => ({ topic, count: (await loadTopicQuestions(topic.id)).length })));
+  return withQuestions.filter(({ count }) => count > 0).map(({ topic }) => ({ params: { slug: topic.slug }, props: { topic } }));
+}
+
+interface Props {
+  topic: TopicView;
+}
+
+const { topic } = Astro.props;
+const course = (await getEntry('course', 'course'))?.data;
+if (!course) throw new Error('Не знайдено content/course.yaml');
+const questions = await loadTopicQuestions(topic.id);
+const views = questions.map(bankQuestionView);
+const bloom = BLOOM_LEVELS.map((level) => ({ level, count: questions.filter((q) => q.bloom === level).length }));
+const typeLabels = questions.map(questionTypeLabel);
+const typeCounts = [...new Set(typeLabels)].map((label) => [label, typeLabels.filter((l) => l === label).length] as const);
+const withLaw = questions.filter((q) => q.lawRef.length > 0).length;
+---
+
+<BaseLayout
+  title={`Тренувальний банк теми ${topic.number} — ${course.title}`}
+  description={`Питання тренувального тесту теми «${topic.title}» з типом, рівнем Блума, нормою і правильною відповіддю — для викладача.`}
+  current="teacher"
+  noindex
+>
+  <div class="container bank-page" data-bank-page={topic.id}>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Кабінет викладача', href: url(CABINET_PATH) }, { label: `Банк теми ${topic.number}` }]} />
+    <header class="bank-head">
+      <p class="kicker">Оглядач тренувального банку</p>
+      <h1 class="h1">Тренувальний тест {topic.number}. {typo(topic.title)}</h1>
+      <p class="lede">
+        {pluralUk(questions.length, QUESTION_FORMS)} з правильними відповідями, поясненнями й нормами. Ті самі питання студент проходить у тренувальному тесті теми.
+      </p>
+      <div class="bank-actions">
+        <a class="btn btn-secondary" href={url(quizPath(topic.slug))}><Icon name="play" />Відкрити тест</a>
+        <a class="btn btn-ghost" href={url(CABINET_PATH)}><Icon name="arrow-l" />До кабінету</a>
+      </div>
+    </header>
+
+    <aside class="bank-note" aria-labelledby="bank-note-title">
+      <Icon name="info" size="lg" />
+      <div>
+        <p><b id="bank-note-title">Контрольних банків на сайті немає.</b> Питання модульних і підсумкового тестів зберігаються в приватному репозиторії курсу й потрапляють у Moodle лише через резервну копію для викладача. Тут — публічний тренувальний банк: його ключі й так доступні в тесті на сайті.</p>
+        <p><a href={url(MOODLE_GUIDE_PATH)}>Як завантажити курс у Moodle</a></p>
+      </div>
+    </aside>
+
+    <section class="bank-stats" aria-labelledby="bank-stats-title">
+      <h2 class="h3" id="bank-stats-title">Склад банку</h2>
+      <div class="bank-grid">
+        <table class="bank-table">
+          <caption>За рівнем Блума</caption>
+          <tbody>
+            {bloom.map(({ level, count }) => (
+              <tr>
+                <th scope="row">{BLOOM_TEXT[level].label}</th>
+                <td class="num">{count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <table class="bank-table">
+          <caption>За типом питання</caption>
+          <tbody>
+            {typeCounts.map(([label, count]) => (
+              <tr>
+                <th scope="row">{label}</th>
+                <td class="num">{count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <table class="bank-table">
+          <caption>Норми права</caption>
+          <tbody>
+            <tr>
+              <th scope="row">Питань з нормою</th>
+              <td class="num">{withLaw}</td>
+            </tr>
+            <tr>
+              <th scope="row">Без норми</th>
+              <td class="num">{questions.length - withLaw}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="bank-list-title">
+      <h2 class="h3" id="bank-list-title">Питання</h2>
+      <ol class="bank-list">
+        {views.map((view) => <BankQuestion question={view} />)}
+      </ol>
+    </section>
+  </div>
+</BaseLayout>

@@ -3,8 +3,11 @@ import { render } from 'astro:content';
 import { loadTopicQuestions } from '../../components/quiz/load-bank';
 import Crumbs from '../../components/site/Crumbs.astro';
 import Icon from '../../components/site/Icon.astro';
+import { topicsWithSlides } from '../../components/slides/load-slides';
+import { slidesPath } from '../../components/slides/slides-pure';
 import { mdxComponents } from '../../components/topic/mdx-components';
 import SourceList from '../../components/topic/SourceList.astro';
+import TopicPracticals from '../../components/trainers/TopicPracticals.astro';
 import Term from '../../components/topic/Term.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { loadCourseData, neighbours, type TopicView } from '../../lib/course-data';
@@ -41,6 +44,7 @@ const description = typo(lecture?.data.description ?? topic.summary);
 const title = `Тема ${topic.number}. ${topic.title} — ${course.title}`;
 const quizQuestions = await loadTopicQuestions(topic.id);
 const quizHref = url(quizPath(topic.slug));
+const slidesHref = (await topicsWithSlides()).has(topic.id) ? url(slidesPath(topic.slug)) : undefined;
 const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'терміни', many: 'термінів', other: 'терміна' });
 ---
 
@@ -84,6 +88,14 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
           <span><Icon name="pen" />лекція готується</span>
         )}
       </div>
+      {slidesHref && (
+        <div class="topic-actions">
+          <a class="btn btn-secondary btn-sm" href={slidesHref} data-topic-slides-link>
+            <Icon name="layers" size="sm" />
+            Презентація
+          </a>
+        </div>
+      )}
     </header>
 
     {
@@ -106,6 +118,7 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
               )}
               <span class="small muted">{quizQuestions.length > 0 ? 'XP — за найкращий результат, до 150.' : 'Банк питань теми пишеться; сторінка тесту пояснює, що буде.'}</span>
             </div>
+            <TopicPracticals topic={topic.id} />
             <nav class="pager" aria-label="Сусідні теми">
               {prev ? (
                 <a href={url(`temy/${prev.slug}/`)}>
@@ -184,6 +197,7 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
               <Icon name="arrow-r" size="sm" />
             </a>
           </div>
+          <TopicPracticals topic={topic.id} />
           <nav class="pager" aria-label="Сусідні теми">
             {prev ? (
               <a href={url(`temy/${prev.slug}/`)}>
@@ -221,6 +235,7 @@ const termsLabel = pluralUk(topic.termCount, { one: 'термін', few: 'тер
 </BaseLayout>
 
 <style>
+  .topic-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); }
   .toc-heading { display: block; }
   @media (max-width: 960px) {
     .toc-heading, .toc-desktop { display: none; }

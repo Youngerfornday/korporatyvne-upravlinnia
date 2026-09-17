@@ -83,6 +83,28 @@ if (result.ok) { store.save(result.value.state); announce(eventOutcomeText(resul
 
 Еталонні приклади з розписаним розрахунком: `calculators/__fixtures__/reference-cases.ts`.
 
+## `matrix/` — тренажер-матриця практичних
+
+Дані — `content/practicals/pNN.yaml` → `trainer` (моделі, ознаки, клітинки з поясненням і джерелом, завдання «визнач модель»).
+
+```ts
+let session = startMatrixSession({ matrix, seed: `p01:${Date.now()}:0`, now });   // спроба 1 — навчальна
+let attempt = currentAttempt(session);
+attempt = unwrap(selectModel(attempt, matrix, itemId, 'german'));                   // null — зняти вибір
+attempt = unwrap(checkFeature(attempt, matrix, featureId));                          // лише навчальна: фіксує ознаку, відкриває розбір
+session = replaceCurrentAttempt(session, unwrap(finishMatrixAttempt(attempt, matrix, now)));
+session = unwrap(startGradedAttempt(session, matrix, now));                          // спроба 2 — оцінювана, інше перемішування
+const summary = summarizeMatrixAttempt(finished, matrix);                            // right, total, share, за ознаками й моделями
+const mark = rubricMark(unwrap(rubricBandsFromLevels(criterion.levels)), summary.right, summary.total);
+const event = matrixCompletedEvent(finished, summary, 'p01');                        // trainer-completed, activityId p01-model-matrix
+```
+
+- `reviewItem` до розкриття (навчальна — до перевірки ознаки, оцінювана — до завершення) не повертає правильної моделі й пояснення; `attemptProgress` рахує правильні лише серед розкритих.
+- Пропуски в оцінюваній спробі — неправильні. Помилки користувача — `Result` з повідомленням з `MATRIX_ERROR_MESSAGES`.
+- Поріг рубрики читається з опису рівня реєстру («не менше 90%», «60–89%»); межа включна й без похибки округлення (`right·100 ≥ min·total`).
+- `gradeCompanyTask(task, matrix, { model, features })`: рівно дві ознаки; `right` / `partial` (модель правильна, ознаки не ключові) / `wrong`, з формулюваннями ключових ознак для правильної моделі.
+- Тексти для `aria-live`: `featureCheckText`, `matrixSummaryText`, `recordedResultText`, `itemStateLabel`.
+
 ## `simulations/`
 
 ### `auction/` — аукціон заявок

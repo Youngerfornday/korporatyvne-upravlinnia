@@ -52,10 +52,13 @@ export function usageText(file) {
   return file.units.filter((unit) => unit.path[0] !== 'sources').map((unit) => unit.text).join('\n');
 }
 
-/** Посилання на джерела: `source:` і `alsoSources:` у YAML, `#src-id` і `<SourceList ids={[…]}>` у MDX. */
+/**
+ * Посилання на джерела: `source:`, `alsoSources:` і список ID `sources: [id, …]` слайдів у YAML,
+ * `#src-id` і `<SourceList ids={[…]}>` у MDX. Записи самого списку джерел — мапи, тож як посилання не рахуються.
+ */
 export function references(file) {
   const fromFields = file.units
-    .filter((unit) => unit.key === 'source' || unit.path.at(-1) === 'alsoSources')
+    .filter((unit) => unit.key === 'source' || unit.path.at(-1) === 'alsoSources' || (unit.key === null && unit.path.at(-1) === 'sources'))
     .map((unit) => ({ id: unit.text.trim(), line: unit.line }));
   const fromText = file.kind !== 'mdx' ? [] : file.lines.flatMap((line, index) => [
     ...[...line.matchAll(SRC_ANCHOR)].map(([, id]) => ({ id, line: index + 1 })),

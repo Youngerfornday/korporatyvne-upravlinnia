@@ -32,9 +32,9 @@ export const DEFAULT_MEETING_RULES: MeetingRules = Object.freeze<MeetingRules>({
   majorities: {
     /** [AT-38] ст. 53 ч. 4: загальне правило — більше 50% голосів зареєстрованих акціонерів. */
     simple: { numerator: 1, denominator: 2, strict: true, base: 'registered' },
-    /** [AT-38] ст. 53 ч. 4: більш як 3/4 — статут, тип, структура, емісія, капітал, викуп, припинення. */
+    /** [AT-38] ст. 53 ч. 6 абз. 1: більш як 3/4 — статут, тип, структура, емісія, капітал, викуп, припинення. */
     qualified: { numerator: 3, denominator: 4, strict: true, base: 'registered' },
-    /** [AT-38] ст. 53 ч. 4: більше 95% — невикористання переважного права (п. 21 ч. 2 ст. 39). */
+    /** [AT-38, AT-15] ст. 53 ч. 6 абз. 2: більше 95% — невикористання переважного права (п. 21 ч. 2 ст. 39). */
     'preemptive-waiver': { numerator: 95, denominator: 100, strict: true, base: 'registered' },
     /** [AT-62] ст. 106 ч. 3: значний правочин на 50% активів і більше — більш як 50% від загальної кількості голосів. */
     'significant-transaction-50': { numerator: 1, denominator: 2, strict: true, base: 'total' },

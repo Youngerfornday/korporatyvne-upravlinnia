@@ -4,12 +4,15 @@ import { xpLedgerKey } from '../../engines/progress';
 import { formatPercent } from '../../engines/shared/number-format';
 import { quizIdForTopic, topicVisualState, type TopicVisualState } from '../progress/derive';
 import { Icon } from '../quiz/Icon';
+import { practicumNote, practicumProgress } from '../trainers/practicum-progress';
 
 export interface MapTopic {
   readonly id: string;
   readonly number: number;
   readonly title: string;
   readonly slug: string;
+  /** Активності опублікованих тренажерів практичних теми (src/components/trainers/catalog.ts). */
+  readonly trainerActivityIds?: readonly string[];
 }
 
 export interface MapModule {
@@ -37,6 +40,23 @@ function Mark({ state, note }: { readonly state: TopicVisualState; readonly note
       </span>
       {note && <span className="num">{note}</span>}
     </>
+  );
+}
+
+/** Практикум теми: тренажери зараховано всі / частину / жодного; без опублікованих тренажерів — прочерк. */
+function PracticumCell({ state, activityIds }: { readonly state: ProgressState; readonly activityIds: readonly string[] }) {
+  const progress = practicumProgress(state, activityIds);
+  if (!progress) {
+    return (
+      <div className="c faint" role="cell">
+        <span aria-label="тренажер ще не опубліковано">—</span>
+      </div>
+    );
+  }
+  return (
+    <div className="c" role="cell" data-practicum-state={progress.state}>
+      <Mark state={progress.state} note={practicumNote(progress)} />
+    </div>
   );
 }
 
@@ -84,9 +104,7 @@ export function ProgressMap({ modules, state, topicUrl }: Props) {
                     <div className="c" role="cell">
                       <Mark state={quizState} note={quiz ? formatPercent(quiz.bestScore, 0) : undefined} />
                     </div>
-                    <div className="c faint" role="cell">
-                      <span aria-label="тренажер ще не опубліковано">—</span>
-                    </div>
+                    <PracticumCell state={state} activityIds={topic.trainerActivityIds ?? []} />
                   </div>
                 );
               })}

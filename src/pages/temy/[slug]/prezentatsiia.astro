@@ -1,0 +1,72 @@
+---
+import Crumbs from '../../../components/site/Crumbs.astro';
+import Icon from '../../../components/site/Icon.astro';
+import Deck from '../../../components/slides/Deck.astro';
+import { buildDeck, loadSlidesEntries } from '../../../components/slides/load-slides';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { loadCourseData } from '../../../lib/course-data';
+import { pluralUk } from '../../../lib/plural';
+import { typo } from '../../../lib/typography';
+import { url } from '../../../lib/url';
+// Крихти (.crumbs) оформлено в topic.css — як на сторінках тем, тестів і профілю.
+import '../../../styles/topic.css';
+
+/** Веб-режим презентації теми: `temy/<slug>/prezentatsiia/`. Сторінка є лише в тем, для яких написано slides.yaml. */
+export async function getStaticPaths() {
+  const [{ topics }, entries] = await Promise.all([loadCourseData(), loadSlidesEntries()]);
+  return topics.flatMap((topic) => {
+    const entry = entries.find((item) => item.data.topic === topic.id);
+    return entry ? [{ params: { slug: topic.slug }, props: { topic, entry } }] : [];
+  });
+}
+
+type Params = Awaited<ReturnType<typeof getStaticPaths>>[number];
+type Props = Params['props'];
+
+const { topic, entry } = Astro.props;
+const data = await loadCourseData();
+const { course, modules } = data;
+const module = modules.find((item) => item.id === topic.module);
+if (!module) throw new Error(`Модуль теми ${topic.id} не знайдено`);
+const registryTopic = course.topics.find((item) => item.id === topic.id);
+const deck = buildDeck(entry, topic, data);
+const lectureHref = url(`temy/${topic.slug}/`);
+const meta = {
+  count: deck.slides.length,
+  topicId: topic.id,
+  topicNumber: topic.number,
+  topicTitle: topic.title,
+  moduleNumber: module.number,
+  moduleTitle: module.title,
+  courseTitle: course.title,
+  institution: course.institution,
+  lectureHours: pluralUk(registryTopic?.hours.lectures ?? 2, { one: 'академічна година', few: 'академічні години', many: 'академічних годин', other: 'академічної години' }),
+};
+const slidesLabel = pluralUk(meta.count, { one: 'слайд', few: 'слайди', many: 'слайдів', other: 'слайда' });
+const title = `Презентація. Тема ${topic.number}. ${topic.title} — ${course.title}`;
+const description = typo(`Презентація лекції теми ${topic.number} «${topic.title}»: ${slidesLabel} з нотатками доповідача, для показу на занятті й друку.`);
+---
+
+<BaseLayout title={title} description={description} current="topics" ogType="article">
+  <div class="container deck-page" data-slides-page data-topic={topic.id}>
+    <Crumbs
+      items={[
+        { label: 'Курс', href: url() },
+        { label: `Модуль ${module.number}. ${typo(module.title)}`, href: url(`moduli/${module.id}/`) },
+        { label: `Тема ${topic.number}`, href: lectureHref },
+        { label: 'Презентація' },
+      ]}
+    />
+    <header class="deck-head">
+      <div>
+        <p class="deck-head-kicker">Презентація лекції · {slidesLabel} · {meta.lectureHours}</p>
+        <h1 class="deck-head-title"><span class="n">{topic.number}.</span>{typo(topic.title)}</h1>
+      </div>
+      <a class="btn btn-secondary btn-sm deck-back" href={lectureHref} data-slides-back>
+        <Icon name="arrow-l" size="sm" />
+        До лонгріда теми
+      </a>
+    </header>
+    <Deck deck={deck} meta={meta} course={course} />
+  </div>
+</BaseLayout>

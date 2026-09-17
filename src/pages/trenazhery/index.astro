@@ -1,0 +1,131 @@
+---
+import { CALCULATOR_TRAINERS, MATRIX_TRAINER, PUBLISHED_PRACTICALS, practicalLabel, practicalPath } from '../../components/trainers/catalog';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadCourseData } from '../../lib/course-data';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/trainers/trainers.css';
+
+/**
+ * Каталог тренажерів. Серверний стан знака — «не розпочато»; скрипт нижче підставляє стан із прогресу
+ * ([data-trainer-activity] → запис активності), як і решта сторінок сайту.
+ */
+const { course, topics } = await loadCourseData();
+const practicalOf = (id: string) => course.practicals.find((practical) => practical.id === id);
+const topicLinks = (practicalId: string) =>
+  (practicalOf(practicalId)?.topics ?? []).map((id) => topics.find((topic) => topic.id === id)).filter((topic) => topic !== undefined);
+
+const cards = [
+  ...CALCULATOR_TRAINERS.map((trainer) => ({
+    key: trainer.key,
+    href: url(trainer.path),
+    icon: trainer.icon,
+    title: trainer.title,
+    text: trainer.text,
+    formula: trainer.formula,
+    activityId: trainer.activityId,
+    practicalId: trainer.practicalId,
+  })),
+  {
+    key: 'matrix',
+    href: url(MATRIX_TRAINER.path),
+    icon: MATRIX_TRAINER.icon,
+    title: MATRIX_TRAINER.title,
+    text: MATRIX_TRAINER.text,
+    formula: MATRIX_TRAINER.formula,
+    activityId: MATRIX_TRAINER.activityId,
+    practicalId: MATRIX_TRAINER.practicalId,
+  },
+];
+---
+
+<BaseLayout
+  title={`Тренажери — ${course.title}`}
+  description={typo('Тренажери курсу: кворум і голосування, кумулятивне голосування, дивіденди й чисті активи, матриця моделей корпоративного управління. Розрахунок із розбором формули і задачі з варіантами.')}
+  current="trainers"
+>
+  <div class="container" data-trainers-page>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Тренажери' }]} />
+    <header class="topic-head">
+      <h1 class="h1">Тренажери</h1>
+      <p class="lede">
+        {typo('Кожне число в кейсі можна перерахувати самому. Калькулятор показує формулу з вашими числами, а задача дає новий варіант щоразу; XP — лише за варіант, розв’язаний уперше.')}
+      </p>
+      <p class="small muted head-links">
+        <a href={url('praktychni/')}>Усі практичні заняття <Icon name="arrow-r" size="sm" /></a>
+      </p>
+    </header>
+
+    <section class="section" aria-label="Список тренажерів">
+      <ul class="tool-grid">
+        {
+          cards.map((card) => (
+            <li>
+              <article class="card tool" data-trainer-card={card.key} aria-labelledby={`trainer-${card.key}`}>
+                <Icon name={card.icon} size="lg" />
+                <div>
+                  <h2 id={`trainer-${card.key}`}>
+                    <a href={card.href} class="tool-link">
+                      {typo(card.title)}
+                    </a>
+                  </h2>
+                  <p>{typo(card.text)}</p>
+                  <div class="formula-line" data-typography="off">
+                    {card.formula}
+                  </div>
+                  <div class="tool-meta">
+                    <span class="mark mark-todo" role="img" aria-label="не розпочато" data-trainer-activity={card.activityId} />
+                    {PUBLISHED_PRACTICALS.includes(card.practicalId) ? (
+                      <a href={url(practicalPath(card.practicalId))} data-practical-link={card.practicalId}>
+                        {practicalLabel(card.practicalId)}
+                      </a>
+                    ) : (
+                      <span>{practicalLabel(card.practicalId)}</span>
+                    )}
+                    {topicLinks(card.practicalId).map((topic) => (
+                      <a href={url(`temy/${topic.slug}/`)}>Тема {topic.number}</a>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    import { getProgressClient } from '../../components/progress/client';
+    import { renderMark } from '../../components/progress/dom';
+    import type { ProgressState } from '../../engines/progress';
+
+    function render(state: ProgressState): void {
+      document.querySelectorAll<HTMLElement>('[data-trainer-activity]').forEach((mark) => {
+        const id = mark.dataset['trainerActivity'] ?? '';
+        const done = Object.hasOwn(state.activities, id);
+        renderMark(mark, done ? 'done' : 'todo');
+        mark.setAttribute('aria-label', done ? 'зараховано' : 'не розпочато');
+      });
+    }
+
+    const client = getProgressClient();
+    render(client.getState());
+    client.subscribe((detail) => render(detail.state));
+  </script>
+</BaseLayout>
+
+<style>
+  .head-links { margin-top: var(--s-4); }
+  .head-links a, .tool-meta a { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .tool-link { color: inherit; text-decoration: none; }
+  .tool-link::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-2); }
+  .tool { position: relative; }
+  .tool:has(.tool-link:hover) { box-shadow: var(--shadow-2); border-color: var(--line-strong); }
+  .tool:has(.tool-link:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .tool-link:focus-visible { outline: none; }
+  .tool-meta a { position: relative; z-index: 1; }
+</style>

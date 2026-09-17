@@ -1,0 +1,84 @@
+---
+import { CALCULATOR_TRAINERS, PUBLISHED_PRACTICALS, practicalLabel, practicalPath, type CalculatorTrainer } from '../../components/trainers/catalog';
+import { CumulativeTrainer } from '../../components/trainers/CumulativeTrainer';
+import { DividendTrainer } from '../../components/trainers/DividendTrainer';
+import { QuorumTrainer } from '../../components/trainers/QuorumTrainer';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { findBadge } from '../../engines/gamification';
+import { XP_RULES } from '../../engines/gamification/xp-rules';
+import { loadCourseData } from '../../lib/course-data';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/quiz/quiz.css';
+import '../../components/trainers/trainers.css';
+
+/** Сторінка тренажера-калькулятора: режими «Розрахунок» і «Задача» в React-острові (client:only). */
+export function getStaticPaths() {
+  return CALCULATOR_TRAINERS.map((trainer) => ({ params: { slug: trainer.slug }, props: { trainer } }));
+}
+
+interface Props {
+  trainer: CalculatorTrainer;
+}
+
+const { trainer } = Astro.props;
+const { course, topics } = await loadCourseData();
+const practical = course.practicals.find((candidate) => candidate.id === trainer.practicalId);
+const practicalTopics = (practical?.topics ?? []).map((id) => topics.find((topic) => topic.id === id)).filter((topic) => topic !== undefined);
+const badge = findBadge(trainer.badgeId);
+const INTRO: Record<CalculatorTrainer['key'], string> = {
+  quorum:
+    'Чи правомочні загальні збори і скільки голосів потрібно для рішення. Пороги — з чинного Закону № 2465-IX: кворум рахують від голосуючих акцій, а базу для більшості визначає питання порядку денного.',
+  cumulative:
+    'Кумулятивні голоси акціонера — акції, помножені на кількість місць у раді. Тренажер рахує мінімальний пакет, щоб гарантовано провести k своїх кандидатів, і перевіряє, чи пройдуть кандидати з вашим пакетом.',
+  dividends:
+    'Розподіл чистого прибутку за каскадом: резерв, дивіденди за привілейованими, потім за простими акціями. Наприкінці — перевірка, чи дозволяє виплату правило чистих активів.',
+};
+const title = `${trainer.title} — тренажер — ${course.title}`;
+---
+
+<BaseLayout title={title} description={typo(trainer.text)} current="trainers">
+  <div class="container" data-trainer-page={trainer.key}>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Тренажери', href: url('trenazhery/') }, { label: trainer.title }]} />
+    <header class="topic-head">
+      <h1 class="h1">{typo(trainer.title)}</h1>
+      <p class="lede">{typo(INTRO[trainer.key])}</p>
+      <div class="topic-facts">
+        <span data-typography="off"><Icon name={trainer.icon} />{trainer.formula}</span>
+        {
+          practical && (
+            <span>
+              <Icon name="pen" />
+              {PUBLISHED_PRACTICALS.includes(practical.id) ? (
+                <a href={url(practicalPath(practical.id))}>
+                  {practicalLabel(practical.id)}. {typo(practical.title)}
+                </a>
+              ) : (
+                <>
+                  {practicalLabel(practical.id)}. {typo(practical.title)}
+                </>
+              )}
+            </span>
+          )
+        }
+        {
+          practicalTopics.length > 0 && (
+            <span>
+              <Icon name="book" />
+              <span>{practicalTopics.map((topic, index) => (<>{index > 0 && ', '}<a href={url(`temy/${topic.slug}/`)}>Тема {topic.number}</a></>))}</span>
+            </span>
+          )
+        }
+        <span class="chip chip-xp">до {XP_RULES.trainerMax} XP</span>
+        {badge && <span class="chip chip-level">бейдж «{badge.title}»</span>}
+      </div>
+    </header>
+
+    {trainer.key === 'quorum' && <QuorumTrainer client:only="react"><div slot="fallback" class="quiz-pending" aria-busy="true"><div class="card"><Icon name="clock" size="lg" /><div><p class="h3">Тренажер завантажується</p><p class="muted">Якщо цей напис не зникає, увімкніть JavaScript.</p></div></div></div></QuorumTrainer>}
+    {trainer.key === 'cumulative' && <CumulativeTrainer client:only="react"><div slot="fallback" class="quiz-pending" aria-busy="true"><div class="card"><Icon name="clock" size="lg" /><div><p class="h3">Тренажер завантажується</p><p class="muted">Якщо цей напис не зникає, увімкніть JavaScript.</p></div></div></div></CumulativeTrainer>}
+    {trainer.key === 'dividends' && <DividendTrainer client:only="react"><div slot="fallback" class="quiz-pending" aria-busy="true"><div class="card"><Icon name="clock" size="lg" /><div><p class="h3">Тренажер завантажується</p><p class="muted">Якщо цей напис не зникає, увімкніть JavaScript.</p></div></div></div></DividendTrainer>}
+  </div>
+</BaseLayout>

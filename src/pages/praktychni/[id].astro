@@ -1,0 +1,298 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { CompanyTasks } from '../../components/trainers/CompanyTasks';
+import { MatrixTrainer } from '../../components/trainers/MatrixTrainer';
+import { practicalLabel } from '../../components/trainers/catalog';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { rubricTotal } from '../../content/schemas/course-practicals';
+import { marksOfText, rubricBandsFromLevels, type RubricBand } from '../../engines/matrix';
+import { loadCourseData } from '../../lib/course-data';
+import { formatDate, outcomeLabel } from '../../lib/course-data-pure';
+import { pluralUk } from '../../lib/plural';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/quiz/quiz.css';
+import '../../components/trainers/trainers.css';
+
+/** Сторінка практичної з тренажером-матрицею: дані — content/practicals/pNN.yaml, мета й рубрика — реєстр course.yaml. */
+export async function getStaticPaths() {
+  const files = await getCollection('practicals');
+  return files.map((entry) => ({ params: { id: entry.data.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'practicals'>;
+}
+
+const { entry } = Astro.props;
+const file = entry.data;
+const { course, modules, topics } = await loadCourseData();
+const practical = course.practicals.find((candidate) => candidate.id === file.id);
+if (!practical) throw new Error(`Практичної ${file.id} немає в реєстрі course.yaml`);
+const module = modules.find((candidate) => candidate.id === practical.module);
+if (!module) throw new Error(`Модуль практичної ${file.id} не знайдено`);
+const practicalTopics = practical.topics.map((id) => topics.find((topic) => topic.id === id)).filter((topic) => topic !== undefined);
+
+/** Критерій рубрики для матриці: назва з «матриц», інакше перший критерій з порогами у відсотках. */
+function matrixCriterion(): { title: string; bands: readonly RubricBand[] } {
+  const ordered = [...practical!.rubric].sort((a, b) => Number(/матриц/i.test(b.title)) - Number(/матриц/i.test(a.title)));
+  for (const criterion of ordered) {
+    const bands = rubricBandsFromLevels(criterion.levels);
+    if (bands.ok) return { title: criterion.title, bands: bands.value };
+  }
+  throw new Error(`Практична ${file.id}: у рубриці немає критерію з порогами у відсотках для матриці`);
+}
+
+const trainer = file.trainer;
+const rubric = matrixCriterion();
+const matrix = {
+  models: trainer.models.map((model) => ({ id: model.id, title: typo(model.title), short: typo(model.short) })),
+  features: trainer.features.map((feature) => ({
+    id: feature.id,
+    title: typo(feature.title),
+    cells: feature.cells.map((cell) => ({
+      model: cell.model,
+      statement: typo(cell.statement),
+      explanation: typo(cell.explanation),
+      source: cell.source,
+      alsoSources: cell.alsoSources,
+    })),
+  })),
+};
+const sources = Object.fromEntries(file.sources.map((source) => [source.id, { title: typo(source.title), url: source.url, checkedAt: source.checkedAt }]));
+const companyTasks = trainer.companyTasks.map((task) => ({ ...task, company: typo(task.company), description: typo(task.description), explanation: typo(task.explanation) }));
+const cellCount = trainer.features.reduce((total, feature) => total + feature.cells.length, 0);
+
+const label = practicalLabel(practical.id);
+const hoursLabel = pluralUk(practical.hours, { one: 'година', few: 'години', many: 'годин', other: 'години' });
+const totalPoints = rubricTotal(practical.rubric);
+const pointColumns = [...new Set(practical.rubric.flatMap((criterion) => criterion.levels.map((level) => level.points)))].sort((a, b) => b - a);
+const maxCriterionPoints = Math.max(...practical.rubric.map((criterion) => criterion.points));
+const outcomes = practical.prn.map((id) => ({ id, code: outcomeLabel(course, id), statement: course.learningOutcomes.find((outcome) => outcome.id === id)?.statement ?? '' }));
+const toc = [
+  { id: 'meta', label: 'Мета і результати' },
+  { id: 'umova', label: 'Умова' },
+  { id: 'trenazher', label: 'Тренажер-матриця' },
+  { id: 'kompanii', label: 'Визначте модель компанії' },
+  { id: 'ese', label: 'Есе' },
+  { id: 'rubryka', label: 'Рубрика' },
+  { id: 'dani', label: 'Моделі, дані й джерела' },
+];
+const bandMax = rubric.bands[0]?.points ?? 0;
+const bandLines = rubric.bands.map((band, index) => {
+  const previous = rubric.bands[index - 1];
+  const range = band.minPercent > 0 ? `від ${band.minPercent}\u00A0%` : `менше ${previous?.minPercent ?? 0}\u00A0%`;
+  return `${range} — ${marksOfText(band.points, bandMax)}`;
+});
+const title = `${label}. ${practical.title} — ${course.title}`;
+const statusLabel = file.status === 'verified' ? null : `${file.status === 'review' ? 'на перевірці' : 'чернетка'} · оновлено ${formatDate(file.updatedAt)}`;
+---
+
+<BaseLayout title={title} description={typo(practical.goal)} current="trainers">
+  <div class="container" data-practical-page data-practical={practical.id}>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Практичні', href: url('praktychni/') }, { label: label }]} />
+
+    <header class="topic-head">
+      <h1 class="h1"><span class="n">{label}.</span>{typo(practical.title)}</h1>
+      <p class="lede">{typo(practical.goal)}</p>
+      <div class="topic-facts">
+        <span><Icon name="layers" />Модуль {module.number}</span>
+        <span>
+          <Icon name="book" />
+          <span>{practicalTopics.map((topic, index) => (<>{index > 0 && ', '}<a href={url(`temy/${topic.slug}/`)}>Тема {topic.number}</a></>))}</span>
+        </span>
+        <span><Icon name="clock" />{hoursLabel}</span>
+        <span class="chip chip-xp">до 60 XP за матрицю</span>
+        <span>
+          ПРН
+          <span class="chips">{outcomes.map((outcome) => <span class="chip chip-prn">{outcome.code}</span>)}</span>
+        </span>
+        {statusLabel && <span class="chip">{statusLabel}</span>}
+      </div>
+    </header>
+
+    <div class="prac-layout">
+      <div class="prac-main">
+        <section class="prac-section" id="meta" aria-labelledby="meta-title">
+          <h2 id="meta-title">Мета і результати</h2>
+          <p class="lead">Після практичної ви зможете:</p>
+          <ul class="checklist">
+            {practical.results.map((result) => (
+              <li><Icon name="check" />{typo(result)}</li>
+            ))}
+          </ul>
+          <ul class="outcomes">
+            {outcomes.map((outcome) => (
+              <li class="outcome">
+                <span class="chip chip-prn">{outcome.code}</span>
+                <span class="small muted">{typo(outcome.statement)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="prac-section" id="umova" aria-labelledby="umova-title">
+          <h2 id="umova-title">Умова</h2>
+          <p class="lead">{typo(file.intro)}</p>
+          <ol class="prac-list">
+            {practical.tasks.map((task) => <li>{typo(task)}</li>)}
+          </ol>
+          <p class="small muted">
+            {typo(`У тренажері — ${matrix.features.length} ознак × ${matrix.models.length} моделі = ${cellCount} формулювань. Перша спроба навчальна, оцінюється друга: бал за критерієм «${rubric.title}» рубрики нижче.`)}
+          </p>
+        </section>
+
+        <section class="prac-section" id="trenazher" aria-labelledby="trenazher-title">
+          <h2 id="trenazher-title">Тренажер: матриця моделей</h2>
+          <MatrixTrainer client:only="react" practicalId={practical.id} matrix={matrix} sources={sources} rubric={rubric}>
+            <div slot="fallback" class="quiz-pending" aria-busy="true">
+              <div class="card">
+                <Icon name="clock" size="lg" />
+                <div>
+                  <p class="h3">Тренажер завантажується</p>
+                  <p class="muted">{typo('Формулювання перемішуються у вашому браузері. Якщо цей напис не зникає, увімкніть JavaScript.')}</p>
+                </div>
+              </div>
+            </div>
+          </MatrixTrainer>
+        </section>
+
+        <section class="prac-section" id="kompanii" aria-labelledby="kompanii-title">
+          <h2 id="kompanii-title">Визначте модель компанії</h2>
+          <p class="lead">{typo('Для кожного опису оберіть модель і дві ознаки, які її видають. Після перевірки — розбір ключових ознак із формулюванням для правильної моделі і джерело. Це навчальне завдання: воно не оцінюється на сайті.')}</p>
+          <CompanyTasks client:only="react" matrix={matrix} tasks={companyTasks} sources={sources}>
+            <p slot="fallback" class="muted" aria-busy="true">Завдання завантажуються…</p>
+          </CompanyTasks>
+        </section>
+
+        <section class="prac-section essay" id="ese" aria-labelledby="ese-title">
+          <h2 id="ese-title">Есе</h2>
+          <p class="essay-prompt">{typo(trainer.essay.prompt)}</p>
+          <p class="small muted">{typo(`Обсяг — до ${trainer.essay.maxWords} слів. Есе здається в Moodle і оцінюється за критеріями рубрики, крім «${rubric.title}».`)}</p>
+          <h3 class="h4">Що має бути в есе</h3>
+          <ul class="checklist">
+            {trainer.essay.expectations.map((expectation) => (
+              <li><Icon name="check" />{typo(expectation)}</li>
+            ))}
+          </ul>
+          {
+            trainer.essay.hints.length > 0 && (
+              <details class="hints" data-essay-hints>
+                <summary>
+                  <Icon name="chev-d" size="sm" />
+                  Підказки: на що спертися
+                </summary>
+                <ol>
+                  {trainer.essay.hints.map((hint) => <li>{typo(hint)}</li>)}
+                </ol>
+              </details>
+            )
+          }
+        </section>
+
+        <section class="prac-section" id="rubryka" aria-labelledby="rubryka-title">
+          <h2 id="rubryka-title">Рубрика</h2>
+          <div class="rubric-wrap" tabindex="0" role="region" aria-labelledby="rubryka-title">
+            <table class="rubric">
+              <caption>{typo(`${practical.rubric.length} критерії, разом ${pluralUk(totalPoints, { one: 'бал', few: 'бали', many: 'балів', other: 'бала' })}. Формат рубрики — як у Moodle.`)}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Критерій</th>
+                  {pointColumns.map((points) => <th scope="col">{marksOfText(points, maxCriterionPoints).replace(/ з .*$/, '')}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {practical.rubric.map((criterion) => (
+                  <tr>
+                    <th scope="row">
+                      {typo(criterion.title)}
+                      <span class="num">до {criterion.points}</span>
+                    </th>
+                    {pointColumns.map((points) => {
+                      const level = criterion.levels.find((candidate) => candidate.points === points);
+                      return <td>{level ? typo(level.description) : '—'}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="prac-section" id="dani" aria-labelledby="dani-title">
+          <h2 id="dani-title">Моделі, дані й джерела</h2>
+          <div class="models-grid">
+            {trainer.models.map((model) => (
+              <article class="card model-card" aria-labelledby={`model-${model.id}`}>
+                <h3 id={`model-${model.id}`}>{typo(model.title)}</h3>
+                <span class="faint">{typo(model.countries.join(', '))}</span>
+                <p>{typo(model.summary)}</p>
+                {model.examples.map((example) => (
+                  <p class="example small">
+                    <b>{typo(example.company)}</b> ({typo(example.country)}). {typo(example.note)}{' '}
+                    <a href={example.url} target="_blank" rel="noopener">
+                      Джерело <Icon name="external" size="sm" />
+                    </a>{' '}
+                    <span class="verified">перевірено {formatDate(example.checkedAt)}</span>
+                  </p>
+                ))}
+              </article>
+            ))}
+          </div>
+          <h3 class="h4">Дані для практичної</h3>
+          <ul class="data-list">
+            {practical.data.map((item) => (
+              <li>
+                <a href={item.url} target="_blank" rel="noopener">{typo(item.title)} <Icon name="external" size="sm" /></a>
+                {item.note && <span class="faint">{typo(item.note)}</span>}
+              </li>
+            ))}
+          </ul>
+          <h3 class="h4">Джерела тренажера</h3>
+          <ol class="sources">
+            {file.sources.map((source) => (
+              <li id={`src-${source.id}`}>
+                {source.authors.length > 0 && <span>{source.authors.join(', ')}. </span>}
+                <span>{typo(source.title)}</span>
+                {(source.publisher || source.year) && <span>. {[source.publisher, source.year].filter(Boolean).join(', ')}</span>}
+                <span class="src-meta">
+                  <a href={source.url} target="_blank" rel="noopener">
+                    {new URL(source.url).hostname.replace(/^www\./, '')} <Icon name="external" size="sm" />
+                  </a>
+                  <span class="verified">перевірено {formatDate(source.checkedAt)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+
+      <aside class="prac-side" aria-label="Навігація практичною">
+        <div class="side-block side-toc">
+          <h2>На цій сторінці</h2>
+          <nav class="toc" aria-label="Зміст практичної">
+            {toc.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+          </nav>
+        </div>
+        <div class="side-block side-progress">
+          <h2>Оцінювання</h2>
+          <dl class="kv">
+            <dt>Рубрика</dt>
+            <dd class="num">{pluralUk(totalPoints, { one: 'бал', few: 'бали', many: 'балів', other: 'бала' })}</dd>
+            <dt>Матриця</dt>
+            <dd>
+              <ul class="band-list">
+                {bandLines.map((line) => <li class="num">{line}</li>)}
+              </ul>
+            </dd>
+            <dt>Спроби</dt>
+            <dd>перша навчальна, друга оцінювана</dd>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

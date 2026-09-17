@@ -22,6 +22,7 @@
     "test:export:coverage": "vitest run --config tools/export/vitest.config.ts --coverage",
     "export:moodle": "node --import ./tools/export/register-ts.mjs tools/export/cli.ts",
     "export:book": "node --import ./tools/export/register-ts.mjs tools/export/book-cli.ts",
+    "export:slides-pdf": "node --import ./tools/export/register-ts.mjs tools/export/slides-pdf.ts",
     "build:downloads": "node --import ./tools/export/register-ts.mjs tools/export/downloads.ts",
     "moodle:import-check": "tools/moodle/import-check.sh",
     "moodle:build": "tools/moodle/build-mbz.sh",

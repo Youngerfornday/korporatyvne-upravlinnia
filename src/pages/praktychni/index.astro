@@ -1,0 +1,120 @@
+---
+import { PUBLISHED_PRACTICALS, practicalLabel, practicalPath, publishedTrainer, trainerKindLabel } from '../../components/trainers/catalog';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { rubricTotal } from '../../content/schemas/course-practicals';
+import { loadCourseData } from '../../lib/course-data';
+import { outcomeLabel } from '../../lib/course-data-pure';
+import { pluralUk } from '../../lib/plural';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+import '../../styles/topic.css';
+import '../../components/trainers/trainers.css';
+
+/** Реєстр практичних (course.yaml → practicals) за модулями: мета, теми, години, рубрика, тренажери, статус. */
+const { course, modules, topics } = await loadCourseData();
+const hoursLabel = (hours: number) => pluralUk(hours, { one: 'година', few: 'години', many: 'годин', other: 'години' });
+const pointsLabel = (points: number) => pluralUk(points, { one: 'бал', few: 'бали', many: 'балів', other: 'бала' });
+const published = course.practicals.filter((practical) => PUBLISHED_PRACTICALS.includes(practical.id)).length;
+const byModule = modules.map((module) => ({ module, practicals: course.practicals.filter((practical) => practical.module === module.id) }));
+const description = typo(
+  `${course.practicals.length} практичних занять курсу «${course.title}»: мета, теми, рубрика оцінювання і тренажери. Опубліковано ${published} із ${course.practicals.length}.`,
+);
+---
+
+<BaseLayout title={`Практичні заняття — ${course.title}`} description={description} current="trainers">
+  <div class="container" data-practicals-page>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Практичні' }]} />
+    <header class="topic-head plist-head">
+      <h1 class="h1">Практичні заняття</h1>
+      <p class="lede">
+        {typo(`${course.practicals.length} практичних по ${hoursLabel(course.practicals[0]?.hours ?? 2)}: кожна має рубрику на ${pointsLabel(rubricTotal(course.practicals[0]?.rubric ?? []))} і тренажер. Опубліковано ${published} із ${course.practicals.length}; решта готується разом із темами.`)}
+      </p>
+      <p class="btns-row small">
+        <a href={url('trenazhery/')}>Усі тренажери <Icon name="arrow-r" size="sm" /></a>
+      </p>
+    </header>
+
+    <div class="plist section">
+      {
+        byModule.map(({ module, practicals }) => (
+          <section class="plist-module" aria-labelledby={`pm-${module.id}`} data-module={module.id}>
+            <h2 id={`pm-${module.id}`}>
+              <span class="n">М{module.number}</span>
+              {typo(module.title)}
+            </h2>
+            <div class="plist-items">
+              {practicals.map((practical) => {
+                const isPublished = PUBLISHED_PRACTICALS.includes(practical.id);
+                const practicalTopics = practical.topics.map((id) => topics.find((topic) => topic.id === id)).filter((topic) => topic !== undefined);
+                return (
+                  <article class="card pcard" data-practical={practical.id} data-status={isPublished ? 'published' : 'pending'} aria-labelledby={`pt-${practical.id}`}>
+                    <div class="pcard-head">
+                      <h3 id={`pt-${practical.id}`}>
+                        <span class="n">{practicalLabel(practical.id)}</span>
+                        {isPublished ? <a href={url(practicalPath(practical.id))}>{typo(practical.title)}</a> : typo(practical.title)}
+                      </h3>
+                      {isPublished ? (
+                        <span class="chip chip-ok status-chip">
+                          <Icon name="check" size="sm" />
+                          опубліковано
+                        </span>
+                      ) : (
+                        <span class="soon">готується</span>
+                      )}
+                    </div>
+                    <p class="pcard-goal">{typo(practical.goal)}</p>
+                    <dl class="kv">
+                      <dt>Теми</dt>
+                      <dd>
+                        {practicalTopics.map((topic, index) => (
+                          <>
+                            {index > 0 && ', '}
+                            <a href={url(`temy/${topic.slug}/`)}>Тема {topic.number}</a>
+                          </>
+                        ))}
+                      </dd>
+                      <dt>Обсяг</dt>
+                      <dd>{hoursLabel(practical.hours)}</dd>
+                      <dt>ПРН</dt>
+                      <dd>{practical.prn.map((id) => outcomeLabel(course, id)).join(', ')}</dd>
+                      <dt>Рубрика</dt>
+                      <dd>
+                        {practical.rubric.map((criterion) => typo(criterion.title)).join(' · ')} — разом {pointsLabel(rubricTotal(practical.rubric))}
+                      </dd>
+                      <dt>Тренажер</dt>
+                      <dd>
+                        {practical.trainers.map((trainerId, index) => {
+                          const trainer = publishedTrainer(trainerId);
+                          return (
+                            <>
+                              {index > 0 && ', '}
+                              {trainer ? <a href={url(trainer.path)} data-trainer-link={trainerId}>{trainerKindLabel(trainerId)}</a> : trainerKindLabel(trainerId)}
+                            </>
+                          );
+                        })}
+                      </dd>
+                    </dl>
+                    {isPublished && (
+                      <p class="pcard-foot">
+                        <a class="btn btn-primary btn-sm" href={url(practicalPath(practical.id))}>
+                          Відкрити практичну <Icon name="arrow-r" size="sm" />
+                        </a>
+                      </p>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .btns-row { margin-top: var(--s-4); }
+  .btns-row a { display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 600; }
+</style>

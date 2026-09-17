@@ -1,0 +1,117 @@
+---
+import CabinetIcons from '../../components/cabinet/CabinetIcons.astro';
+import FileCards from '../../components/cabinet/FileCards.astro';
+import { loadCabinetData } from '../../components/cabinet/load-catalog';
+import { BUILD_DOWNLOADS_COMMAND } from '../../components/cabinet/load-manifest';
+import { GUIDE_LIMITS, GUIDE_SECTIONS, inlineParts } from '../../components/cabinet/moodle-guide';
+import Crumbs from '../../components/site/Crumbs.astro';
+import Icon from '../../components/site/Icon.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CABINET_PATH } from '../../lib/site-nav';
+import { typo } from '../../lib/typography';
+import { url } from '../../lib/url';
+// Крихти (.crumbs) оформлено в topic.css — як на сторінках тестів і профілю.
+import '../../styles/topic.css';
+import '../../components/cabinet/files.css';
+import '../../components/cabinet/moodle.css';
+
+/** «Як завантажити курс у Moodle»: покроково для викладача eln.stu.cn.ua, з файлами з маніфесту матеріалів. */
+const { catalog, manifest } = await loadCabinetData();
+const files = [...catalog.materials.flatMap((material) => material.files), ...catalog.packages];
+const filesOf = (kinds: readonly string[]) => files.filter((file) => kinds.includes(file.kind));
+/** Типографіка — лише для тексту: назви файлів і команди в `code` лишаються як є. */
+const render = (text: string) => inlineParts(text).map((part) => (part.kind === 'code' ? part : { ...part, text: typo(part.text) }));
+---
+
+<BaseLayout
+  title={`Як завантажити курс у Moodle — ${catalog.courseTitle}`}
+  description="Покрокова інструкція для викладача eln.stu.cn.ua: відновлення резервної копії курсу .mbz, мова курсу, імпорт глосарію, дати закриття тестів і запасні шляхи."
+  current="teacher"
+>
+  <CabinetIcons />
+  <div class="container guide" data-moodle-guide>
+    <Crumbs items={[{ label: 'Курс', href: url() }, { label: 'Кабінет викладача', href: url(CABINET_PATH) }, { label: 'Moodle' }]} />
+    <header class="guide-head">
+      <p class="kicker">Для викладача eln.stu.cn.ua</p>
+      <h1 class="h1">Як завантажити курс у Moodle</h1>
+      <p class="lede">
+        {typo('Курс переноситься однією резервною копією: розділи-модулі, Книги лекцій, тести, завдання з рубриками й журнал оцінок. Глосарій імпортується окремим файлом. Перевірено на Moodle 5.2.2 — тій самій версії, що на eln.')}
+      </p>
+      {
+        !manifest && (
+          <p class="guide-missing" data-guide-missing>
+            <Icon name="info" />
+            <span>
+              Файли для завантаження ще не зібрано. Запустіть <code>{BUILD_DOWNLOADS_COMMAND}</code> і перезберіть сайт — тоді на цій сторінці з’являться резервна копія, глосарій і запасні файли.
+            </span>
+          </p>
+        )
+      }
+    </header>
+
+    <div class="guide-layout">
+      <nav class="guide-toc" aria-labelledby="guide-toc-title">
+        <h2 class="caps" id="guide-toc-title">Кроки</h2>
+        <ol>
+          {GUIDE_SECTIONS.map((section, index) => (
+            <li>
+              <a href={`#${section.id}`}>
+                <span class="num">{index + 1}</span>
+                {section.title}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="#obmezhennia"><span class="num">!</span>Обмеження</a>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="guide-body">
+        {
+          GUIDE_SECTIONS.map((section, index) => (
+            <section class="guide-section" id={section.id} aria-labelledby={`${section.id}-title`}>
+              <h2 class="h2" id={`${section.id}-title`}>
+                <span class="n">{index + 1}.</span>
+                {section.title}
+              </h2>
+              {section.intro && (
+                <p class="guide-intro">
+                  {render(section.intro).map((part) => (part.kind === 'strong' ? <b>{part.text}</b> : part.kind === 'code' ? <code>{part.text}</code> : part.text))}
+                </p>
+              )}
+              <ol class="guide-steps">
+                {section.steps.map((step) => (
+                  <li>
+                    <span>{render(step).map((part) => (part.kind === 'strong' ? <b>{part.text}</b> : part.kind === 'code' ? <code>{part.text}</code> : part.text))}</span>
+                  </li>
+                ))}
+              </ol>
+              {section.warning && (
+                <p class="guide-warn">
+                  <Icon name="alert" />
+                  <span>{typo(section.warning)}</span>
+                </p>
+              )}
+              {section.files && (
+                <div class="guide-files">
+                  <FileCards files={filesOf(section.files.kinds)} empty={section.files.empty} label={section.files.label} />
+                </div>
+              )}
+            </section>
+          ))
+        }
+
+        <section class="guide-section" id="obmezhennia" aria-labelledby="obmezhennia-title">
+          <h2 class="h2" id="obmezhennia-title">Обмеження</h2>
+          <ul class="guide-limits">
+            {GUIDE_LIMITS.map((limit) => <li>{typo(limit)}</li>)}
+          </ul>
+          <p class="guide-back">
+            <a class="btn btn-secondary" href={url(CABINET_PATH)}><Icon name="arrow-l" />До кабінету викладача</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

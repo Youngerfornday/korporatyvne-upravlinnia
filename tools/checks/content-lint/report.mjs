@@ -11,6 +11,11 @@ export const RULE_TITLES = {
   'source-missing': 'Висячі посилання на джерела',
   term: 'Терміни, введені через <Term>',
   'number-without-source': 'Числа без джерела поруч',
+  'slide-number-source': 'Презентації: число на слайді без sources',
+  'slide-number-lecture': 'Презентації: числа, яких немає в лонгріді',
+  'slide-norm-code': 'Презентації: норма без коду legal-baseline',
+  'slide-case': 'Презентації: кейс не з реєстру теми',
+  'slide-figure': 'Презентації: схема не з лонгріда теми',
 };
 
 const LEVEL_LABEL = { error: 'ПОМИЛКА', warning: 'УВАГА  ' };

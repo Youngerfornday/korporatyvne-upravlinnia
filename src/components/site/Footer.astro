@@ -1,5 +1,5 @@
 ---
-import { CABINET_PATH, PROFILE_PATH } from '../../lib/site-nav';
+import { CABINET_PATH, MOODLE_GUIDE_PATH, PROFILE_PATH } from '../../lib/site-nav';
 import { url } from '../../lib/url';
 
 interface Props {
@@ -27,7 +27,8 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
         <ul>
           <li><a href={url('#agenda')}>Порядок денний курсу</a></li>
           <li><a href={url('temy/')}>Усі теми</a></li>
-          <li><span class="soon">Практикуми й тренажери</span></li>
+          <li><a href={url('praktychni/')}>Практичні заняття</a></li>
+          <li><a href={url('trenazhery/')}>Тренажери</a></li>
           <li><a href={url('testy/')}>Тренувальні тести</a></li>
           <li><a href={url(PROFILE_PATH)}>Ваш профіль</a></li>
           <li><span class="soon">Флеш-картки й глосарій</span></li>
@@ -37,9 +38,9 @@ const logoDark = url('brand/logo-cpnu-uk-white.png');
         <h3 id="footer-teachers">Викладачам</h3>
         <ul>
           <li><a href={url(CABINET_PATH)}>Кабінет викладача</a></li>
-          <li><span class="soon">Як завантажити курс у Moodle</span></li>
-          <li><span class="soon">Пакети для eln.stu.cn.ua</span></li>
-          <li><span class="soon">Силабус і робоча програма</span></li>
+          <li><a href={url(MOODLE_GUIDE_PATH)}>Як завантажити курс у Moodle</a></li>
+          <li><a href={url(`${CABINET_PATH}#pakety`)}>Пакети для eln.stu.cn.ua</a></li>
+          <li><a href={url('downloads/course/syllabus.docx')}>Силабус (DOCX)</a></li>
         </ul>
       </nav>
     </div>

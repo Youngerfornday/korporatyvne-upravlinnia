@@ -133,6 +133,13 @@ export function mdxModel(text) {
   return { units: [...front.units, ...units], maps: front.maps, data: front.data, lines, blocks };
 }
 
+const SLIDES_FILE = /(?:^|\/)modules\/m\d+\/t\d{2}\/slides\.ya?ml$/;
+
+/** Презентація теми: `content/modules/mN/tNN/slides.yaml`. */
+export function isSlidesFile(file) {
+  return SLIDES_FILE.test(file.file);
+}
+
 /** @returns {ContentFile} */
 export function contentFile(file, text) {
   const kind = extname(file) === '.mdx' || extname(file) === '.md' ? 'mdx' : 'yaml';

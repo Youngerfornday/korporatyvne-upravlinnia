@@ -1,11 +1,12 @@
 ---
 import Agenda from '../components/site/Agenda.astro';
+import { CALCULATOR_TRAINERS } from '../components/trainers/catalog';
 import Icon from '../components/site/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { loadCourseData } from '../lib/course-data';
 import { INITIAL_LEVEL, PLAYER_LEVELS, formatXp } from '../lib/player-levels';
 import { pluralUk } from '../lib/plural';
-import { CABINET_PATH } from '../lib/site-nav';
+import { CABINET_PATH, MOODLE_GUIDE_PATH } from '../lib/site-nav';
 import { typo } from '../lib/typography';
 import { url } from '../lib/url';
 
@@ -23,29 +24,8 @@ const facts = [
   { value: course.hours.total, label: pluralUk(course.hours.total, { one: 'година', few: 'години', many: 'годин', other: 'години' }).replace(/^\S+\s/, '') },
 ];
 
-const trainers = [
-  {
-    id: 'quorum',
-    icon: 'scale',
-    title: 'Кворум і голосування',
-    text: 'Чи відбудуться збори, якщо зареєструвалося 48,7 % голосуючих акцій, і скільки треба для рішення про зміну статуту.',
-    formula: 'Кворум: понад 50 % голосуючих акцій',
-  },
-  {
-    id: 'cumulative',
-    icon: 'target',
-    title: 'Кумулятивне голосування',
-    text: 'Мінімальний пакет, щоб гарантовано провести k своїх кандидатів у раду з N місць.',
-    formula: 'S·k / (N + 1) + 1 акція',
-  },
-  {
-    id: 'dividends',
-    icon: 'calc',
-    title: 'Дивіденди й чисті активи',
-    text: 'Розподіл прибутку між привілейованими і простими акціями та перевірка, чи дозволяє виплату розмір чистих активів.',
-    formula: 'ЧА > СК після виплати',
-  },
-];
+/** Картки тренажерів — з каталогу (src/components/trainers/catalog.ts): ті самі назви, шляхи й формули, що на сторінках тренажерів. */
+const trainers = CALCULATOR_TRAINERS;
 ---
 
 <BaseLayout title={`${course.title} — онлайн-курс ${course.institutionShort}`} description={description} current="course">
@@ -139,20 +119,22 @@ const trainers = [
   <section class="section container" aria-labelledby="tools-title">
     <div class="section-head">
       <h2 class="h2" id="tools-title">Тренажери</h2>
-      <p class="muted">{typo('Кожне число в кейсі можна перерахувати самому. Формули відкриті. Тренажери з’являться разом із практикумами.')}</p>
+      <p class="muted">
+        {typo('Кожне число в кейсі можна перерахувати самому. Формули відкриті: розрахунок показує кожен крок, а задача щоразу дає новий варіант.')}{' '}
+        <a href={url('trenazhery/')}>Усі тренажери</a>
+      </p>
     </div>
     <div class="tools" data-trainers>
       {
         trainers.map((trainer) => (
-          <article class="card tool" data-trainer={trainer.id} data-status="planned">
+          <a class="card tool" href={url(trainer.path)} data-trainer={trainer.key} data-status="published">
             <Icon name={trainer.icon} size="lg" />
             <div>
               <h3>{trainer.title}</h3>
               <p>{typo(trainer.text)}</p>
               <div class="formula-line" data-typography="off">{trainer.formula}</div>
-              <span class="soon">незабаром</span>
             </div>
-          </article>
+          </a>
         ))
       }
     </div>
@@ -194,7 +176,7 @@ const trainers = [
       </div>
       <div class="btns">
         <a class="btn btn-primary" href={url(CABINET_PATH)}>Відкрити кабінет</a>
-        <span class="soon">Інструкція для Moodle — незабаром</span>
+        <a class="btn btn-secondary" href={url(MOODLE_GUIDE_PATH)}>Як завантажити курс у Moodle</a>
       </div>
     </div>
   </section>
@@ -219,12 +201,13 @@ const trainers = [
   .fact dt { font-size: var(--text-xs); color: var(--band-ink-muted); }
 
   .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
-  .tool { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); padding: var(--s-5); color: inherit; }
+  .tool { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); padding: var(--s-5); color: inherit; text-decoration: none; transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out); }
+  .tool:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); border-color: var(--line-strong); color: inherit; }
+  @media (prefers-reduced-motion: reduce) { .tool:hover { transform: none; } }
   .tool :global(.icon-lg) { color: var(--lavender-ink); margin-top: 0.1rem; }
   .tool h3 { font-size: var(--text-md); font-weight: 650; }
   .tool p { color: var(--ink-2); font-size: var(--text-sm); margin-top: var(--s-1); line-height: 1.45; text-wrap: pretty; }
   .tool .formula-line { margin-top: var(--s-3); font-size: var(--text-xs); color: var(--ink-3); font-variant-numeric: tabular-nums; }
-  .tool .soon { margin-top: var(--s-2); }
 
   .how { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-8); align-items: start; }
   .how-text { margin-top: var(--s-4); max-width: 52ch; text-wrap: pretty; }

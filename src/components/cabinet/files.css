@@ -1,0 +1,10 @@
+/* files.css — картки файлів для завантаження: готові пакети кабінету й файли сторінки «Як завантажити курс у Moodle». */
+.ready { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
+.ready-card { display: grid; grid-template-columns: auto 1fr auto; gap: var(--s-3); align-items: center; height: 100%; padding: var(--s-4) var(--s-5); text-decoration: none; color: inherit; transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }
+.ready-card:hover { border-color: var(--line-strong); box-shadow: var(--shadow-2); color: inherit; }
+.ready-card .icon-lg { color: var(--lavender-ink); }
+.ready-card b { display: block; font-size: var(--text-sm); font-weight: 650; }
+.ready-card small { display: block; color: var(--ink-3); font-size: var(--text-xs); font-variant-numeric: tabular-nums; }
+.ready-card .ready-desc { margin-top: 2px; }
+.ready-card > .icon:last-child { color: var(--ink-3); }
+@media (max-width: 1024px) { .ready { grid-template-columns: 1fr; } }

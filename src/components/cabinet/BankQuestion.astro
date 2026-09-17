@@ -1,0 +1,107 @@
+---
+/** Одне питання тренувального банку для викладача: стовбур з відповідями, варіанти з позначкою правильних, норма. */
+import Icon from '../site/Icon.astro';
+import { typo } from '../../lib/typography';
+import type { BankQuestionView } from './bank-view';
+
+interface Props {
+  question: BankQuestionView;
+}
+
+const { question } = Astro.props;
+---
+
+<li class="bq" id={question.id} data-question={question.id}>
+  <div class="bq-head">
+    <span class="bq-n num">{question.number}</span>
+    <span class="chip">{question.typeLabel}</span>
+    <span class="chip chip-tint">{question.bloomLabel}</span>
+    <span class="faint small">{question.mark}</span>
+    <code class="bq-id">{question.id}</code>
+  </div>
+  <p class="bq-stem">
+    {
+      question.stem.map((part) =>
+        part.kind === 'text' ? typo(part.text) : <mark class="bq-gap"><span class="visually-hidden">правильна відповідь: </span>{typo(part.text)}</mark>,
+      )
+    }
+  </p>
+
+  {
+    question.answers.length > 0 && (
+      <ul class="bq-answers">
+        {question.answers.map((answer) => (
+          <li data-correct={answer.correct ? 'true' : undefined}>
+            <span class={answer.correct ? 'mark mark-done' : 'mark mark-todo'} role="img" aria-label={answer.correct ? 'правильна відповідь' : 'хибна відповідь'}>
+              {answer.correct && <Icon name="check" />}
+            </span>
+            <span>
+              {typo(answer.text)}
+              {answer.fraction && <b class="bq-fraction num"> {answer.fraction}</b>}
+              {answer.feedback && <span class="bq-why">{typo(answer.feedback)}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    question.pairs.length > 0 && (
+      <table class="bq-pairs">
+        <caption class="visually-hidden">Правильні пари</caption>
+        <thead>
+          <tr>
+            <th scope="col">Елемент</th>
+            <th scope="col">Правильна відповідь</th>
+          </tr>
+        </thead>
+        <tbody>
+          {question.pairs.map((pair) => (
+            <tr>
+              <th scope="row">{typo(pair.prompt)}</th>
+              <td>{typo(pair.answer)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+
+  {
+    question.correctText && (
+      <p class="bq-correct">
+        <Icon name="check" /> Правильна відповідь: <b>{question.correctText}</b>
+      </p>
+    )
+  }
+
+  {
+    question.distractors.length > 0 && (
+      <p class="bq-distractors small">
+        <span class="faint">Дистрактори:</span> {question.distractors.map((text) => typo(text)).join('; ')}
+      </p>
+    )
+  }
+
+  <details class="bq-feedback">
+    <summary>Загальний відгук</summary>
+    <p>{typo(question.generalFeedback)}</p>
+  </details>
+
+  {
+    question.lawRefs.length > 0 && (
+      <ul class="bq-law small">
+        {question.lawRefs.map((ref) => (
+          <li>
+            <Icon name="scale" size="sm" />
+            <span>
+              {ref.url ? <a href={ref.url} rel="noopener">{`${ref.article} — ${ref.act}`}</a> : `${ref.article} — ${ref.act}`}
+              <span class="ok-date"> · перевірено {ref.checked}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</li>

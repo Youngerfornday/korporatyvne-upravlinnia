@@ -8,6 +8,7 @@ import { checkCheckedDates, todayIso } from './rules/checked-dates.mjs';
 import { checkLawCodes } from './rules/law-codes.mjs';
 import { checkLawNumbers } from './rules/law-numbers.mjs';
 import { checkNumbersWithoutSource } from './rules/numbers.mjs';
+import { checkSlides } from './rules/slides.mjs';
 import { checkSourceUsage } from './rules/sources.mjs';
 import { checkTerms } from './rules/terms.mjs';
 import { checkUnconfirmedZone } from './rules/unconfirmed-zone.mjs';
@@ -26,5 +27,6 @@ export function lintContent({ files, baseline, course, today = todayIso() }) {
     ...checkSourceUsage(files),
     ...checkTerms(files, course ?? { glossaryTerms: [] }),
     ...checkNumbersWithoutSource(files),
+    ...checkSlides(files, course ?? {}),
   ];
 }

@@ -1,0 +1,40 @@
+---
+/** Картки файлів із маніфесту матеріалів для сторінки Moodle: пряме завантаження або зовнішнє посилання. */
+import Icon from '../site/Icon.astro';
+import { formatBytes, formatLabel, kindLabel } from './texts';
+import type { MaterialFile } from './types';
+
+interface Props {
+  files: readonly MaterialFile[];
+  /** Текст, коли файлів цього виду в маніфесті немає. */
+  empty: string;
+  label: string;
+}
+
+const { files, empty, label } = Astro.props;
+---
+
+{
+  files.length === 0 ? (
+    <p class="files-empty" data-files-empty>{empty}</p>
+  ) : (
+    <ul class="ready" aria-label={label}>
+      {files.map((file) => (
+        <li>
+          <a class="card ready-card" href={file.href} data-file={file.id} {...(file.external ? { rel: 'noopener' } : { download: '' })}>
+            <Icon name={file.kind === 'backup' || file.kind === 'scorm' ? 'cab-scorm' : file.format === 'zip' ? 'cab-archive' : 'file'} size="lg" />
+            <span>
+              <b>{file.title}</b>
+              <small>
+                {kindLabel(file.kind)} · {formatLabel(file.format)} · {formatBytes(file.bytes)}
+                {file.external && ' · GitHub Releases'}
+              </small>
+              {file.external && <span class="visually-hidden"> (зовнішнє посилання)</span>}
+            </span>
+            <Icon name={file.external ? 'external' : 'download'} />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}

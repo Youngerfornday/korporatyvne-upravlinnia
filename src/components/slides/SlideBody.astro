@@ -1,0 +1,133 @@
+---
+import type { Course } from '../../content/schemas/course';
+import { formatDate, outcomeLabel } from '../../lib/course-data-pure';
+import { typo } from '../../lib/typography';
+import Icon from '../site/Icon.astro';
+import type { SlideView } from './load-slides';
+import { optionLetter } from './slides-pure';
+
+/** Вміст змістового слайда за типом. Заголовок, колонтитул і нотатки малює Slide.astro. */
+interface Props {
+  view: SlideView;
+  course: Course;
+  topicId: string;
+}
+
+const { view, course, topicId } = Astro.props;
+const { slide } = view;
+const results = course.topics.find((topic) => topic.id === topicId)?.results ?? [];
+const lawHost = slide.type === 'norm' && slide.lawRef.url ? new URL(slide.lawRef.url).hostname.replace(/^www\./, '') : undefined;
+---
+
+{
+  slide.type === 'outcomes' && (
+    <ul class="slide-outcomes">
+      {results.map((result) => (
+        <li>
+          <span class="slide-chips">{result.prn.map((prn) => <span class="chip chip-prn">{outcomeLabel(course, prn)}</span>)}</span>
+          <span>{typo(result.statement)}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+{(slide.type === 'bullets' || slide.type === 'summary') && (
+  <ul class:list={['slide-list', { 'is-summary': slide.type === 'summary' }]}>
+    {slide.bullets.map((item) => <li>{typo(item)}</li>)}
+  </ul>
+)}
+
+{
+  slide.type === 'two-columns' && (
+    <div class="slide-columns">
+      {[slide.left, slide.right].map((column) => (
+        <section class="slide-column">
+          <h3>{typo(column.heading)}</h3>
+          <ul class="slide-list">{column.bullets.map((item) => <li>{typo(item)}</li>)}</ul>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+{
+  slide.type === 'figure' && (
+    <figure class="slide-figure">
+      <div class="slide-figure-art" set:html={view.figureSvg} />
+      <figcaption>{typo(slide.caption)}</figcaption>
+    </figure>
+  )
+}
+
+{
+  slide.type === 'norm' && (
+    <div class="slide-norm" role="note" aria-label={`Норма: ${slide.title}`}>
+      <Icon name="scale" size="lg" />
+      <div>
+        <p class="slide-norm-text">{typo(slide.text)}</p>
+        <p class="slide-norm-src">
+          <span>{typo(slide.lawRef.act, { keepSpacedHyphens: true })}, {slide.lawRef.article}</span>
+          {slide.lawRef.url && lawHost && (
+            <a href={slide.lawRef.url} target="_blank" rel="noopener">
+              {lawHost}
+              <Icon name="external" size="sm" />
+            </a>
+          )}
+          <span class="verified">
+            <Icon name="check" size="sm" />
+            перевірено {formatDate(slide.lawRef.checkedAt)}
+          </span>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+{
+  slide.type === 'formula' && (
+    <div class="slide-formula-wrap">
+      <div class="slide-formula" role="figure" aria-label={`Формула: ${slide.title}`}>
+        <span class="slide-formula-label">Формула</span>
+        <span class="slide-formula-body num">{slide.formula}</span>
+      </div>
+      <ul class="slide-list">{slide.explanation.map((item) => <li>{typo(item)}</li>)}</ul>
+    </div>
+  )
+}
+
+{
+  slide.type === 'case' && (
+    <div class="slide-case">
+      <ol class="slide-facts" style={`--fact-rows: ${Math.ceil(slide.facts.length / 2)}`}>{slide.facts.map((fact) => <li>{typo(fact)}</li>)}</ol>
+      <div class="slide-case-q">
+        <span class="slide-case-q-label">Питання для обговорення</span>
+        <p>{typo(slide.question)}</p>
+      </div>
+    </div>
+  )
+}
+
+{
+  slide.type === 'quote' && (
+    <figure class="slide-quote">
+      <blockquote>
+        <p>«{typo(slide.text)}»</p>
+      </blockquote>
+      <figcaption>{typo(slide.attribution)}</figcaption>
+    </figure>
+  )
+}
+
+{
+  slide.type === 'question' && slide.options.length > 0 && (
+    <ol class="slide-options">
+      {slide.options.map((option, index) => (
+        <li>
+          <span class="slide-option-key" aria-hidden="true">{optionLetter(index)}</span>
+          <span><span class="visually-hidden">{optionLetter(index)}. </span>{typo(option)}</span>
+        </li>
+      ))}
+    </ol>
+  )
+}

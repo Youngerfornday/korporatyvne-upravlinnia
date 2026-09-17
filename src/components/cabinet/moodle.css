@@ -1,0 +1,49 @@
+/* moodle.css — сторінка «Як завантажити курс у Moodle»: зміст кроків збоку, нумеровані кроки, файли з маніфесту. */
+
+.guide-head { padding-block: var(--s-6) var(--s-6); border-bottom: 1px solid var(--rule); }
+.guide-head .kicker { font-size: var(--text-sm); color: var(--ink-3); margin-bottom: var(--s-2); }
+.guide-head .lede { margin-top: var(--s-4); max-width: 62ch; }
+.guide-missing { margin-top: var(--s-5); display: flex; gap: var(--s-3); align-items: flex-start; padding: var(--s-3) var(--s-4); border-radius: var(--r-1); background: var(--surface-tint); color: var(--ink-on-tint); font-size: var(--text-sm); max-width: 62ch; }
+.guide-missing .icon { flex: none; margin-top: 0.1rem; color: var(--accent); }
+.guide code { font-size: 0.9em; padding: 0.05rem 0.35rem; border-radius: 4px; background: var(--bg-sunken); color: var(--ink); overflow-wrap: anywhere; }
+
+.guide-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s-7); padding-top: var(--s-6); }
+.guide-toc { position: sticky; top: 5rem; align-self: start; }
+.guide-toc .caps { color: var(--ink-3); margin-bottom: var(--s-3); }
+.guide-toc ol { display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.guide-toc a { display: flex; gap: var(--s-3); align-items: baseline; padding: var(--s-2) var(--s-3); min-height: 2.25rem; color: var(--ink-2); text-decoration: none; font-size: var(--text-sm); border-radius: 0 var(--r-1) var(--r-1) 0; }
+.guide-toc a:hover { color: var(--ink); background: var(--bg-sunken); }
+.guide-toc .num { color: var(--ink-3); font-variant-numeric: tabular-nums; min-width: 1ch; }
+
+.guide-body { max-width: 48rem; }
+.guide-section { padding-bottom: var(--s-7); scroll-margin-top: 5rem; }
+.guide-section + .guide-section { padding-top: var(--s-6); border-top: 1px solid var(--line); }
+.guide-section .h2 { margin-bottom: var(--s-4); }
+.guide-section .h2 .n { color: var(--ink-3); font-weight: 500; margin-right: 0.35rem; font-variant-numeric: tabular-nums; }
+.guide-intro { color: var(--ink-2); margin-bottom: var(--s-4); text-wrap: pretty; }
+.guide-steps { counter-reset: step; display: grid; gap: var(--s-3); }
+.guide-steps li { counter-increment: step; display: grid; grid-template-columns: 2rem 1fr; gap: var(--s-3); align-items: start; line-height: 1.55; text-wrap: pretty; }
+.guide-steps li::before { content: counter(step); display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 1.5px solid var(--line-strong); font-size: var(--text-xs); font-weight: 650; color: var(--ink-2); font-variant-numeric: tabular-nums; margin-top: 0.05rem; }
+.guide-steps b { font-weight: 650; color: var(--ink); }
+.guide-warn { margin-top: var(--s-4); display: flex; gap: var(--s-3); align-items: flex-start; padding: var(--s-3) var(--s-4); border-left: 3px solid var(--warn); background: var(--bg-sunken); border-radius: 0 var(--r-1) var(--r-1) 0; font-size: var(--text-sm); color: var(--ink-2); }
+.guide-warn .icon { flex: none; color: var(--warn); margin-top: 0.1rem; }
+.guide-files { margin-top: var(--s-5); }
+.guide-files .ready { grid-template-columns: repeat(2, 1fr); }
+.files-empty { font-size: var(--text-sm); color: var(--ink-3); padding: var(--s-3) var(--s-4); border: 1px dashed var(--line-strong); border-radius: var(--r-2); }
+.guide-limits { display: grid; gap: var(--s-3); }
+.guide-limits li { position: relative; padding-left: var(--s-5); color: var(--ink-2); text-wrap: pretty; }
+.guide-limits li::before { content: ""; position: absolute; left: 0.2rem; top: 0.65em; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--ink-3); }
+.guide-back { margin-top: var(--s-6); }
+
+@media (max-width: 960px) {
+  .guide-layout { grid-template-columns: 1fr; gap: var(--s-5); }
+  .guide-toc { position: static; }
+  .guide-files .ready { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .guide-toc, .guide-back, .guide-files { display: none !important; }
+  .guide-layout { display: block; }
+  .guide-section { break-inside: auto; }
+  .guide-steps li { break-inside: avoid; }
+}

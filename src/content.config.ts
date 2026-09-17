@@ -6,6 +6,7 @@ import { CourseSchema } from './content/schemas/course';
 import { GlossaryFileSchema } from './content/schemas/glossary';
 import { PracticalFileSchema } from './content/schemas/practical';
 import { BankFileSchema } from './content/schemas/questions';
+import { SlidesFileSchema } from './content/schemas/slides';
 import { SourcesFileSchema } from './content/schemas/sources';
 import { TopicFrontmatterSchema } from './content/schemas/topic';
 
@@ -45,4 +46,10 @@ const practicals = defineCollection({
   schema: PracticalFileSchema,
 });
 
-export const collections = { course, topics, glossary, sources, trainingBanks, practicals };
+/** Презентації тем: `content/modules/mN/tNN/slides.yaml` — веб-режим `temy/<slug>/prezentatsiia/`, PDF і PPTX. */
+const slides = defineCollection({
+  loader: glob({ base: MODULES_ROOT, pattern: 'm*/t*/slides.yaml' }),
+  schema: SlidesFileSchema,
+});
+
+export const collections = { course, topics, glossary, sources, trainingBanks, practicals, slides };
