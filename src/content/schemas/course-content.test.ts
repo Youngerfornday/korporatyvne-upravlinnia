@@ -36,10 +36,12 @@ describe('course.yaml: references to docs/research', () => {
   it('quotes programme outcomes and special competences verbatim from the standard', () => {
     const standard = researchDoc('education-standard').replace(/\s+/g, ' ').replace(/'/g, '’');
     const course = CourseSchema.parse(loadCourse());
-    const statements = [...course.learningOutcomes, ...course.competences.filter((c) => c.source === 'standard')].map(
-      (item) => `${item.code}. ${item.statement}`,
-    );
-    for (const statement of statements) expect(standard).toContain(statement);
+    // Формулювання звіряємо дослівно, а код — окремо: у дослідженні він може стояти в таблиці, а не перед текстом.
+    const items = [...course.learningOutcomes, ...course.competences.filter((c) => c.source === 'standard')];
+    for (const item of items) {
+      expect(standard).toContain(item.statement);
+      expect(standard).toContain(item.code);
+    }
     expect(standard).toContain(course.integralCompetence.statement);
   });
 });
