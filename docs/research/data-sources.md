@@ -305,6 +305,9 @@
   - 15,5% з 31.07.2026.
 - **Наступне засідання з монетарної політики — 17.09.2026** (графік НБУ) [B13]. Якщо курс публікується після цієї
   дати, ставку перевірити повторно.
+- Повторна перевірка таблиці НБУ **2026-09-17**: нового рядка ще немає, чинне значення — 15,5% з 31.07.2026 [B11].
+  Рішення Правління від 17.09.2026 оголошують того самого дня на пресбрифінгу о 14:00 [B13] — після публікації
+  оновити значення в задачах.
 
 Джерела розділу 3:
 
@@ -334,3 +337,126 @@
 | П6 (ринок капіталу, облігації, доходність) | ОВДП: НБУ + ПФТС (ISIN, погашення), аукціон 08.09.2026; облікова ставка 15,5% | придатні; для акцій реальних котирувань майже немає — брати іноземний лістинг або умовні дані |
 | П7 (ризики, аудит розкриття) | SMIDA + Положення № 608 (п. 43 як чекліст) | придатні; конкретний звіт емітента обрати вручну; норми звірити з `legal-baseline.md` |
 | П8 (ефективність КУ, DuPont) | фінансова звітність емітентів на SMIDA або звіт Astarta (див. `cases.md`) | частково; приклад звіту не завантажено |
+
+---
+
+## 5. Дослідницькі джерела про структуру власності (для тем 1, 2, 4 і практичного П1)
+
+Додано 2026-09-17. Потрібні, щоб модель «сімейна компанія» і теза про концентровану власність спиралися на
+дослідження, а не на приклад однієї компанії. Усі PDF відкрито; HTML-сторінки oecd.org на автоматизований
+запит віддають 403, тому наведено прямі посилання на PDF.
+
+### 5.1. OECD Corporate Governance Factbook 2025 [офіційне]
+
+OECD (2025). *OECD Corporate Governance Factbook 2025*. OECD Publishing, Paris. DOI 10.1787/f4f43735-en.
+PDF: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/10/oecd-corporate-governance-factbook-2025_56febc0d/f4f43735-en.pdf
+Охоплення: 46 086 лістингових компаній зі 98 ринків (близько 99% світової капіталізації), дані на кінець 2024 р.
+
+Що підтверджує (цитати й місця в документі):
+
+1. Розпорошена власність — не типовий випадок: «In 44% of listed companies globally, the combined holding of
+   the three largest shareholders is over 50% of the listed equity. Conversely, the largest 3 shareholders own
+   less than 1% of the equity in only 0.7% of listed companies» (розд. 1.2.1, с. 30, Figure 1.14).
+2. Регіональна різниця, потрібна для теми 2: у США «the three largest owners hold between 10% and 29% of the
+   equity in more than half of the listed companies (53%) while their holdings exceed 50% in just 17% of
+   companies», у Європі — «over 50% in 53% of listed companies» (с. 31); Латинська Америка — 71%.
+3. Структура власників (Figure 1.13, с. 29–30): у світі інституційні інвестори 47%, інший вільний обіг 27%,
+   публічний сектор 10%, корпорації 9%, **стратегічні фізичні особи та родини 7%**; Європа — 9% у стратегічних
+   осіб і родин, США — 5%.
+4. Тип агентської проблеми залежить від структури власності: «in controlled companies, the vertical agency
+   problem between ownership and management may be less acute and the horizontal agency problem involving
+   controlling and minority shareholders more apparent» (розд. 4.1.1, с. 154–155, Table 4.8); шість юрисдикцій
+   прив'язують вимоги щодо незалежності ради до структури власності.
+5. Основна регуляторна відповідь на контроль — режим угод із пов'язаними сторонами: «Ninety-four percent of
+   Factbook jurisdictions require immediate disclosure of material related party transactions, an increase from
+   88% in 2022 and 50% in 2016» (розд. 3.8, с. 89–90).
+
+### 5.2. OECD Working Paper про механіку контролю [офіційне]
+
+Medina, A., de la Cruz, A., Tang, Y. (2022). *Corporate ownership and concentration*. OECD Corporate Governance
+Working Papers No. 27. DOI 10.1787/bc3adca3-en.
+PDF: https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/09/corporate-ownership-and-concentration_071a223d/bc3adca3-en.pdf
+
+- «Strategic individuals concentrate on average over 20% of the shares in listed companies in 16 jurisdictions
+  including France, Norway, Italy, Germany and Spain» (с. 9); найвищі показники — Гонконг 34,7%, Мексика 32,3%,
+  Литва 28,7%, Ізраїль 28,2%, Китай 27,6%, Греція 27,2%, Польща 26,0%, Іспанія 25,0% (Table 1.1, с. 10).
+- Механізми контролю: пірамідальні структури й подвійні класи акцій (с. 13); перехресне володіння — Японія
+  6,3% капіталізації, Угорщина 5,1%, Чилі 3,5% (Table 2.3, с. 13–14).
+- Прогалини в розкритті, що б'ють по міноритаріях: «transparency around shareholder agreements is not mandatory
+  in 12 jurisdictions… in 13 jurisdictions public disclosure of beneficial ownership of listed companies is not
+  mandatory» (с. 20).
+- Головний ризик: «the parent company may intend to extract private benefits of control at the expense of
+  subsidiaries and minority shareholders» (розд. 2.5, с. 16).
+- Стримування: схвалення угод із пов'язаними сторонами незалежними директорами вимагають 21 юрисдикція,
+  схвалення міноритаріями — 17, правило «majority of the minority» — 4 (с. 17).
+
+### 5.3. Рецензований огляд саме про сімейні фірми [наукове джерело]
+
+Villalonga, B., Amit, R. (2020). «Family ownership». *Oxford Review of Economic Policy*, Vol. 36, No. 2,
+pp. 241–257. PDF: https://faculty.wharton.upenn.edu/wp-content/uploads/2020/04/Family_Ownership.pdf
+
+- Поширеність (Table 1, с. 245): Faccio & Lang (2002) по 5 232 компаніях у 13 країнах Західної Європи — 44%
+  сімейних проти 45% розпорошених; без Великої Британії — 56% проти 28%. Claessens et al. (2000) по Східній
+  Азії — 37% (без Японії — 61%).
+- Розкид усередині Європи (с. 246): від 23% у Великій Британії до близько 60% у Франції, Німеччині,
+  Португалії та Італії; вища концентрація — у країнах французької правової традиції зі слабшим захистом
+  акціонерів.
+- Родина в раді та менеджменті (с. 244): засновники або їхні родини — ключові посадові особи, директори чи
+  власники у третині компаній S&P 500 (Anderson & Reeb, 2003) і в 37% компаній Fortune 500 (Villalonga & Amit,
+  2006); за найсуворішого визначення частка падає до 7% — показник дуже чутливий до визначення.
+- Горизонт рішень (с. 248–249, 253): «families provide their firms with a long-term orientation and “patient
+  capital”»; сімейні фірми платять нижчі зарплати, але рідше звільняють — ознака довгострокового неявного
+  контракту.
+- Зворотний бік (с. 248, 250): тунелювання прибутків усередині груп; позитивний вплив сімейної власності
+  поєднується з негативним впливом контролю, що перевищує частку у капіталі (подвійні класи акцій), і з
+  гіршими результатами компаній під керівництвом нащадків.
+- Застереження для лекції (с. 247): популярна теза «лише 30% сімейних фірм доживають до другого покоління і
+  10–15% — до третього» в академічній літературі не підтверджена власними емпіричними даними — подавати з цим
+  застереженням або не використовувати.
+
+### 5.4. Концентрація власності в українських АТ [офіційне, з обмеженням охоплення]
+
+OECD (2025). *Mapping Ukraine's Financial Markets and Corporate Governance Framework for a Sustainable
+Recovery*. DOI 10.1787/866c5c44-en. PDF:
+https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/01/mapping-ukraine-s-financial-markets-and-corporate-governance-framework-for-a-sustainable-recovery_ba6fc369/866c5c44-en.pdf
+(розд. 3.2.1, близько с. 60)
+
+- «More than 60% of companies whose shares traded on stock exchanges have a single owner holding more than 50%
+  of the equity capital in Ukraine», тоді як у юрисдикціях Factbook цей показник був близько 32% у 2022 р.
+- Держава — найбільший власник: «nearly 50% of the total shares and bonds traded on Ukrainian stock exchanges»
+  проти 11% у середньому по юрисдикціях Factbook; іноземні інвестори — понад 30%, внутрішні — майже 18%.
+- Прямо зафіксована прогалина: «Data on company groups in Ukraine is not available, as the NSSMC has not
+  carried out specific research or oversight on such company structures».
+- Контекст малої бази: частка торгів акціями впала приблизно з 5% у 2019 р. до 0,5% у 2023 р.; обсяг торгів
+  акціями — 3 млн дол. США у 2023 р.; близько 80% обсягу торгів акціями 2023 р. дали п'ять компаній.
+- Про Кодекс КУ 2020 р.: «there is currently no information available on compliance with the 2020 Code… no
+  institution responsible for carrying out aggregate reporting about overall compliance» (с. 61).
+
+OECD (2026). *Stronger Financial Markets and Institutions for Ukraine's Recovery*. DOI 10.1787/0c41c8ac-en.
+PDF: https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/03/stronger-financial-markets-and-institutions-for-ukraine-s-recovery_99e3d4a5/0c41c8ac-en.pdf
+
+- Squeeze-out без ринкового орієнтира: «the fair price assessment in the squeeze-out scheme could be revised,
+  since no market benchmark is available due to the lack of listed companies».
+- Для теми 9: «Companies submitted their annual reports in September 2025, for the first time since martial law
+  took effect».
+
+НКЦПФР (2022). Річний звіт Комісії за 2021 рік, с. 14 — https://smida.gov.ua/uploads/Zvit2021.pdf :
+«Станом на 31.12.2021 року було проведено 404 процедури squeeze out на загальну суму 1,823 млрд грн», з них у
+359 процедурах найвищою ціною була ринкова вартість, визначена суб'єктом оціночної діяльності. Застереження: з
+формулювання не видно, це накопичений підсумок із 2017 р. чи показник за рік.
+
+**Чого немає (формулювати як гіпотезу, а не як факт):**
+
+- частка **всіх** українських АТ (близько 13,5 тис. за ЄДРПОУ) з контролюючим акціонером — не знайдено; цифра
+  ОЕСР «понад 60%» стосується **лише компаній, акції яких торгувалися на біржі**, тож теза «у більшості
+  українських АТ є контролюючий власник» джерелом не підтверджена;
+- середній розмір найбільшого пакета акцій і кількість АТ з одним акціонером — не знайдено;
+- статистика squeeze-out після 2021 р.: у звіті НКЦПФР за 2024 р.
+  (https://www.nssmc.gov.ua/wp-content/uploads/2025/06/zvit-nktspfr-2024-rik-1-1.pdf) таких даних немає, звіт за
+  2025 р. (https://www.nssmc.gov.ua/wp-content/uploads/2026/05/zvit_2025.pdf) — скан без текстового шару;
+- дані про групи компаній в Україні — відсутність прямо зафіксована ОЕСР (див. вище).
+
+**Чим замінити в курсі:** (а) цифри ОЕСР 2025 із застереженням «біржові компанії»; (б) статистика squeeze-out
+зі звіту НКЦПФР за 2021 р.; (в) база SMIDA «Власники» (пакети 5% і більше з 31.03.2019, https://smida.gov.ua/db)
+— придатна для власного підрахунку студентами на вибірці емітентів, тобто як завдання практичного, а не як
+готова статистика.

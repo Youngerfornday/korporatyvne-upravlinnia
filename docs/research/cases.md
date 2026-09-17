@@ -1,6 +1,8 @@
 # Кейси корпоративного управління: фактичні довідки
 
-Дослідження R2. Дати перевірки джерел: 2026-09-14, зведення 2026-09-15. Кожен факт має посилання на джерело,
+Дослідження R2. Дати перевірки джерел: 2026-09-14, зведення 2026-09-15, досверка для «золотої теми» —
+2026-09-17 (блоки «Додаткові факти для лекції» у кейсах 1 і 7, підрозділ про Кодекс КУ Японії в кейсі 11,
+уточнення щодо дивідендів Astarta в кейсі 6). Кожен факт має посилання на джерело,
 відкрите під час дослідження. Номери джерел [n] діють у межах одного кейсу. Оцінних суджень немає.
 Імена наведено лише для публічних посадових осіб і сторін судових справ.
 
@@ -106,6 +108,21 @@
   - Дані про частку пов'язаного кредитування і нестачу капіталу — позиція НБУ [1].
   - Позиція Коломойського (за джерелом [10]): норми Закону № 590-IX унеможливлюють відновлення прав власності
     й обмежують судовий захист.
+- **Додаткові факти для лекції (перевірено 2026-09-17)**
+  - **Активи на 31.12.2016 — 205 183 млн грн**, зобов'язання — 206 065 млн грн [11, аудована окрема фінансова
+    звітність банку за 2017 р. з порівняльними даними, аудитор EY]. Твердження «найбільший банк України за
+    активами» **офіційним документом НБУ не підтверджено**: сторінки НБУ (pb.bank.gov.ua, хронологія) віддали
+    403, «Огляд банківського сектору» за лютий 2017 р. за перевіреними URL не знайдено. Вторинні джерела дають
+    активи близько 271 млрд грн у листопаді 2016 р. і частку 20–25% активів системи [12], що не збігається з
+    аудованою цифрою на кінець року (після визнання втрат). **Рекомендація:** у лекції давати аудовану цифру
+    205,2 млрд грн і формулювання «найбільший банк країни» без відсотка, або підтвердити частку окремо.
+  - **Частка ринку вкладів населення не підтверджена**: медіа наводять 30%, 36% і 40%; офіційне повідомлення
+    уряду й НБУ від 19.12.2016 [13] цифр частки не містить (там — «понад 20 млн громадян», 3,2 млн пенсіонерів,
+    потреба в капіталі 148 млрд грн). **Рекомендація:** зняти відсоток або порахувати самостійно за
+    грошово-кредитною статистикою НБУ на 01.01.2017.
+  - **Кошти населення в пасивах — підтверджено розрахунком за звітністю [11]:** кошти клієнтів на 31.12.2016 —
+    181 133 млн грн, з них фізичні особи 151 203 млн грн (строкові 119 519 + поточні 31 684), тобто **84% коштів
+    клієнтів** і **близько 73% усіх зобов'язань банку** (151 203 / 206 065 — розрахунок автора довідки).
 - **Джерела**
   1. НБУ. Виступ Голови НБУ В. Гонтаревої на спільному брифінгу з Міністром фінансів — https://bank.gov.ua/ua/news/all/vistup-golovi-natsionalnogo-banku-valeriyi-gontarevoyi-pid-chas-spilnogo-brifingu-z-ministrom-finansiv-oleksandrom-danilyukom-schodo-perehodu-privatbanku-u-derjavnu-vlasnist (2016-12-19)
   2. КМУ / Мінфін. Ministry of Finance welcomes the judgment of the High Court in London — https://www.kmu.gov.ua/en/news/minfin-vitaie-rishennia-vysokoho-sudu-velykobrytanii-pro-zdobuttia-pryvatbankom-peremohy-u-sudovomu-protsesi-proty-ioho-kolyshnikh-vlasnykiv (2025-07-30)
@@ -117,6 +134,12 @@
   8. Essex Court Chambers. US$3bn awarded in PrivatBank litigation — https://essexcourt.com/us3bn-awarded-in-privatbank-litigation/ (2025-11-11)
   9. Forbes.ua. ПриватБанк переміг Коломойського та Боголюбова в апеляції — https://forbes.ua/news/privatbank-peremig-kolomoyskogo-ta-bogolyubova-v-apelyatsii-sudu-londona-u-spravi-na-3-mlrd-22052026-39047 (2026-05-22)
   10. Forbes.ua. Конституційний Суд повернувся до справ ФГВФО та «антиколомойського закону» — https://forbes.ua/money/pereglyanuti-istoriyu-u-kolomoyskogo-fridmana-zhevago-ta-desyatkiv-vlasnikiv-bankiv-bankrutiv-zyavivsya-shans-yak-konstitutsiyniy-sud-mozhe-perekresliti-roki-ochishchennya-bankivskogo-rinku-22082023-15537 (2023-08-22); анонс КСУ — https://ccu.gov.ua/novyna/anons-konstytuciynyy-sud-ukrayiny-rozpochne-rozglyad-spravy-shchodo-konstytuciynosti-zakonu
+  11. ПАТ КБ «ПриватБанк». Окрема фінансова звітність за 2017 рік (порівняльні дані на 31.12.2016; аудитор EY) —
+      https://static.privatbank.ua/files/year_zvit_05_05.pdf (перевірено 2026-09-17)
+  12. **[втор.]** OSW (T. Iwański). Oligarchs in the making: the costly nationalisation of Ukraine's PrivatBank
+      (2016-12-21) — https://www.osw.waw.pl/en/publikacje/analyses/2016-12-21/oligarchs-making-gains-costly-nationalisation-ukraines-privatbank
+  13. Урядовий портал. Повідомлення про перехід ПриватБанку у державну власність (2016-12-19) —
+      https://www.kmu.gov.ua/news/249599083
 - **Не підтверджено / звірити**
   - **КСУ щодо Закону № 590-IX**: конституційне подання 64 народних депутатів (червень 2020 р.); засідання
     у 2023 р. (16.03, 20.04, 27.07) [10]; анонс КСУ про початок розгляду «16 липня» без року на сторінці.
@@ -127,6 +150,10 @@
     рішення остаточним).
   - Точну суму «1 761 957 792 дол. основних збитків» бачено лише в пошуковому витягу; у відкритому джерелі [8] —
     «понад 3 млрд дол. США» загалом.
+  - (2026-09-17) Статус «найбільший банк України за активами на кінець 2016 р.» — офіційним документом НБУ не
+    підтверджено; частка активів у системі за вторинними джерелами різниться (20% проти 25%).
+  - (2026-09-17) Частка ПриватБанку на ринку вкладів населення (у медіа — 30%, 36%, 40%) — першоджерелом не
+    підтверджена.
 
 ---
 
@@ -383,7 +410,14 @@
   5. Wikipedia. Astarta Holding — https://en.wikipedia.org/wiki/Astarta_Holding **[вторинне]**
   6. Astarta Holding PLC. Corporate Documents — https://astartaholding.com/en/corporate-documents/
 - **Не підтверджено / звірити**
-  - Розмір дивідендів за 2025 р., затверджений 16.06.2026, — сума у відкритих джерелах не підтверджена.
+  - Дивіденди за 2025 р. (перевірено 2026-09-17): у стрічці поточних звітів компанії є звіт № 11/2026 від
+    22.05.2026 «Dividend distribution for 2025» і звіт № 12/2026 від 17.06.2026 «Resolutions adopted at the AGM»
+    [3]; сама сторінка «Dividends» станом на 2026-09-17 містить виплати лише за 2020, 2022, 2023 і 2024 фінансові
+    роки (по 0,50 євро на акцію; за 2024 р. — 12 235 тис. євро, виплата 09.07.2025) —
+    https://astartaholding.com/en/dividends/ . За повідомленням медіа, рада директорів рекомендувала **не
+    виплачувати** дивіденди з прибутку 2025 р., щоб зберегти ліквідність, і винесла це на збори 16.06.2026
+    [втор.: Cyprus Mail, 2026-05-25 — https://cyprus-mail.com/2026/05/25/astarta-holding-decides-against-dividend-payout ].
+    **Рішення зборів за первинним документом (звіт № 12/2026) не звірено** — відкрити PDF звіту вручну.
   - Кількість незалежних директорів, структура акціонерів у відсотках, стандарт ESG-звітності (у Вікіпедії — GRI
     з 2017 р.) — не підтверджено першоджерелом (річний звіт 2025 у PDF перевищує ліміт завантаження; відкрити
     вручну: https://astartaholding.com/wp-content/uploads/2026/04/astarta_ar_2025.pdf).
@@ -443,6 +477,46 @@
     (2002-06-14) скасовано Верховним судом США 2005-05-31 [1][5].
   - Позиція сторони / органу розслідування: висновки про відповідальність ради директорів — це висновки
     підкомітету Сенату (2002-07-08), а не суду [2]; звіт Пауерса — документ спеціального комітету самої ради [1].
+- **Додаткові факти для лекції (перевірено 2026-09-17)**
+  - **Розпорошена власність і мала частка менеджменту — підтверджено першоджерелом.** Довіреність Enron Corp.
+    (DEF 14A, подана 27.03.2001, дані на 15.02.2001): «Enron knows of no one who beneficially owns in excess of
+    5% of a class of Enron's Voting Stock except as set forth in the table below» — єдиний власник понад 5%
+    звичайних акцій — **Janus Capital Corporation, 5,43%**; «All directors and executive officers as a group
+    (30 in number)… **3.44**» відсотка класу [9].
+  - **Пенсійні заощадження працівників в акціях роботодавця — підтверджено.** GAO (27.02.2002): «DOL reports
+    that **63 percent** of Enron's 401(k) assets were invested in company stock as of the end of 2000»; плани
+    охоплювали «over 20,000 employees»; внесок роботодавця («matched 50 percent of all participants' pre-tax
+    contributions up to a maximum of 6 percent») здійснювався **виключно акціями Enron**, а перерозподіл цих
+    акцій дозволявся лише з 50 років [10]. CRS (22.01.2002) дає близьку цифру: «As of December 31, 2000, **62%**
+    of the assets held in the corporation's 401(k) retirement plan consisted of shares of Enron stock», ціна
+    акції впала з понад $80 (січень 2001) до менш ніж 70 центів (січень 2002) [11]. Оцінка втрат «an estimated
+    **15,000** Enron employees lost an astounding **$1.3 billion** from their 401(k) nest eggs» — це **заява
+    сенатора на слуханні**, не аудована цифра [12]; блокування рахунків (blackout) за даними Enron тривало
+    29.10–13.11.2001, працівники свідчили про обмеження з 27.09 до 19.11.2001 [12].
+  - **Про «на папері більшість ради була незалежною» — формулювання уточнити.** Дослівно такої тези у звіті
+    Сенату немає. Підтверджене: «In 2001, Enron's Board of Directors had **15 members**» (виконавчі — Лей і
+    Скіллінг), а в розділі «Board Independence»: «the independence and objectivity of the Enron Board had been
+    weakened by financial ties between Enron and certain directors. **These financial ties, which affected a
+    majority of the outside Board members**, included the following» (консалтинг $6 000/міс. і $72 000 у 2000 р.;
+    виплати $493 914 у 2000 р.; продажі структурам Enron на $1,03 млн і менше у 1997–2000 рр.; близько
+    $600 000 пожертв онкоцентру, який очолювали двоє директорів; понад $50 000 університетові, де працювала
+    директорка) [2]. Висновок (6) звіту: «The independence of the Enron Board of Directors was compromised by
+    financial ties between the company and certain Board members…» [2].
+    **Рекомендоване формулювання для лекції:** «формально більшість ради складали зовнішні директори (13 із 15
+    не були виконавчими), але фінансові зв'язки з компанією мала більшість зовнішніх директорів».
+  - **Arthur Andersen фактично припинила аудиторську практику до скасування вироку — лише вторинні джерела.**
+    За медіа, 31.08.2002 фірма припинила аудит публічних компаній і відмовилася від ліцензій, штат скоротився
+    приблизно з 28 000 до менш ніж 3 000, тож на момент скасування вироку Верховним судом США 31.05.2005 фірму
+    вже було демонтовано [13]. Первинного документа SEC або суду з датою 31.08.2002 **не отримано**.
+  - **Витрати на відповідність після SOX — лише оцінки, не офіційна статистика.** Дослідження SEC (вересень
+    2009, опитування 2 901 компанії): серед компаній, охоплених розділом 404(b), середні сукупні витрати на
+    відповідність знизилися з **$2,87 млн до $2,33 млн (−19%)** після реформ 2007 р. (медіана з $1,19 млн до
+    $1,04 млн, −13%), середня плата зовнішнім підрядникам — з $438 тис. до $311 тис. (−29%) [14]. GAO (2006):
+    витрати «disproportionately higher (as a percentage of revenues)» для малих компаній, насамперед за
+    розділом 404 [15]; GAO (18.06.2025): у компаній, які втратили звільнення від 404(b), витрати приблизно на
+    **19% вищі**, медіанне зростання аудиторських гонорарів — **$219 тис. (13%)** у рік переходу [16].
+    **Застереження:** цифри SEC описують **рівень і зниження** витрат після 2007 р., а не стрибок витрат одразу
+    після ухвалення SOX; офіційної статистики зростання витрат у 2003–2005 рр. не знайдено.
 - **Джерела**
   - [1] Congressional Research Service. Enron: A Select Chronology of Congressional, Corporate, and Government
     Activities (RL31364) — https://www.everycrsreport.com/reports/RL31364.html
@@ -461,6 +535,23 @@
     https://www.law.cornell.edu/supct/html/08-1394.ZO.html
   - [8] (додаткове) SEC. Litigation Release No. 23422, Jeffrey K. Skilling et al. —
     https://www.sec.gov/enforcement-litigation/litigation-releases/lr-23422
+  - [9] Enron Corp. Proxy Statement (DEF 14A), подано 2001-03-27 (дані на 2001-02-15) —
+    https://www.sec.gov/Archives/edgar/data/1024401/000095012901001669/h84664ddef14a.txt
+  - [10] U.S. GAO. Private Pensions: Key Issues to Consider Following the Enron Collapse (GAO-02-480T, 2002-02-27) —
+    https://www.gao.gov/assets/gao-02-480t.pdf
+  - [11] Congressional Research Service. The Enron Bankruptcy and Employer Stock in Retirement Plans (RS21115,
+    2002-01-22) — https://www.everycrsreport.com/reports/RS21115.html
+  - [12] U.S. Senate. Retirement Insecurity: 401(k) Crisis at Enron (слухання, CHRG-107shrg78616) —
+    https://www.govinfo.gov/content/pkg/CHRG-107shrg78616/html/CHRG-107shrg78616.htm
+  - [13] **[втор.]** ABC News. Arthur Andersen (огляд десятиліття) —
+    https://abcnews.com/Business/Decade/arthur-andersen-business/story?id=9279255 ; Consulting Magazine.
+    The Collapse of Arthur Andersen (2009-12-13) — https://www.consultingmag.com/2009/12/13/1-the-collapse-of-arthur-andersen/
+  - [14] U.S. SEC, Office of Economic Analysis. Study of the Sarbanes-Oxley Act of 2002 Section 404 Internal
+    Control over Financial Reporting Requirements (вересень 2009) — https://www.sec.gov/news/studies/2009/sox-404_study.pdf
+  - [15] U.S. GAO. Sarbanes-Oxley Act: Consideration of Key Principles Needed in Addressing Implementation for
+    Smaller Public Companies (GAO-06-361, квітень 2006) — https://www.gao.gov/products/gao-06-361
+  - [16] U.S. GAO. Звіт про наслідки втрати звільнення від вимог розділу 404(b) (GAO-25-107500, 2025-06-18) —
+    https://www.gao.gov/products/gao-25-107500
 - **Не підтверджено / звірити**
   - Точна дата скасування вироку Лею: джерело [6] датоване 2006-10-18; інші медіа в пошуковій видачі датовані
     2006-10-17 — у тексті вказано «жовтень 2006 р.».
@@ -468,6 +559,13 @@
     2013 р.; першоджерело ФБР/DOJ не відкрилося (403). У тексті — «2013 р.».
   - Сторінку Верховного суду США у справі Arthur Andersen безпосередньо не відкрито (403); факт скасування вироку
     2005-05-31 узгоджено за кількома медіа в пошуковій видачі.
+  - (2026-09-17) Дата припинення аудиторської практики Arthur Andersen (31.08.2002) і скорочення штату «з ~28 000
+    до менш ніж 3 000» — лише вторинні джерела [13]; первинного документа SEC чи суду не знайдено.
+  - (2026-09-17) Кількісної оцінки **зростання** витрат на відповідність одразу після ухвалення SOX (2003–2005)
+    в офіційних джерелах не знайдено; дані SEC [14] описують зниження витрат після 2007 р. Опитування FEI
+    бачено лише в пошуковій видачі — не використовувати без звірки.
+  - (2026-09-17) Оцінка втрат працівників за планами 401(k) ($1,3 млрд, близько 15 000 осіб) — заява на слуханні
+    в Сенаті [12], а не аудований показник.
 
 ---
 
@@ -686,11 +784,18 @@
 
 ### 11. Toyota Motor: Кодекс корпоративного управління Японії, голосування щодо Акіо Тойоди, приватизація Toyota Industries
 
+> **Довідка про Кодекс КУ Японії — перевірено за офіційними текстами 2026-09-17** (деталі й цитати —
+> у підрозділі «Кодекс корпоративного управління Японії: чинна редакція» наприкінці кейсу). Стисло:
+> чинна редакція — **21 липня 2026 р.**, видає **Tokyo Stock Exchange, Inc.**; для ринку Prime у чинному тексті
+> залишається **щонайменше третина** незалежних директорів, а **більшість** вимагається лише для компаній ринку
+> Prime **з контролюючим акціонером**; вимога щодо перехресного володіння (Принцип 1.4) є **з першої редакції
+> 2015 р.**, посилена в редакції 2018 р.
+
 - **Хронологія**
   - Кодекс корпоративного управління Японії запроваджено 2015 р., переглянуто 2018 р.; 2021-04-06 Рада експертів FSA
     і TSE запропонувала другий перегляд: для компаній ринку Prime — щонайменше третина незалежних директорів
     (замість двох), комітети з номінацій і винагород з більшістю незалежних директорів, матриця навичок ради,
-    цілі різноманіття, розкриття кліматичних ризиків за TCFD [1].
+    цілі різноманіття, розкриття кліматичних ризиків за TCFD [1]. Редакцію 2026 р. опубліковано 2026-07-21 [9].
   - 2023-05-29 — радник з голосування Glass Lewis рекомендував голосувати проти переобрання голови ради Акіо Тойоди,
     оскільки лише 3 з 10 кандидатів до ради були незалежними [5]. 2023-06-14 — 119-ті збори: Тойоду переобрано з
     84,57% голосів «за»; акціонерна пропозиція щодо звіту про кліматичне лобіювання отримала 15,06% [2].
@@ -744,9 +849,74 @@
     (2024-05-28) — https://finance.yahoo.com/news/proxy-firm-glass-lewis-recommends-075114714.html
   - [8] (додаткове) Elliott (PR Newswire). Elliott Opposes Toyota Fudosan's Revised Tender Offer for Toyota Industries
     Corporation (2026-01-18) — https://www.newswire.ca/news-releases/elliott-opposes-toyota-fudosan-s-revised-tender-offer-for-toyota-industries-corporation-809366346.html
+  - [9] Japan Exchange Group / Tokyo Stock Exchange. Corporate Governance Code (July 2026 Revision) Published
+    (2026-07-21) — https://www.jpx.co.jp/english/corporate/news/news-releases/1020/20260721-01.html ;
+    текст кодексу (PDF, «21 July, 2026, Tokyo Stock Exchange, Inc») —
+    https://www.jpx.co.jp/english/corporate/news/news-releases/1020/vk0khi000001xys3-att/vk0khi000001xyv1.pdf ;
+    сторінка «Corporate Governance Code» (оновлено 2026-07-21) — https://www.jpx.co.jp/english/equities/listing/cg/index.html
+  - [10] FSA + TSE. The Revised Corporate Governance Code to Promote Growth Investments (2026-07-21) —
+    https://www.jpx.co.jp/english/equities/listing/cg/tvdivq0000008jdy-att/b5b4pj0000046lke.pdf ;
+    сторінка публічного обговорення проєкту (2026-04-10) — https://www.fsa.go.jp/en/news/2026/20260410.html
+  - [11] The Council of Experts Concerning the Corporate Governance Code (FSA). Japan's Corporate Governance Code
+    [Final Proposal] (2015-03-05) — https://www.fsa.go.jp/en/refer/councils/corporategovernance/20150306-1/01.pdf
+  - [12] Tokyo Stock Exchange. Japan's Corporate Governance Code (Revised June 2018) —
+    https://www.jpx.co.jp/english/rules-participants/public-comment/detail/d1/b5b4pj0000022v6o-att/20180601.pdf ;
+    редакція 2021 р. (з відстеженням змін) —
+    https://www.jpx.co.jp/english/rules-participants/public-comment/detail/d1/b5b4pj00000436i2-att/b5b4pj0000046lfk.pdf
+
+#### Кодекс корпоративного управління Японії: чинна редакція (перевірено за офіційними текстами, 2026-09-17)
+
+- **Хто видає і яка редакція чинна.** Кодекс видає **Tokyo Stock Exchange, Inc.** (група JPX); чинна редакція —
+  **«Japan's Corporate Governance Code», 21 July 2026** (титул PDF). Реліз TSE: «Tokyo Stock Exchange (TSE) has
+  revised its Securities Listing Regulations in relation to revisions of the Corporate Governance Code. The
+  revisions to TSE's Securities Listing Regulations shall take effect from July 21, 2026» [9]. Проєкт редакції
+  виносила на консультації FSA (2026-04-10) [10]. Попередні редакції: червень 2015 (перша), червень 2018,
+  червень 2021 [9][11][12]. Звіти про корпоративне управління за новою редакцією компанії подають «by July 2027
+  at the latest» [10].
+- **Режим застосування.** «A Prime or Standard Market-listed company is required to provide explanation for
+  non-compliance with any principle of the Code, while a Growth Market-listed company is required to provide
+  explanation for non-compliance with any General Principle of the Code» (сторінка TSE) [9] — тобто «дотримуйся
+  або пояснюй» з різним обсягом для сегментів ринку.
+- **Незалежні директори: чи є вимога БІЛЬШОСТІ для ринку Prime — ні, крім компаній з контролюючим акціонером.**
+  Чинний Принцип **4.10 «Securing Sufficient Number of Independent Directors»** (редакція 2026 р.): «Companies
+  listed on the Prime Market should therefore appoint **at least one-third** of their directors as independent
+  directors (two directors if listed on other markets) that have sufficient expertise. Companies listed on the
+  Prime Market **with a controlling shareholder** should appoint **at least the majority** of their directors
+  (one-third of directors if listed on other markets and with a controlling shareholder) as independent directors
+  who are independent of the controlling shareholder» [9]. Роз'яснення до принципу дозволяє компаніям Prime з
+  контролюючим акціонером замість більшості створити **спеціальний комітет** з незалежних осіб для розгляду
+  правочинів із конфліктом інтересів [9]. Окремо Принцип **4.7** вимагає, щоб у компаній ринку Prime **більшість
+  членів** комітетів з номінацій і винагород становили незалежні директори [9].
+  - Редакція 2021 р. мала ту саму логіку в Принципі 4.8 і Додатковому принципі 4.8.3: Prime — «at least
+    one-third», а для компаній з контролюючим акціонером — «the majority of directors if listed on the Prime
+    Market … or establish a special committee» [12].
+  - **Що змінилося у 2026 р.:** принципи про незалежних директорів перегруповано (4.8 — ролі, 4.9 — експертиза,
+    4.10 — кількість) і додано «Interpretive Guidance»; частку для Prime не піднято. В огляді FSA/TSE є лише
+    орієнтир на майбутнє: «it has been pointed out that … companies listed on the Prime Market and competing
+    globally **should eventually ensure that the majority of their directors are independent directors**» [10] —
+    це констатація позиції в пояснювальному документі, **а не норма Кодексу**.
+  - **Застереження для практичного 1:** твердження медіа (у т. ч. заголовки липня 2026 р.) про те, що «для Prime
+    тепер потрібна більшість незалежних директорів», офіційним текстом **не підтверджується**; у завданнях
+    використовувати формулювання «щонайменше третина; більшість — для Prime з контролюючим акціонером».
+- **Перехресне володіння (cross-shareholdings): вимога з'явилася вже в редакції 2015 р.** Принцип 1.4 у першій
+  редакції: «When companies hold shares of other listed companies as cross-shareholdings, they should disclose
+  their policy with respect to doing so. In addition, the board should examine the mid- to long-term economic
+  rationale and future outlook of major cross-shareholdings on an annual basis… Companies should establish and
+  disclose standards with respect to the voting rights as to their cross-shareholdings» [11].
+  - Редакція **2018 р.** посилила норму: щорічна оцінка **кожного окремого** пакета, перевірка, «whether the
+    benefits and risks from each holding cover the company's **cost of capital**», оприлюднення результатів
+    оцінки, голосування **за оприлюдненими конкретними стандартами**, плюс додаткові принципи 1.4.1 (не
+    перешкоджати продажу) і 1.4.2 (не укладати з перехресними акціонерами угод на шкоду інтересам компанії) [12].
+  - Редакція **2026 р.** зберігає цей зміст, об'єднавши його в чотири пункти Принципу 1.4 (1)–(4) [9].
+- **Інші акценти редакції 2026 р.** (за офіційним оглядом [10]): «growth-oriented governance» — розподіл ресурсів
+  і інвестиції в зростання (роль ради: визначати шлях зростання, пояснювати заходи, постійно переглядати
+  доцільність розподілу ресурсів, у т. ч. накопиченої готівки); посилення ефективності ради й функції
+  корпоративного секретаря; подання річного звіту (annual securities report) до загальних зборів — «best to
+  submit … at least three weeks before general shareholders meetings».
+- **Не підтверджено:** точні дати набрання чинності редакціями 2015, 2018 і 2021 рр. (у документах — місяць
+  публікації); статистика TSE про фактичну частку компаній Prime з більшістю незалежних директорів у 2026 р.
+
 - **Не підтверджено / звірити**
-  - Точна дата набрання чинності Кодексом 2015 р. (1 червня 2015 р.) і дата публікації редакції 2021 р. на сайті JPX
-    (червень 2021 р.) — першоджерело JPX не відкрилося (403); у тексті лише «2015» і «2018».
   - Медіа розходяться щодо результату 2024 р. («nearly 85%» у пошуковій видачі проти 71,93% в офіційному звіті) —
     використовувати лише офіційні дані [2b].
   - Кількість незалежних директорів у раді Toyota Motor після переходу 2025 р. — не підтверджено.
