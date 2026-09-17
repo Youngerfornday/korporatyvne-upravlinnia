@@ -44,19 +44,22 @@ function allItems(): DownloadItem[] {
   return [
     backupItem({ url: 'https://example.com/course.mbz', bytes: 5, moodle: '5.2.2' }),
     courseBundleItem(file('course/all.zip')),
-    glossaryItem(course, { kind: 'course' }, file('moodle/glossary-course.xml'), 150),
-    questionBankItem(course, { kind: 'final' }, file('moodle/questions-training-final.xml'), 120),
-    questionBankItem(course, { kind: 'course' }, file('moodle/questions-training-course.xml'), 180),
+    glossaryItem(course, { kind: 'course' }, file('moodle/glossary-course.xml')),
+    questionBankItem(course, { kind: 'final' }, file('moodle/questions-training-final.xml')),
+    questionBankItem(course, { kind: 'course' }, file('moodle/questions-training-course.xml')),
     moduleBundleItem(course, 'm2', file('m2/all.zip')),
-    lectureItem(course, topic('t05'), file('m2/lecture-t05.pdf'), 1),
-    practicalItem(course, practical, file(`m2/practical-${practical.id}.pdf`), 3),
+    lectureItem(course, topic('t05'), file('m2/lecture-t05.pdf')),
+    practicalItem(course, practical, file(`m2/practical-${practical.id}.pdf`)),
     moduleBundleItem(course, 'm1', file('m1/all.zip')),
-    glossaryItem(course, { kind: 'module', module: 'm1' }, file('moodle/glossary-m1.xml'), 1),
-    questionBankItem(course, { kind: 'module', module: 'm1' }, file('moodle/questions-training-m1.xml'), 22),
-    bookItem(course, topic('t02'), file('moodle/book-t02.zip'), 5, 2),
-    bookItem(course, topic('t01'), file('moodle/book-t01.zip'), 1, 0),
-    lectureItem(course, topic('t02'), file('m1/lecture-t02.pdf'), 12),
-    lectureItem(course, topic('t01'), file('m1/lecture-t01.pdf'), 41),
+    glossaryItem(course, { kind: 'topic', topic: topic('t01') }, file('moodle/glossary-t01.xml')),
+    glossaryItem(course, { kind: 'module', module: 'm1' }, file('moodle/glossary-m1.xml')),
+    questionBankItem(course, { kind: 'topic', topic: topic('t02') }, file('moodle/questions-training-t02.xml')),
+    questionBankItem(course, { kind: 'topic', topic: topic('t01') }, file('moodle/questions-training-t01.xml')),
+    questionBankItem(course, { kind: 'module', module: 'm1' }, file('moodle/questions-training-m1.xml')),
+    bookItem(course, topic('t02'), file('moodle/book-t02.zip')),
+    bookItem(course, topic('t01'), file('moodle/book-t01.zip')),
+    lectureItem(course, topic('t02'), file('m1/lecture-t02.pdf')),
+    lectureItem(course, topic('t01'), file('m1/lecture-t01.pdf')),
     workProgramItem(course, file('course/work-program.docx')),
     syllabusItem(course, file('course/syllabus.docx')),
   ];
@@ -67,19 +70,40 @@ describe('елементи маніфесту', () => {
     for (const item of allItems()) expect(DownloadItemSchema.safeParse(item).success, item.id).toBe(true);
   });
 
-  test('описи з українськими формами множини', () => {
+  test('прив’язка для кабінету: module у всіх файлах модулів і тем, topic у файлах тем, practical у PDF практичної', () => {
     const items = new Map(allItems().map((item) => [item.id, item]));
-    expect(items.get('lecture-t01')?.description).toContain('41 сторінка');
-    expect(items.get('lecture-t02')?.description).toContain('12 сторінок');
-    expect(items.get('lecture-t05')?.description).toContain('1 сторінка');
-    expect(items.get('book-t02')?.description).toContain('5 глав, схем — 2');
-    expect(items.get('book-t01')?.description).toContain('1 глава');
-    expect(items.get('glossary-m1')?.description).toContain('1 термін ');
-    expect(items.get('questions-training-m1')?.description).toContain('22 питання');
-    expect(items.get('questions-training-final')?.title).toBe('Тренувальні питання підсумкового пулу');
+    for (const id of ['lecture-t01', 'book-t01', 'questions-training-t01', 'glossary-t01']) {
+      expect(items.get(id), id).toMatchObject({ module: 'm1', topic: 't01' });
+    }
+    for (const id of ['questions-training-m1', 'glossary-m1', 'bundle-m1']) {
+      expect(items.get(id), id).toMatchObject({ module: 'm1' });
+      expect(items.get(id)?.topic, id).toBeUndefined();
+    }
+    const practical = allItems().find((item) => item.kind === 'practical');
+    expect(practical).toMatchObject({ module: 'm2', practical: expect.stringMatching(/^p\d{2}$/) });
+    expect(practical?.topic).toBeUndefined();
+    for (const id of ['syllabus', 'work-program', 'questions-training-course', 'glossary-course', 'bundle-course', 'backup-course']) {
+      expect(items.get(id)?.module, id).toBeUndefined();
+    }
+    expect(items.get('questions-training-t01')?.title).toBe(`Тренувальні питання. Тема 1. ${topic('t01').title}`);
+    expect(items.get('glossary-course')?.title).toBe(`Глосарій курсу «${course.title}»`);
+    expect(items.get('questions-training-final')?.title).toBe('Тренувальні питання. Підсумковий пул');
   });
 
-  test('сталий порядок: документи курсу, модулі (пакет модуля останнім), файли курсу, пакет курсу, резервна копія', () => {
+  test('опис — одне коротке речення без технічних деталей', () => {
+    for (const item of allItems()) {
+      const description = item.description ?? '';
+      expect(description, item.id).toMatch(/^[А-ЯІЇЄҐ][^.!?]*[.]$/);
+      expect(description.length, item.id).toBeLessThanOrEqual(110);
+      expect(description, item.id).not.toMatch(/Times New Roman|PDF|DOCX|XML|ZIP|A4|\d+ (?:сторін|глав|питан|термін)/);
+    }
+    const items = new Map(allItems().map((item) => [item.id, item]));
+    expect(items.get('questions-training-t01')?.description).toContain('теми');
+    expect(items.get('questions-training-m1')?.description).toContain('модуля');
+    expect(items.get('glossary-course')?.description).toContain('усього курсу');
+  });
+
+  test('сталий порядок: документи курсу, модулі (файл модуля перед файлами тем, пакет модуля останнім), файли курсу, пакет курсу, резервна копія', () => {
     expect(orderItems(course, allItems()).map((item) => item.id)).toEqual([
       'syllabus',
       'work-program',
@@ -88,7 +112,10 @@ describe('елементи маніфесту', () => {
       'book-t01',
       'book-t02',
       'questions-training-m1',
+      'questions-training-t01',
+      'questions-training-t02',
       'glossary-m1',
+      'glossary-t01',
       'bundle-m1',
       'lecture-t05',
       `practical-${course.practicals.find((candidate) => candidate.module === 'm2')?.id}`,
@@ -111,7 +138,17 @@ describe('пакети', () => {
 
   test('учасники пакета модуля й курсу, шлях у архіві', () => {
     const items = allItems();
-    expect(bundleMembers(items, 'm1').map((item) => item.id).sort()).toEqual(['book-t01', 'book-t02', 'glossary-m1', 'lecture-t01', 'lecture-t02', 'questions-training-m1']);
+    expect(bundleMembers(items, 'm1').map((item) => item.id).sort()).toEqual([
+      'book-t01',
+      'book-t02',
+      'glossary-m1',
+      'glossary-t01',
+      'lecture-t01',
+      'lecture-t02',
+      'questions-training-m1',
+      'questions-training-t01',
+      'questions-training-t02',
+    ]);
     const courseMembers = bundleMembers(items, undefined).map((item) => item.id);
     expect(courseMembers).toContain('syllabus');
     expect(courseMembers).not.toContain('bundle-m1');

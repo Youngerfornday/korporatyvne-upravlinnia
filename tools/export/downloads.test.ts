@@ -9,6 +9,7 @@ import { astroBuild, generateDownloads, runDownloads, type DownloadsDeps } from 
 import { checkDownloadsDir } from './downloads-verify.ts';
 import type { PrintJob, PrintOptions } from './pdf.ts';
 import { loadCourse } from './test-support/docx-xml.ts';
+import { parseXml, type XmlNode } from './test-support/xml-tree.ts';
 import { readZip, readZipText } from './unzip.ts';
 
 /**
@@ -87,6 +88,7 @@ describe('генерація матеріалів', () => {
     expect(ids.slice(-4)).toEqual(['questions-training-course', 'glossary-course', 'bundle-course', 'backup-course']);
     expect(ids.filter((id) => id.startsWith('lecture-'))).toEqual(['lecture-t01']);
     expect(ids.filter((id) => id.startsWith('book-'))).toEqual(['book-t01']);
+    expect(ids.filter((id) => /^(?:questions-training|glossary)-t\d{2}$/.test(id))).toEqual(['questions-training-t01', 'glossary-t01']);
     expect(ids.filter((id) => id.startsWith('practical-')).sort()).toEqual(practicals.sort());
     expect(ids).toEqual(expect.arrayContaining([...banks, 'glossary-m1', 'bundle-m1']));
     for (const item of manifest.items.filter((candidate) => candidate.kind === 'bundle' && candidate.module !== undefined)) {
@@ -95,14 +97,30 @@ describe('генерація матеріалів', () => {
     }
     const byId = new Map(manifest.items.map((item) => [item.id, item]));
     expect(byId.get('lecture-t01')).toMatchObject({ kind: 'lecture', format: 'pdf', audience: 'student', module: 'm1', topic: 't01', path: 'downloads/m1/lecture-t01.pdf' });
-    expect(byId.get('practical-p01')).toMatchObject({ kind: 'practical', practical: 'p01', path: 'downloads/m1/practical-p01.pdf' });
+    expect(byId.get('practical-p01')).toMatchObject({ kind: 'practical', module: 'm1', practical: 'p01', path: 'downloads/m1/practical-p01.pdf' });
+    expect(byId.get('practical-p01')?.topic).toBeUndefined();
+    expect(byId.get('questions-training-t01')).toMatchObject({ kind: 'question-bank', module: 'm1', topic: 't01', path: 'downloads/moodle/questions-training-t01.xml' });
+    expect(byId.get('glossary-t01')).toMatchObject({ kind: 'glossary', module: 'm1', topic: 't01', path: 'downloads/moodle/glossary-t01.xml' });
+    expect(byId.get('questions-training-m1')).toMatchObject({ module: 'm1' });
+    expect(byId.get('glossary-m1')).toMatchObject({ module: 'm1' });
     expect(byId.get('work-program')).toMatchObject({ kind: 'work-program', format: 'docx', audience: 'teacher', path: 'downloads/course/work-program.docx' });
     expect(byId.get('questions-training-m1')).toMatchObject({ kind: 'question-bank', format: 'xml', path: 'downloads/moodle/questions-training-m1.xml' });
-    expect(byId.get('book-t01')).toMatchObject({ kind: 'book', format: 'zip', path: 'downloads/moodle/book-t01.zip' });
+    expect(byId.get('book-t01')).toMatchObject({ kind: 'book', format: 'zip', module: 'm1', topic: 't01', path: 'downloads/moodle/book-t01.zip' });
     const backup = JSON.parse(await readFile(join(ROOT, 'tools/export/course-backup.json'), 'utf8')) as { url: string; bytes: number };
     expect(byId.get('backup-course')).toMatchObject({ kind: 'backup', format: 'mbz', url: backup.url, bytes: backup.bytes });
     expect(byId.get('backup-course')?.path).toBeUndefined();
     expect(ids.some((id) => id.includes('control'))).toBe(false);
+  });
+
+  test('Moodle XML теми містить лише питання й терміни цієї теми', async () => {
+    const collect = (node: XmlNode, name: string): XmlNode[] => node.children.flatMap((child) => (child.name === name ? [child] : collect(child, name)));
+    const questions = parseXml(await readFile(join(outDir, 'moodle/questions-training-t01.xml'), 'utf8'));
+    const ids = collect(questions, 'idnumber').map((node) => node.text).filter((id) => id.includes('-q'));
+    expect(ids.length).toBeGreaterThan(0);
+    expect(ids.every((id) => id.startsWith('t01-'))).toBe(true);
+    const glossary = parseXml(await readFile(join(outDir, 'moodle/glossary-t01.xml'), 'utf8'));
+    expect(collect(glossary, 'NAME')[0]?.text).toMatch(/^Глосарій: Тема 01?\. /);
+    expect(collect(glossary, 'ENTRY').length).toBeGreaterThan(0);
   });
 
   test('друк: лише опубліковані теми й практичні, сторінка практичної — зі стилями сайту', () => {

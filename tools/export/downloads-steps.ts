@@ -3,6 +3,10 @@ import { dirname, join } from 'node:path';
 import type { DownloadItem } from '../../src/content/schemas/downloads.ts';
 import { runBookCli, type BooksManifest } from './book-cli.ts';
 import { runCli } from './cli.ts';
+import { planGlossaryExport, renderGlossaryPlan } from './glossary-xml.ts';
+import { loadExportContent } from './load.ts';
+import { planQuestionExport, renderQuestionPlan } from './moodle-xml.ts';
+import { topicCategoryName } from './registry.ts';
 import { buildSyllabus } from './docx/syllabus.ts';
 import { buildWorkProgram } from './docx/work-program.ts';
 import { packDocx } from './docx/pack.ts';
@@ -50,6 +54,27 @@ export type PrintPdfs = (jobs: readonly PrintJob[], options: PrintOptions) => Pr
 const ARTICLE_MARKER = 'data-topic-article';
 const PRACTICAL_PAGE_PREFIX = 'pdf/praktychni';
 
+type Topic = DownloadSources['course']['topics'][number];
+
+interface TopicPage {
+  readonly topic: Topic;
+  readonly html: string;
+}
+
+/** Сторінки всіх тем зібраного сайту; відсутня сторінка — помилка збірки сайту. */
+async function readTopicPages(ctx: StepContext): Promise<TopicPage[]> {
+  const pages = await Promise.all(
+    ctx.sources.course.topics.map(async (topic) => ({ topic, html: await readFile(join(ctx.siteDir, 'temy', topic.slug, 'index.html'), 'utf8').catch(() => null) })),
+  );
+  const missing = pages.filter((page) => page.html === null).map((page) => page.topic.slug);
+  if (missing.length > 0) throw new Error(`у зібраному сайті немає сторінок тем: ${missing.join(', ')}`);
+  return pages.map((page) => ({ topic: page.topic, html: page.html ?? '' }));
+}
+
+function publishedTopics(pages: readonly TopicPage[]): Topic[] {
+  return pages.filter((page) => page.html.includes(ARTICLE_MARKER)).map((page) => page.topic);
+}
+
 async function writeStaged(ctx: StepContext, file: string, data: Uint8Array): Promise<{ file: string; bytes: number }> {
   const target = join(ctx.stagingDir, file);
   await mkdir(dirname(target), { recursive: true });
@@ -83,9 +108,55 @@ export async function moodleXmlStep(ctx: StepContext): Promise<DownloadItem[]> {
     const data = await readFile(join(outDir, file));
     return writeStaged(ctx, `moodle/${file}`, data);
   };
-  const questions = await Promise.all(manifest.questions.map(async (entry) => questionBankItem(course, xmlScope(entry.scope), await copy(entry.file), entry.total)));
-  const glossaries = await Promise.all(manifest.glossaries.map(async (entry) => glossaryItem(course, xmlScope(entry.scope), await copy(entry.file), entry.total)));
+  const questions = await Promise.all(manifest.questions.map(async (entry) => questionBankItem(course, xmlScope(entry.scope), await copy(entry.file))));
+  const glossaries = await Promise.all(manifest.glossaries.map(async (entry) => glossaryItem(course, xmlScope(entry.scope), await copy(entry.file))));
   return [...questions, ...glossaries];
+}
+
+/**
+ * Moodle XML на кожну опубліковану тему: ті самі функції експортера, що й CLI, на банку й глосарії лише цієї теми.
+ * Тема без питань чи термінів свого файлу не отримує.
+ */
+export async function topicXmlStep(ctx: StepContext): Promise<DownloadItem[]> {
+  const { course } = ctx.sources;
+  const topics = publishedTopics(await readTopicPages(ctx));
+  const { content, issues } = await loadExportContent({
+    courseFile: join(ctx.root, 'content/course.yaml'),
+    banksDir: join(ctx.root, 'content/banks/training'),
+    modulesDir: join(ctx.root, 'content/modules'),
+  });
+  if (!content || issues.length > 0) throw new Error(issues.map((issue) => `${issue.file}: ${issue.message}`).join('\n'));
+  const banks = content.banks.map((bank) => bank.data).filter((bank) => bank.kind === 'training' && bank.pool === 'module');
+  const glossaries = content.glossaries.map((glossary) => glossary.data);
+  const perTopic = await Promise.all(
+    topics.map(async (topic) => {
+      const topicBanks = banks
+        .map((bank) => ({ ...bank, questions: bank.questions.filter((question) => question.topic === topic.id) }))
+        .filter((bank) => bank.questions.length > 0);
+      const topicGlossaries = glossaries.filter((glossary) => glossary.topic === topic.id && glossary.terms.length > 0);
+      const scope = { kind: 'topic', topic } as const;
+      const questionItems =
+        topicBanks.length === 0
+          ? []
+          : [questionBankItem(course, scope, await writeStaged(ctx, `moodle/questions-training-${topic.id}.xml`, Buffer.from(renderQuestionPlan(planQuestionExport(topicBanks, content.course)), 'utf8')))];
+      const glossaryItems =
+        topicGlossaries.length === 0
+          ? []
+          : [
+              glossaryItem(
+                course,
+                scope,
+                await writeStaged(
+                  ctx,
+                  `moodle/glossary-${topic.id}.xml`,
+                  Buffer.from(renderGlossaryPlan(planGlossaryExport(topicGlossaries, content.course, { name: `Глосарій: ${topicCategoryName(topic)}`, references: glossaries })), 'utf8'),
+                ),
+              ),
+            ];
+      return [...questionItems, ...glossaryItems];
+    }),
+  );
+  return perTopic.flat();
 }
 
 /** ZIP глав Книги на кожну опубліковану тему — наявним книжковим експортером. */
@@ -102,7 +173,7 @@ export async function booksStep(ctx: StepContext): Promise<DownloadItem[]> {
       const topic = course.topics.find((candidate) => candidate.id === book.topic);
       if (!topic) throw new Error(`книжковий експортер повернув невідому тему ${book.topic}`);
       const staged = await writeStaged(ctx, `moodle/book-${topic.id}.zip`, await readFile(join(outDir, book.file)));
-      return bookItem(course, topic, staged, book.chapters.length, book.images.length);
+      return bookItem(course, topic, staged);
     }),
   );
 }
@@ -110,12 +181,8 @@ export async function booksStep(ctx: StepContext): Promise<DownloadItem[]> {
 /** PDF лекцій опублікованих тем і умов опублікованих практичних. */
 export async function pdfStep(ctx: StepContext, print: PrintPdfs): Promise<DownloadItem[]> {
   const { course, practicals, date } = ctx.sources;
-  const topicPages = await Promise.all(
-    course.topics.map(async (topic) => ({ topic, html: await readFile(join(ctx.siteDir, 'temy', topic.slug, 'index.html'), 'utf8').catch(() => null) })),
-  );
-  const missing = topicPages.filter((page) => page.html === null).map((page) => page.topic.slug);
-  if (missing.length > 0) throw new Error(`у зібраному сайті немає сторінок тем: ${missing.join(', ')}`);
-  const published = topicPages.filter((page) => page.html?.includes(ARTICLE_MARKER) === true).map((page) => page.topic);
+  const topicPages = await readTopicPages(ctx);
+  const published = publishedTopics(topicPages);
   const head = extractHead(topicPages[0]?.html ?? '');
 
   const practicalJobs = practicals.map((file) => {
@@ -123,7 +190,7 @@ export async function pdfStep(ctx: StepContext, print: PrintPdfs): Promise<Downl
     if (!practical) throw new Error(`практичної ${file.id} немає в реєстрі курсу`);
     return { practical, page: `${PRACTICAL_PAGE_PREFIX}/${practical.id}/`, html: renderPracticalPage({ course, practical, file, head }) };
   });
-  const lectureFile = (topic: (typeof published)[number]): string => `${topic.module}/lecture-${topic.id}.pdf`;
+  const lectureFile = (topic: Topic): string => `${topic.module}/lecture-${topic.id}.pdf`;
   const practicalFile = (practical: (typeof practicalJobs)[number]['practical']): string => `${practical.module}/practical-${practical.id}.pdf`;
   const jobs: PrintJob[] = [
     ...published.map((topic) => ({ page: `temy/${topic.slug}/`, outFile: join(ctx.stagingDir, lectureFile(topic)) })),
@@ -144,11 +211,11 @@ export async function pdfStep(ctx: StepContext, print: PrintPdfs): Promise<Downl
   return [
     ...published.map((topic) => {
       const pdf = result(lectureFile(topic));
-      return lectureItem(course, topic, { file: lectureFile(topic), bytes: pdf.bytes }, pdf.pages);
+      return lectureItem(course, topic, { file: lectureFile(topic), bytes: pdf.bytes });
     }),
     ...practicalJobs.map(({ practical }) => {
       const pdf = result(practicalFile(practical));
-      return practicalItem(course, practical, { file: practicalFile(practical), bytes: pdf.bytes }, pdf.pages);
+      return practicalItem(course, practical, { file: practicalFile(practical), bytes: pdf.bytes });
     }),
   ];
 }

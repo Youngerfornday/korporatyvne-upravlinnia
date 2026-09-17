@@ -9,7 +9,7 @@ import { pluralUk } from '../../src/lib/plural.ts';
 import { formatSize } from './downloads-bundle.ts';
 import { orderItems } from './downloads-items.ts';
 import { loadDownloadSources, type DownloadSources } from './downloads-sources.ts';
-import { booksStep, bundlesStep, docxStep, moodleXmlStep, pdfStep, type PrintPdfs, type StepContext } from './downloads-steps.ts';
+import { booksStep, bundlesStep, docxStep, moodleXmlStep, pdfStep, topicXmlStep, type PrintPdfs, type StepContext } from './downloads-steps.ts';
 import { checkDownloadsDir, MANIFEST_FILE } from './downloads-verify.ts';
 import { printPdfs } from './pdf.ts';
 import { readSiteUrl } from './site-url.ts';
@@ -102,10 +102,11 @@ export async function generateDownloads(options: DownloadsOptions, io: Downloads
     const ctx: StepContext = { root: options.root, sources, siteDir, siteUrl, workDir, stagingDir: join(workDir, 'downloads'), warn: io.stderr };
 
     const xml = await step('Moodle XML: тренувальні питання й глосарій', io, () => moodleXmlStep(ctx));
+    const topicXml = await step('Moodle XML тем: питання й глосарій кожної опублікованої теми', io, () => topicXmlStep(ctx));
     const books = await step('ZIP глав Книги', io, () => booksStep(ctx));
     const pdfs = await step('PDF лекцій і практичних (Playwright)', io, () => pdfStep(ctx, deps.printPdfs));
     const docs = await step('Силабус і робоча програма DOCX', io, () => docxStep(ctx));
-    const files = [...docs, ...pdfs, ...books, ...xml];
+    const files = [...docs, ...pdfs, ...books, ...xml, ...topicXml];
     const bundles = await step('Пакети модулів і курсу', io, () => bundlesStep(ctx, files));
     const manifest = await step('Маніфест', io, async () => {
       const built = manifestOf(sources, [...files, ...bundles]);
