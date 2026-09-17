@@ -25,15 +25,40 @@ import { cdataElement, element, serializeXml, textElement, type XmlElement } fro
  */
 
 export type BankKind = BankFile['kind'];
+export type BankPool = BankFile['pool'];
+
+interface BankRoot {
+  readonly idnumber: string;
+  readonly name: string;
+  readonly info: string;
+}
 
 /**
- * Корінь дерева категорій за видом банку. Тренувальні й контрольні питання живуть у різних гілках
- * і мають різні idnumber, тож навіть в одному курсі випадковий вибір за категорією не змішає їх.
+ * Корінь дерева категорій за видом банку й пулом тесту. Тренувальні, контрольні модульні й контрольні
+ * підсумкові питання живуть у різних гілках і мають різні idnumber, тож навіть в одному курсі випадковий
+ * слот тесту з фільтром «категорія теми + тег» бере лише питання свого банку й свого пулу.
  */
 export const BANK_ROOTS = {
-  training: { idnumber: 'tr', name: 'Тренувальний банк', info: 'Тренувальні питання курсу: відкриті банки з поясненнями.' },
-  control: { idnumber: 'ct', name: 'Контрольний банк', info: 'Контрольні питання курсу: модульні й підсумковий тести.' },
-} as const satisfies Record<BankFile['kind'], { idnumber: string; name: string; info: string }>;
+  training: {
+    module: { idnumber: 'tr', name: 'Тренувальний банк', info: 'Тренувальні питання курсу: відкриті банки з поясненнями.' },
+    final: {
+      idnumber: 'tr-final',
+      name: 'Тренувальний банк. Підсумковий',
+      info: 'Тренувальні питання для репетиції підсумкового тесту.',
+    },
+  },
+  control: {
+    module: { idnumber: 'ct', name: 'Контрольний банк', info: 'Контрольні питання модульних тестів.' },
+    final: {
+      idnumber: 'ct-final',
+      name: 'Контрольний банк. Підсумковий',
+      info: 'Контрольні питання підсумкового тесту: матриця «теми × рівні».',
+    },
+  },
+} as const satisfies Record<BankKind, Record<BankPool, BankRoot>>;
+
+const POOL_LABEL = { module: 'модульний', final: 'підсумковий' } as const;
+const POOL_LABEL_GENITIVE = { module: 'модульного', final: 'підсумкового' } as const;
 /** Назва типу в базі Moodle (`question.qtype`). */
 export type MoodleQtype = 'multichoice' | 'truefalse' | 'match' | 'numerical' | 'calculated' | 'ddwtos' | 'multianswer';
 
@@ -78,6 +103,7 @@ export interface QuestionSection {
 
 export interface QuestionExportPlan {
   readonly kind: BankKind;
+  readonly pool: BankPool;
   readonly sections: readonly QuestionSection[];
   /** Canary контрольних банків — лише для перевірки, що жоден із них не потрапив у вивід. */
   readonly canaries: readonly string[];
@@ -103,9 +129,14 @@ export function findBankProblems(banks: readonly BankFile[], course: CourseRegis
   if (banks.length === 0) return ['Немає жодного банку питань для експорту'];
   const topics = indexTopics(course);
   const kinds = new Set(banks.map((bank) => bank.kind));
+  const pools = new Set(banks.map((bank) => bank.pool));
   return [
     ...(kinds.size > 1 ? ['Тренувальні й контрольні банки не можна змішувати в одному файлі'] : []),
-    ...findDuplicates(banks.map((bank) => bank.module)).map((module) => `Модуль ${module} має більше одного банку`),
+    ...(pools.size > 1 ? ['Банки модульного й підсумкового пулів не можна змішувати в одному файлі'] : []),
+    ...findDuplicates(banks.map((bank) => `${bank.module}|${bank.pool}`)).map((key) => {
+      const [module, pool] = key.split('|') as [string, BankPool];
+      return `Модуль ${module} має більше одного банку для ${POOL_LABEL_GENITIVE[pool]} пулу`;
+    }),
     ...banks
       .filter((bank) => moduleOrder(course, bank.module) < 0)
       .map((bank) => `Модуль банку «${bank.module}» не зареєстровано в course.yaml`),
@@ -120,7 +151,8 @@ export function findBankProblems(banks: readonly BankFile[], course: CourseRegis
 export function planQuestionExport(banks: readonly BankFile[], course: CourseRegistry): QuestionExportPlan {
   throwIfProblems(findBankProblems(banks, course));
   const kind = banks[0]?.kind ?? 'training';
-  const root = BANK_ROOTS[kind];
+  const pool = banks[0]?.pool ?? 'module';
+  const root = BANK_ROOTS[kind][pool];
   const questions = banks.flatMap((bank) => bank.questions);
   const moduleSections = course.modules.flatMap((module): QuestionSection[] => {
     const moduleTopics = course.topics.filter((topic) => topic.module === module.id);
@@ -151,7 +183,7 @@ export function planQuestionExport(banks: readonly BankFile[], course: CourseReg
   };
   const sections = moduleSections.length === 0 ? [] : [rootSection, ...moduleSections];
   const canaries = banks.flatMap((bank) => (bank.kind === 'control' && bank.canary ? [bank.canary] : []));
-  return { kind, sections, canaries };
+  return { kind, pool, sections, canaries };
 }
 
 function questionBody(question: Question): XmlElement[] {
@@ -191,7 +223,7 @@ export function renderQuestionPlan(plan: QuestionExportPlan): string {
   const children = plan.sections.flatMap((section) => [categoryElement(section.category), ...section.questions.map(questionElement)]);
   const label = plan.kind === 'control' ? 'контрольний' : 'тренувальний';
   const xml = serializeXml(element('quiz', children), {
-    comment: `Moodle XML: ${label} банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення.`,
+    comment: `Moodle XML: ${label} банк питань, ${POOL_LABEL[plan.pool]} пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення.`,
   });
   const leaked = plan.canaries.find((canary) => xml.includes(canary));
   if (leaked !== undefined) throw new Error('Canary контрольного банку потрапив у текст Moodle XML: приберіть його з питань');
@@ -208,6 +240,7 @@ export function bankToMoodleXml(bank: BankFile, course: CourseRegistry): string 
 
 export interface QuestionManifest {
   readonly kind: BankKind;
+  readonly pool: BankPool;
   readonly total: number;
   readonly byType: Readonly<Record<string, number>>;
   readonly categories: ReadonlyArray<Omit<PlannedCategory, 'infoHtml'>>;
@@ -234,6 +267,7 @@ export function describeQuestionPlan(plan: QuestionExportPlan): QuestionManifest
   const counts = questions.reduce<Record<string, number>>((acc, { qtype }) => ({ ...acc, [qtype]: (acc[qtype] ?? 0) + 1 }), {});
   return {
     kind: plan.kind,
+    pool: plan.pool,
     total: questions.length,
     byType: Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b))),
     categories: plan.sections.map(({ category: { idnumber, path, parent } }) => ({ idnumber, path, parent })),

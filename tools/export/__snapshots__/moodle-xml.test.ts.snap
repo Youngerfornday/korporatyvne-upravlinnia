@@ -2,7 +2,7 @@
 
 exports[`bankToMoodleXml: снапшоти кожного типу > calculated: стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -218,7 +218,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > calculated:
 
 exports[`bankToMoodleXml: снапшоти кожного типу > ddwtos: стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -271,7 +271,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > ddwtos: с�
 
 exports[`bankToMoodleXml: снапшоти кожного типу > matching: стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -324,7 +324,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > matching: �
 
 exports[`bankToMoodleXml: снапшоти кожного типу > multianswer (Cloze): стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -359,7 +359,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multianswer
 
 exports[`bankToMoodleXml: снапшоти кожного типу > multichoice (множинний вибір): стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -415,7 +415,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multichoice
 
 exports[`bankToMoodleXml: снапшоти кожного типу > multichoice (один правильний): стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -470,7 +470,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > multichoice
 
 exports[`bankToMoodleXml: снапшоти кожного типу > numerical: стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>
@@ -515,7 +515,7 @@ exports[`bankToMoodleXml: снапшоти кожного типу > numerical: 
 
 exports[`bankToMoodleXml: снапшоти кожного типу > truefalse: стабільний і well-formed XML 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
-<!-- Moodle XML: тренувальний банк питань. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
+<!-- Moodle XML: тренувальний банк питань, модульний пул. Згенеровано tools/export/moodle-xml.ts, не редагуйте вручну. Імпорт: категорії з файлу, оцінки без округлення. -->
 <quiz>
   <question type="category">
     <category><text><![CDATA[top/Тренувальний банк]]></text></category>

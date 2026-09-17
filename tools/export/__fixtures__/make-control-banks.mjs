@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Готує каталог банків для перевірки імпорту: тренувальні фікстури як є плюс їхні контрольні двійники
- * (`kind: control`, canary, ID `tNN-kNNN`). Потрібно, щоб import-check міг імпортувати обидва види в один
- * курс і довести, що випадковий вибір за категорією й тегом їх не змішує.
+ * Готує каталог банків для перевірки імпорту: тренувальні фікстури як є, їхні контрольні двійники
+ * (`kind: control`, canary, ID `tNN-kNNN`) і контрольний банк підсумкового пулу (`pool: final`,
+ * ID зсунуті на 500). Потрібно, щоб import-check міг імпортувати все це в один курс і довести, що
+ * випадковий вибір за категорією й тегом не змішує ні види банків, ні пули тестів.
  *
  * Запуск: node tools/export/__fixtures__/make-control-banks.mjs <каталог-призначення>
  *
@@ -32,13 +33,23 @@ for (const name of names) {
   await writeFile(join(target, name), source, 'utf8');
 
   const bank = parse(source);
-  const control = {
-    ...bank,
-    kind: 'control',
-    canary: CANARY,
-    questions: bank.questions.map((question) => ({ ...question, id: question.id.replace('-q', '-k') })),
-  };
-  await writeFile(join(target, `control-${name}`), stringify(control), 'utf8');
+  const controlId = (id) => id.replace('-q', '-k');
+  /** Підсумковий пул повторює теми, але має власні ID: tNN-k001 → tNN-k501. */
+  const finalId = (id) => controlId(id).replace(/-k(\d{3})$/, (_match, number) => `-k${String(Number(number) + 500).padStart(3, '0')}`);
+
+  for (const [prefix, pool, mapId] of [
+    ['control', 'module', controlId],
+    ['final', 'final', finalId],
+  ]) {
+    const control = {
+      ...bank,
+      kind: 'control',
+      pool,
+      canary: CANARY,
+      questions: bank.questions.map((question) => ({ ...question, id: mapId(question.id) })),
+    };
+    await writeFile(join(target, `${prefix}-${name}`), stringify(control), 'utf8');
+  }
 }
 
-console.log(`Банки для перевірки: ${names.length} тренувальних і ${names.length} контрольних у ${target}`);
+console.log(`Банки для перевірки: ${names.length} тренувальних, ${names.length} контрольних модульних і ${names.length} контрольних підсумкових у ${target}`);

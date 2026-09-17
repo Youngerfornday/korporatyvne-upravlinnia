@@ -147,7 +147,7 @@ describe('помилки вхідних даних', () => {
     const unregistered = bank('m7', [{ ...examples.trueFalse(), id: 't01-q999' }]);
     expect(findBankProblems([m1, wrongModule, unknownTopic, control, unregistered, m1], REGISTRY)).toEqual([
       'Тренувальні й контрольні банки не можна змішувати в одному файлі',
-      'Модуль m1 має більше одного банку',
+      'Модуль m1 має більше одного банку для модульного пулу',
       'Модуль банку «m7» не зареєстровано в course.yaml',
       'Питання «t04-q001» належить модулю m2, а банк — модулю m1',
       'Питання «t09-q007»: тему «t09» не зареєстровано в course.yaml',
@@ -155,6 +155,32 @@ describe('помилки вхідних даних', () => {
       'Дублікат ID питання «t01-q003» у банках',
     ]);
     expect(findBankProblems([], REGISTRY)).toEqual(['Немає жодного банку питань для експорту']);
+  });
+
+  it('банки різних пулів не змішуються в одному файлі', () => {
+    const moduleBank = bank('m2', [examples.multichoiceSingle()]);
+    const finalBank = bank('m2', [examples.multichoiceMulti()], { pool: 'final' });
+    expect(findBankProblems([moduleBank, finalBank], REGISTRY)).toEqual([
+      'Банки модульного й підсумкового пулів не можна змішувати в одному файлі',
+    ]);
+    expect(findBankProblems([finalBank, finalBank], REGISTRY)).toEqual([
+      'Модуль m2 має більше одного банку для підсумкового пулу',
+      'Дублікат ID питання «t05-q002» у банках',
+    ]);
+  });
+
+  it('підсумковий пул має власний корінь категорій і власні idnumber', () => {
+    const finalBank = controlBank('m2', [examples.multichoiceSingle()], 'final-2026', 'final');
+    const quiz = parseXml(bankToMoodleXml(finalBank, REGISTRY));
+    expect(childrenNamed(quiz, 'question')
+      .filter((node) => node.attributes.type === 'category')
+      .map((node) => [textAt(node, 'idnumber'), textAt(node, 'category', 'text')])).toEqual([
+      ['ct-final', 'top/Контрольний банк. Підсумковий'],
+      ['ct-final-m2', 'top/Контрольний банк. Підсумковий/Модуль 2. Органи корпоративного управління'],
+      ['ct-final-t04', 'top/Контрольний банк. Підсумковий/Модуль 2. Органи корпоративного управління/Тема 04. Акціонери та загальні збори'],
+    ]);
+    expect(bankToMoodleXml(finalBank, REGISTRY)).toContain('контрольний банк питань, підсумковий пул');
+    expect(describeQuestionPlan(planQuestionExport([finalBank], REGISTRY)).pool).toBe('final');
   });
 
   it('planQuestionExport кидає ExportError зі списком проблем', () => {

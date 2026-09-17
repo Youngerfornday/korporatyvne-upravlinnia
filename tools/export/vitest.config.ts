@@ -14,7 +14,11 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['tools/export/**/*.ts'],
+      // Модулі експорту Moodle XML. Книжковий експортер (book-*.ts) має власника й власні тести,
+      // його покриття рахує кореневий vitest.config.ts разом з усім tools/export.
+      include: [
+        'tools/export/{cli,choice-questions,cloze-question,dataset-items,export-files,glossary-xml,load,moodle-xml,numeric-questions,question-parts,registry,text,xml}.ts',
+      ],
       exclude: ['**/*.test.ts', '**/__fixtures__/**', '**/test-support/**', 'tools/export/vitest.config.ts'],
       reportsDirectory: 'coverage/export',
       reporter: ['text', 'html'],

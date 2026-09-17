@@ -116,16 +116,20 @@ export async function loadExportContent(sources: ExportSources): Promise<LoadRes
 /** Проблеми, через які Moodle відхилив би або спотворив імпорт: реєстр тем, дублікати між файлами, seeAlso. */
 export function findContentProblems(content: ExportContent): ContentIssue[] {
   const { course } = content;
-  const bankIssues = (['training', 'control'] as const).flatMap((kind) => {
-    const banks = content.banks.filter((bank) => bank.data.kind === kind);
-    if (banks.length === 0) return [];
-    const perFile = banks.flatMap(({ file, data }) => findBankProblems([data], course).map((message) => ({ file, message })));
-    const reported = new Set(perFile.map((issue) => issue.message));
-    const shared = findBankProblems(banks.map((bank) => bank.data), course)
-      .filter((message) => !reported.has(message))
-      .map((message) => ({ file: `банки (${kind})`, message }));
-    return [...perFile, ...shared];
-  });
+  // Кожен файл перевіряється окремо, а спільні проблеми (дублікати, повтор модуля) — у межах
+  // групи «вид банку + пул тесту»: саме такі групи стають окремими файлами експорту.
+  const bankIssues = (['training', 'control'] as const).flatMap((kind) =>
+    (['module', 'final'] as const).flatMap((pool) => {
+      const banks = content.banks.filter((bank) => bank.data.kind === kind && bank.data.pool === pool);
+      if (banks.length === 0) return [];
+      const perFile = banks.flatMap(({ file, data }) => findBankProblems([data], course).map((message) => ({ file, message })));
+      const reported = new Set(perFile.map((issue) => issue.message));
+      const shared = findBankProblems(banks.map((bank) => bank.data), course)
+        .filter((message) => !reported.has(message))
+        .map((message) => ({ file: `банки (${kind}, ${pool})`, message }));
+      return [...perFile, ...shared];
+    }),
+  );
   const misplaced = content.banks
     .filter(({ file, data }) => data.kind === 'control' && TRAINING_DIR.test(file))
     .map(({ file }) => ({ file, message: 'контрольний банк лежить у каталозі тренувальних банків' }));

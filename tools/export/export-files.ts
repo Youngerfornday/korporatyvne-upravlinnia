@@ -1,7 +1,14 @@
 import type { GlossaryFile } from '../../src/content/schemas/glossary.ts';
 import { describeGlossaryPlan, planGlossaryExport, renderGlossaryPlan, type GlossaryManifest } from './glossary-xml.ts';
 import type { ExportContent } from './load.ts';
-import { describeQuestionPlan, planQuestionExport, renderQuestionPlan, type BankKind, type QuestionManifest } from './moodle-xml.ts';
+import {
+  describeQuestionPlan,
+  planQuestionExport,
+  renderQuestionPlan,
+  type BankKind,
+  type BankPool,
+  type QuestionManifest,
+} from './moodle-xml.ts';
 import { indexTopics, moduleCategoryName, moduleOrder } from './registry.ts';
 
 /** Набір файлів експорту: питання й глосарій на модуль і на курс, плюс маніфест очікуваного стану Moodle. */
@@ -22,14 +29,23 @@ export const MANIFEST_FILE = 'manifest.json';
 /** Файли, які експорт створює і тому має право видаляти перед новим записом. */
 export const OWNED_FILE = /^(?:questions-(?:training|control)-[a-z0-9]+\.xml|glossary-[a-z0-9]+\.xml|manifest\.json)$/;
 const COURSE_SCOPE = 'course';
+const FINAL_SCOPE = 'final';
+const POOLS: readonly BankPool[] = ['module', 'final'];
 
-function questionFiles(content: ExportContent, kind: BankKind): { files: ExportFile[]; manifest: ExportManifest['questions'] } {
+/**
+ * Модульний пул вивантажується файлом на модуль плюс файлом на курс; підсумковий пул — одним файлом
+ * на курс (`questions-<вид>-final.xml`), бо підсумковий тест бере питання з усього курсу за матрицею тем.
+ */
+function questionFiles(content: ExportContent, kind: BankKind, pool: BankPool): { files: ExportFile[]; manifest: ExportManifest['questions'] } {
   const banks = content.banks
     .map((bank) => bank.data)
-    .filter((bank) => bank.kind === kind)
+    .filter((bank) => bank.kind === kind && bank.pool === pool)
     .sort((a, b) => moduleOrder(content.course, a.module) - moduleOrder(content.course, b.module));
   if (banks.length === 0) return { files: [], manifest: [] };
-  const scopes = [...banks.map((bank) => ({ scope: bank.module, banks: [bank] })), { scope: COURSE_SCOPE, banks }];
+  const scopes =
+    pool === 'final'
+      ? [{ scope: FINAL_SCOPE, banks }]
+      : [...banks.map((bank) => ({ scope: bank.module, banks: [bank] })), { scope: COURSE_SCOPE, banks }];
   const outputs = scopes.map(({ scope, banks: scoped }) => {
     const plan = planQuestionExport(scoped, content.course);
     const name = `questions-${kind}-${scope}.xml`;
@@ -62,18 +78,16 @@ function glossaryFiles(content: ExportContent): { files: ExportFile[]; manifest:
 }
 
 export function buildExportFiles(content: ExportContent): ExportFile[] {
-  const training = questionFiles(content, 'training');
-  const control = questionFiles(content, 'control');
+  const questions = (['training', 'control'] as const).flatMap((kind) => POOLS.map((pool) => questionFiles(content, kind, pool)));
   const glossary = glossaryFiles(content);
   const manifest: ExportManifest = {
     schemaVersion: 1,
     generator: 'tools/export/cli.ts',
-    questions: [...training.manifest, ...control.manifest],
+    questions: questions.flatMap((output) => output.manifest),
     glossaries: glossary.manifest,
   };
   return [
-    ...training.files,
-    ...control.files,
+    ...questions.flatMap((output) => output.files),
     ...glossary.files,
     { name: MANIFEST_FILE, contents: `${JSON.stringify(manifest, null, 2)}\n` },
   ];

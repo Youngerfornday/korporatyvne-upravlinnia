@@ -43,13 +43,20 @@ const QUESTION_ID = {
 } as const;
 
 /**
- * Файл банку: `content/banks/training/mN.yaml` (публічний) або `banks/control/mN.yaml` (лише приватний репозиторій).
- * Контрольний банк обов’язково має canary; тренувальний — ні.
+ * Файл банку: `content/banks/training/mN.yaml` (публічний) або `banks/control/mN.yaml` і
+ * `banks/control/final.yaml` (лише приватний репозиторій). Контрольний банк обов’язково має canary;
+ * тренувальний — ні. Один файл — це один модуль і один пул тесту.
  */
 export const BankFileSchema = z
   .object({
     schemaVersion: z.literal(1),
     kind: z.enum(['training', 'control']),
+    /**
+     * Пул тесту, який живиться з банку: `module` — модульний тест (типово), `final` — підсумковий.
+     * Пули не змішуються: у Moodle це різні гілки категорій, тож випадковий слот модульного тесту
+     * ніколи не візьме питання підсумкового пулу з тієї самої теми.
+     */
+    pool: z.enum(['module', 'final']).default('module'),
     module: ModuleIdSchema,
     canary: z.string().optional(),
     questions: z.array(QuestionSchema).min(1),

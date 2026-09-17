@@ -12,7 +12,11 @@ export function question(raw: unknown): Question {
   return QuestionSchema.parse(raw);
 }
 
-export function bank(module: string, questions: readonly unknown[], extra: Partial<Pick<BankFile, 'kind' | 'canary'>> = {}): BankFile {
+export function bank(
+  module: string,
+  questions: readonly unknown[],
+  extra: Partial<Pick<BankFile, 'kind' | 'canary' | 'pool'>> = {},
+): BankFile {
   return BankFileSchema.parse({ schemaVersion: 1, kind: 'training', module, questions, ...extra });
 }
 
@@ -22,10 +26,16 @@ export function asControl<T extends { readonly id: string }>(question: T): T {
 }
 
 /** Контрольний банк із тих самих прикладів: ID із «k» і canary, який складається під час виконання. */
-export function controlBank(module: string, questions: readonly { readonly id: string }[], canarySuffix = 'test'): BankFile {
+export function controlBank(
+  module: string,
+  questions: readonly { readonly id: string }[],
+  canarySuffix = 'test',
+  pool: BankFile['pool'] = 'module',
+): BankFile {
   return BankFileSchema.parse({
     schemaVersion: 1,
     kind: 'control',
+    pool,
     module,
     canary: `${CONTROL_CANARY_PREFIX}${canarySuffix}`,
     questions: questions.map(asControl),

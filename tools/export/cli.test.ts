@@ -98,11 +98,14 @@ describe('runCli: успішний експорт', () => {
     expect(files).toContain('README.md');
   });
 
-  it('контрольний банк: файли з префіксом control і жодного canary у виводі', async () => {
+  it('контрольні банки: модульний пул на модуль і на курс, підсумковий — одним файлом, без canary', async () => {
     const canary = `${CONTROL_CANARY_PREFIX}m2-cli`;
-    const banks = await bankDir(
-      { schemaVersion: 1, kind: 'control', module: 'm2', canary, questions: [asControl(examples.multichoiceSingle())] },
-      'm2.yaml',
+    const control = { schemaVersion: 1, kind: 'control', module: 'm2', canary };
+    const banks = await bankDir({ ...control, questions: [asControl(examples.multichoiceSingle())] }, 'm2.yaml');
+    await writeFile(
+      join(banks, 'final.yaml'),
+      stringify({ ...control, pool: 'final', questions: [{ ...asControl(examples.multichoiceMulti()), id: 't05-k501' }] }),
+      'utf8',
     );
     const outDir = await temporaryDir();
     const { code } = await run(['--banks', banks, '--modules', `${FIXTURES}/modules`, '--out', outDir]);
@@ -110,6 +113,14 @@ describe('runCli: успішний експорт', () => {
     const names = await readdir(outDir);
     expect(names).toContain('questions-control-m2.xml');
     expect(names).toContain('questions-control-course.xml');
+    expect(names).toContain('questions-control-final.xml');
+    expect(await readFile(join(outDir, 'questions-control-final.xml'), 'utf8')).toContain('top/Контрольний банк. Підсумковий');
+    const manifest = JSON.parse(await readFile(join(outDir, 'manifest.json'), 'utf8')) as ExportManifest;
+    expect(manifest.questions.map((entry) => [entry.scope, entry.pool])).toEqual([
+      ['m2', 'module'],
+      ['course', 'module'],
+      ['final', 'final'],
+    ]);
     for (const name of names) {
       expect(await readFile(join(outDir, name), 'utf8')).not.toContain(CONTROL_CANARY_PREFIX);
     }
