@@ -52,6 +52,8 @@ export const MatrixCellSchema = z.object({
   explanation: NonEmptyTextSchema,
   /** ID джерела з розділу sources цього файлу. */
   source: KebabIdSchema,
+  /** Додаткові джерела клітинки (наприклад, другий закон для того самого правила). */
+  alsoSources: uniqueArray(KebabIdSchema, 'Додаткові джерела').default([]),
 });
 
 /** Рядок матриці — ознака моделі. */
@@ -136,7 +138,9 @@ export function matrixIssues(matrix: ModelMatrix): Issue[] {
 export function sourceRefIssues(matrix: ModelMatrix, sourceIds: ReadonlySet<string>): Issue[] {
   const cellRefs = matrix.features.flatMap((feature, f) =>
     feature.cells.flatMap((cell, c): Issue[] =>
-      sourceIds.has(cell.source) ? [] : [{ message: `Ознака «${feature.id}», модель «${cell.model}»: джерело «${cell.source}» не описано`, path: ['features', f, 'cells', c, 'source'] }],
+      [cell.source, ...cell.alsoSources]
+        .filter((id) => !sourceIds.has(id))
+        .map((id) => ({ message: `Ознака «${feature.id}», модель «${cell.model}»: джерело «${id}» не описано`, path: ['features', f, 'cells', c, 'source'] })),
     ),
   );
   const taskRefs = matrix.companyTasks.flatMap((task, index): Issue[] =>

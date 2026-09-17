@@ -7,12 +7,12 @@ sources:
     type: book
     title: The Modern Corporation and Private Property
     authors: [Berle A. A., Means G. C.]
-    publisher: 'Harcourt, Brace & World'
+    publisher: Macmillan
     year: 1932
     language: en
     url: https://archive.org/details/moderncorporatio0000berl_i9j3
     checkedAt: '2026-09-16'
-    note: 'Перевидання Transaction Publishers, 1991, у відкритому доступі Internet Archive; перше видання — 1932 р.'
+    note: 'Перше видання — Macmillan, 1932; у відкритому доступі Internet Archive — перевидання Transaction Publishers, 1991 (з видання Harcourt, Brace & World, 1967).'
 
   - id: jensen-meckling-1976
     type: article
@@ -77,7 +77,7 @@ sources:
     year: 2023
     language: en
     url: https://www.oecd.org/en/publications/g20-oecd-principles-of-corporate-governance-2023_ed750b30-en.html
-    checkedAt: '2026-09-15'
+    checkedAt: '2026-09-14'
     note: 'Опубліковано 11.09.2023; шість розділів. Дата перевірки — за docs/research/legal-baseline.md, рядок MS-01.'
 
   - id: oecd-factbook-2023
@@ -89,7 +89,7 @@ sources:
     language: en
     url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/09/oecd-corporate-governance-factbook-2023_6bae0258/6d912314-en.pdf
     checkedAt: '2026-09-16'
-    note: 'Розділ 1.5–1.6: концентрація власності в лістингових компаніях 49 юрисдикцій на кінець 2022 р.'
+    note: 'Розділи 1.5–1.6 і табл. 1.1: концентрація власності лістингових компаній на кінець 2022 р.; дані про власність — по 44 з 49 юрисдикцій.'
 
   # Право України (за legal-baseline)
   - id: law-2465-ix
@@ -100,6 +100,24 @@ sources:
     url: https://zakon.rada.gov.ua/laws/show/2465-20
     checkedAt: '2026-09-15'
     note: 'Чинний, редакція від 01.01.2026. Використано ст. 3 (визначення АТ), ст. 2 (пакети акцій), ст. 69, 72, 107 — коди AT-01, AT-46, AT-49, AT-64, AT-69 legal-baseline.'
+
+  - id: law-361-ix
+    type: law
+    title: Закон України «Про запобігання та протидію легалізації (відмиванню) доходів, одержаних злочинним шляхом, фінансуванню тероризму та фінансуванню розповсюдження зброї масового знищення» від 06.12.2019 № 361-IX
+    authors: [Верховна Рада України]
+    year: 2019
+    url: https://zakon.rada.gov.ua/laws/show/361-20
+    checkedAt: '2026-09-16'
+    note: 'Чинний, редакція від 26.06.2026. Ст. 1 ч. 1 п. 30 (поняття КБВ, поріг 25 %), ст. 5-1 (обов’язок знати КБВ, винятки) — коди UBO-01, UBO-02, UBO-08 legal-baseline.'
+
+  - id: law-755-iv
+    type: law
+    title: Закон України «Про державну реєстрацію юридичних осіб, фізичних осіб — підприємців та громадських формувань» від 15.05.2003 № 755-IV
+    authors: [Верховна Рада України]
+    year: 2003
+    url: https://zakon.rada.gov.ua/laws/show/755-15
+    checkedAt: '2026-09-16'
+    note: 'Чинний, редакція від 24.04.2026. Ст. 9 ч. 2 п. 9, ст. 11 ч. 1 — відомості ЄДР про КБВ відкриті (UBO-04).'
 
   - id: nssmc-cg-code-2020
     type: regulation

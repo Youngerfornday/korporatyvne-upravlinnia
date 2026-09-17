@@ -102,6 +102,9 @@ describe('PracticalFileSchema', () => {
     const data = file();
     const parsed = PracticalFileSchema.parse(data);
     expect(sourceRefIssues(parsed.trainer, new Set(['other']))).toHaveLength(MODELS.length * FEATURES.length + 1);
+    const [first, ...rest] = data.trainer.features;
+    const extra = { ...first!, cells: first!.cells.map((cell) => ({ ...cell, alsoSources: ['ghost-law'] })) };
+    expect(issues({ ...data, trainer: { ...data.trainer, features: [extra, ...rest] } })).toContainEqual(expect.stringMatching(/джерело «ghost-law»/));
     const [task] = data.trainer.companyTasks;
     expect(issues({ ...data, trainer: { ...data.trainer, companyTasks: [{ ...task!, source: 'ghost' }] } })).toContainEqual(expect.stringMatching(/джерело «ghost»/));
   });
