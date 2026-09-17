@@ -76,6 +76,15 @@ export function createScormProgressStore(options: ScormProgressStoreOptions): Sc
     return false;
   }
 
+  function read(api: Scorm12Api, element: string): string | null {
+    try {
+      return api.LMSGetValue(element);
+    } catch (error) {
+      notify({ code: 'lms-error', operation: `LMSGetValue ${element}`, error: errorText(error) });
+      return null;
+    }
+  }
+
   function open(): Session {
     const api = getApi();
     if (!api) {
@@ -91,10 +100,14 @@ export function createScormProgressStore(options: ScormProgressStoreOptions): Sc
       notify({ code: 'initialize-failed', error: errorText(error) });
       return { kind: 'memory' };
     }
-    const lmsMastery = Number.parseFloat(api.LMSGetValue('cmi.student_data.mastery_score'));
+    const masteryValue = read(api, 'cmi.student_data.mastery_score');
+    if (masteryValue === null) return { kind: 'memory' };
+    const lmsMastery = Number.parseFloat(masteryValue);
     if (Number.isFinite(lmsMastery)) mastery = lmsMastery;
     // Перший запуск: LMS одразу бачить спробу розпочатою, навіть якщо студент нічого не завершить.
-    if (NOT_ATTEMPTED.has(api.LMSGetValue('cmi.core.lesson_status'))) {
+    const lessonStatus = read(api, 'cmi.core.lesson_status');
+    if (lessonStatus === null) return { kind: 'memory' };
+    if (NOT_ATTEMPTED.has(lessonStatus)) {
       write(api, [['cmi.core.lesson_status', 'incomplete']]);
     }
     return { kind: 'lms', api, startedAt: now().getTime() };
@@ -133,7 +146,11 @@ export function createScormProgressStore(options: ScormProgressStoreOptions): Sc
       if (unsaved !== null) return { status: 'memory-only', state: structuredClone(unsaved) };
       if (active.kind === 'memory') return { status: 'empty', state: createEmptyProgress(now()) };
 
-      const raw = active.api.LMSGetValue('cmi.suspend_data');
+      const raw = read(active.api, 'cmi.suspend_data');
+      if (raw === null) {
+        session = { kind: 'memory' };
+        return { status: 'memory-only', state: createEmptyProgress(now()) };
+      }
       if (raw === '') return { status: 'empty', state: createEmptyProgress(now()) };
       const unpacked = decodeSuspendData(raw);
       const decoded = unpacked.ok ? deserializeProgress(unpacked.json, migrations, maxLength) : unpacked;
@@ -176,10 +193,21 @@ export function createScormProgressStore(options: ScormProgressStoreOptions): Sc
       if (session?.kind !== 'lms' || terminated) return;
       const { api, startedAt } = session;
       terminated = true;
-      write(api, [
+      const finalValues: ReadonlyArray<readonly [string, string]> = [
         ['cmi.core.exit', 'suspend'],
         ['cmi.core.session_time', cmiTimespan(now().getTime() - startedAt)],
-      ]);
+      ];
+      if (unsaved !== null) {
+        const fitted = fitSuspendData(unsaved, limit);
+        if (!fitted.ok) {
+          notify({ code: 'too-large' });
+          return;
+        }
+        if (!write(api, [['cmi.suspend_data', fitted.data], ...resultValues(fitted.state), ...finalValues])) return;
+        unsaved = null;
+      } else {
+        write(api, finalValues);
+      }
       call(api, 'LMSFinish', () => api.LMSFinish(''));
     },
 

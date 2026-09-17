@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { chromium, type Browser } from 'playwright';
+import { chromium, type Browser, type Page } from 'playwright';
 
 /** Підставний рендерер дає змогу тестувати PPTX без запуску Chromium у пісочниці. */
 export type SvgRenderer = (svg: string) => Promise<Buffer>;
@@ -15,6 +15,25 @@ const LIGHT_TOKENS = `
   --err-ink: #8f1d14;
 }
 `;
+
+export const SVG_CONTEXT_OPTIONS = {
+  colorScheme: 'light' as const,
+  deviceScaleFactor: 2,
+  javaScriptEnabled: false,
+};
+
+interface SvgRoute {
+  request(): { url(): string };
+  abort(): Promise<void>;
+  continue(): Promise<void>;
+}
+
+export async function protectSvgPage(page: Pick<Page, 'route'>): Promise<void> {
+  await page.route('**/*', async (route) => {
+    if (route.request().url().startsWith('data:')) await route.continue();
+    else await route.abort();
+  });
+}
 
 function viewBoxSize(svg: string): { width: number; height: number } {
   const match = /viewBox\s*=\s*["']\s*[-+]?\d*\.?\d+\s+[-+]?\d*\.?\d+\s+([\d.]+)\s+([\d.]+)\s*["']/u.exec(svg);
@@ -32,11 +51,11 @@ export const playwrightSvgRenderer: SvgRenderer = async (svg: string): Promise<B
   try {
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
-      colorScheme: 'light',
-      deviceScaleFactor: 2,
+      ...SVG_CONTEXT_OPTIONS,
       viewport: { width: Math.ceil(size.width), height: Math.ceil(size.height) },
     });
     const page = await context.newPage();
+    await protectSvgPage(page);
     await page.setContent(`<!doctype html><html lang="uk"><head><style>${LIGHT_TOKENS}html,body{margin:0;padding:0;background:#fff}svg{display:block;width:${size.width}px;height:${size.height}px}</style></head><body>${svg}</body></html>`);
     const image = await page.locator('svg').screenshot({ type: 'png' });
     await context.close();

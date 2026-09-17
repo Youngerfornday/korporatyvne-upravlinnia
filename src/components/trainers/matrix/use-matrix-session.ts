@@ -25,6 +25,8 @@ import {
   type MatrixStage,
 } from '../../../engines/matrix';
 import { useProgress, type ProgressHandle } from '../../progress/use-progress';
+import type { ProgressClient } from '../../progress/client';
+import type { LearningEvent } from '../../../engines/gamification';
 
 export interface MatrixController {
   readonly session: MatrixSession;
@@ -50,6 +52,19 @@ export interface MatrixController {
 function newSession(matrix: MatrixDefinition, practicalId: string, run: number): MatrixSession {
   const now = new Date();
   return startMatrixSession({ matrix, seed: `${practicalId}:${now.getTime()}:${run}`, now });
+}
+
+type MatrixCompletionClient = Pick<ProgressClient, 'apply'>;
+export type MatrixCompletionResult =
+  | { readonly status: 'unavailable' | 'failed'; readonly nextApplied: string | null; readonly outcomeText: string }
+  | { readonly status: 'saved'; readonly nextApplied: string; readonly outcomeText: string };
+
+export function applyMatrixCompletion(client: MatrixCompletionClient | null, event: LearningEvent | null, attemptId: string, appliedAttemptId: string | null): MatrixCompletionResult {
+  if (!client || !event) return { status: 'unavailable', nextApplied: appliedAttemptId, outcomeText: 'Прогрес ще завантажується — XP не нараховано.' };
+  if (appliedAttemptId === attemptId) return { status: 'saved', nextApplied: appliedAttemptId, outcomeText: 'Результат уже збережено.' };
+  const outcome = client.apply(event);
+  if (!outcome.ok) return { status: 'failed', nextApplied: appliedAttemptId, outcomeText: outcome.error.message };
+  return { status: 'saved', nextApplied: attemptId, outcomeText: eventOutcomeText(outcome.value) };
 }
 
 export function useMatrixSession(matrix: MatrixDefinition, practicalId: string): MatrixController {
@@ -159,11 +174,11 @@ export function useMatrixSession(matrix: MatrixDefinition, practicalId: string):
   useEffect(() => {
     const graded = session.graded;
     if (stage !== 'result' || practice || !graded || !progress.client || applied.current === graded.startedAt) return;
-    applied.current = graded.startedAt;
     const event = matrixCompletedEvent(graded, summarizeMatrixAttempt(graded, matrix), practicalId);
     if (!event) return;
-    const result = progress.client.apply(event);
-    setOutcome(result.ok ? eventOutcomeText(result.value) : result.error.message);
+    const completion = applyMatrixCompletion(progress.client, event, graded.startedAt, applied.current);
+    if (completion.status === 'saved' && completion.nextApplied === graded.startedAt) applied.current = completion.nextApplied;
+    setOutcome(completion.outcomeText);
   }, [matrix, practicalId, practice, progress.client, session.graded, stage]);
 
   return {

@@ -10,6 +10,7 @@ import { checkLawNumbers } from './rules/law-numbers.mjs';
 import { checkNumbersWithoutSource } from './rules/numbers.mjs';
 import { checkSlides } from './rules/slides.mjs';
 import { checkSourceUsage } from './rules/sources.mjs';
+import { checkSvgSafety } from './rules/svg-safety.mjs';
 import { checkTerms } from './rules/terms.mjs';
 import { checkUnconfirmedZone } from './rules/unconfirmed-zone.mjs';
 
@@ -28,5 +29,6 @@ export function lintContent({ files, baseline, course, today = todayIso() }) {
     ...checkTerms(files, course ?? { glossaryTerms: [] }),
     ...checkNumbersWithoutSource(files),
     ...checkSlides(files, course ?? {}),
+    ...checkSvgSafety(files),
   ];
 }

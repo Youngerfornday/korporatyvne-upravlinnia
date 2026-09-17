@@ -306,6 +306,36 @@ describe('createScormProgressStore: without a working LMS', () => {
     expect(store.load().status).toBe('loaded');
   });
 
+  it('повторно записує незбережений стан перед LMSFinish після збою Commit', () => {
+    const api = createFakeScormApi({ failCommit: true });
+    const { store } = harness(api);
+    const state = withActivity(1);
+    store.load();
+    store.save(state);
+    api.setCommitFailing(false);
+
+    store.terminate();
+
+    expect(api.calls.filter((call) => call === 'LMSCommit')).toHaveLength(3);
+    expect(api.finished()).toBe(true);
+    expect(api.persisted()['cmi.core.score.raw']).toBe('100');
+    expect(api.persisted()['cmi.core.exit']).toBe('suspend');
+  });
+
+  it('не викликає LMSFinish, якщо повторний SetValue незбереженого стану теж не вдався', () => {
+    const api = createFakeScormApi({ failSetOn: ['cmi.suspend_data'] });
+    const { store } = harness(api);
+    store.load();
+    store.save(withActivity(1));
+    api.setSetFailing('cmi.suspend_data', false);
+    api.setSetFailing('cmi.core.score.raw', true);
+
+    store.terminate();
+
+    expect(api.finished()).toBe(false);
+    expect(api.calls).not.toContain('LMSFinish');
+  });
+
   it('recovers from unreadable suspend_data with an empty state', () => {
     // Arrange
     const { store } = harness(createFakeScormApi({ suspendData: '{not json' }));
@@ -330,6 +360,29 @@ describe('createScormProgressStore: without a working LMS', () => {
     // Assert
     expect(saved.status).toBe('memory-only');
     expect(notices.at(-1)).toEqual({ code: 'lms-error', operation: 'LMSCommit', error: 'network down' });
+  });
+
+  it('переходить у пам’ять і діагностує виняток LMSGetValue під час load', () => {
+    const api = createFakeScormApi();
+    const throwing = { ...api, LMSGetValue: (element: string) => { throw new Error(`read ${element}`); } };
+    const notices: ScormNotice[] = [];
+    const store = createScormProgressStore({ activityId: ACTIVITY, masteryPercent: 90, getApi: () => throwing, onNotice: (notice) => notices.push(notice) });
+
+    expect(() => store.load()).not.toThrow();
+    expect(store.isPersistent()).toBe(false);
+    expect(notices).toContainEqual({ code: 'lms-error', operation: 'LMSGetValue cmi.student_data.mastery_score', error: 'read cmi.student_data.mastery_score' });
+  });
+
+  it('переходить у пам’ять і діагностує виняток під час читання suspend_data', () => {
+    const api = createFakeScormApi();
+    const original = api.LMSGetValue.bind(api);
+    const throwing = { ...api, LMSGetValue: (element: string) => element === 'cmi.suspend_data' ? (() => { throw new Error('suspend read'); })() : original(element) };
+    const notices: ScormNotice[] = [];
+    const store = createScormProgressStore({ activityId: ACTIVITY, masteryPercent: 90, getApi: () => throwing, onNotice: (notice) => notices.push(notice) });
+
+    expect(() => store.load()).not.toThrow();
+    expect(store.isPersistent()).toBe(false);
+    expect(notices).toContainEqual({ code: 'lms-error', operation: 'LMSGetValue cmi.suspend_data', error: 'suspend read' });
   });
 });
 

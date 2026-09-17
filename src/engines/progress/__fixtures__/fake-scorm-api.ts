@@ -47,6 +47,7 @@ export interface FakeScormApi extends Scorm12Api {
   readonly finished: () => boolean;
   /** Новий запуск SCO з даними, які LMS зберегла в попередньому. */
   readonly relaunch: (options?: Omit<FakeScormOptions, 'suspendData' | 'lessonStatus' | 'restored'>) => FakeScormApi;
+  setSetFailing(element: string, failing: boolean): void;
   setCommitFailing(failing: boolean): void;
 }
 
@@ -145,6 +146,10 @@ export function createFakeScormApi(options: FakeScormOptions = {}): FakeScormApi
         ...next,
         restored: { ...stored, 'cmi.core.entry': stored['cmi.core.exit'] === 'suspend' ? 'resume' : '', 'cmi.core.exit': '' },
       }),
+    setSetFailing(element, failing) {
+      if (failing) failSet.add(element);
+      else failSet.delete(element);
+    },
     setCommitFailing(failing) {
       failCommit = failing;
     },

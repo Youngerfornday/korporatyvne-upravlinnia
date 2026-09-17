@@ -7,6 +7,8 @@ import { useCallback, useRef, useState } from 'react';
 import { createSeededRandom, type RandomSource } from '../../../engines/shared/random';
 import type { Result } from '../../../engines/shared/result';
 import { useProgress } from '../../progress/use-progress';
+import type { ProgressClient } from '../../progress/client';
+import type { LearningEvent } from '../../../engines/gamification';
 import { issuesByField, type FieldIssues, type TaskCheck } from '../model/task-check';
 import { ALREADY_SOLVED_TEXT, WRONG_ANSWER_TEXT, isVariantSolved, solvedOutcomeText } from '../model/xp-text';
 
@@ -39,6 +41,23 @@ function newVariant<V>(create: (random: RandomSource) => V, activityId: string, 
   return create(createSeededRandom(`${activityId}:${Date.now()}:${number}`));
 }
 
+type TrainerEvent = Extract<LearningEvent, { type: 'trainer-completed' }>;
+type TrainerCompletionClient = Pick<ProgressClient, 'getState' | 'apply'>;
+
+export type TrainerCompletionResult =
+  | { readonly status: 'unavailable' | 'failed' | 'already-solved'; readonly nextApplied: string | null; readonly outcomeText: string }
+  | { readonly status: 'saved'; readonly nextApplied: string; readonly outcomeText: string };
+
+export function applyTrainerCompletion(client: TrainerCompletionClient | null, event: TrainerEvent, appliedVariantId: string | null): TrainerCompletionResult {
+  if (!client) return { status: 'unavailable', nextApplied: appliedVariantId, outcomeText: 'Прогрес ще завантажується — XP не нараховано.' };
+  if (appliedVariantId === event.variantId || isVariantSolved(client.getState(), event.activityId, event.variantId ?? '')) {
+    return { status: 'already-solved', nextApplied: appliedVariantId, outcomeText: ALREADY_SOLVED_TEXT };
+  }
+  const outcome = client.apply(event);
+  if (!outcome.ok) return { status: 'failed', nextApplied: appliedVariantId, outcomeText: outcome.error.message };
+  return { status: 'saved', nextApplied: event.variantId ?? event.id, outcomeText: solvedOutcomeText(outcome.value) };
+}
+
 export function useTrainerTask<V extends TaskVariantBase, A>({ activityId, create, check, emptyAnswer }: TrainerTaskOptions<V, A>): TrainerTask<V, A> {
   const progress = useProgress();
   const [number, setNumber] = useState(1);
@@ -65,29 +84,23 @@ export function useTrainerTask<V extends TaskVariantBase, A>({ activityId, creat
       return checked.error;
     }
     setErrors({});
-    setResult(checked.value);
     if (!checked.value.solved) {
+      setResult(checked.value);
       setOutcomeText(WRONG_ANSWER_TEXT);
       return [];
     }
     const client = progress.client;
-    if (!client) {
-      setOutcomeText('Прогрес ще завантажується — XP не нараховано.');
-      return [];
-    }
-    if (isVariantSolved(client.getState(), activityId, variant.variantId) || applied.current === variant.variantId) {
-      setOutcomeText(ALREADY_SOLVED_TEXT);
-      return [];
-    }
-    applied.current = variant.variantId;
-    const outcome = client.apply({
+    const completion = applyTrainerCompletion(client, {
       id: `trainer:${activityId}:${variant.variantId}`,
       type: 'trainer-completed',
       activityId,
       score: 1,
       variantId: variant.variantId,
-    });
-    setOutcomeText(outcome.ok ? solvedOutcomeText(outcome.value) : outcome.error.message);
+    }, applied.current);
+    setOutcomeText(completion.outcomeText);
+    if (completion.status === 'failed' || completion.status === 'unavailable') return [];
+    setResult(checked.value);
+    if (completion.status === 'saved') applied.current = completion.nextApplied;
     return [];
   }, [activityId, answer, check, progress.client, result, variant]);
 

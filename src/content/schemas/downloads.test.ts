@@ -41,4 +41,10 @@ describe('DownloadManifestSchema', () => {
     expect(DownloadManifestSchema.safeParse(manifest([{ ...lecturePdf, path: '../secret.pdf' }])).success).toBe(false);
     expect(DownloadManifestSchema.safeParse(manifest([lecturePdf, lecturePdf])).success).toBe(false);
   });
+
+  it('відхиляє сегменти . і .. у шляху', () => {
+    for (const path of ['downloads/a/../secret.txt', 'downloads/a/../../../secret.txt', 'downloads/./secret.txt']) {
+      expect(DownloadManifestSchema.safeParse(manifest([{ ...lecturePdf, path }])).success, path).toBe(false);
+    }
+  });
 });

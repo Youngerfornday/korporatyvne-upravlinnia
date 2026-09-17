@@ -36,7 +36,7 @@ export const DownloadItemSchema = z
     practical: PracticalIdSchema.optional(),
     path: z
       .string()
-      .regex(/^downloads\/[a-z0-9][a-z0-9._/-]*$/, 'Шлях має починатися з downloads/ і містити лише латиницю, цифри, крапки, дефіси')
+      .regex(/^downloads\/[a-z0-9_-]+(?:\.[a-z0-9_-]+)*(?:\/[a-z0-9_-]+(?:\.[a-z0-9_-]+)*)*$/, 'Шлях має починатися з downloads/ і не містити сегментів . або ..')
       .optional(),
     url: HttpUrlSchema.optional(),
     bytes: z.int().nonnegative(),

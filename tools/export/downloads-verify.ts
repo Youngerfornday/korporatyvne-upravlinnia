@@ -1,5 +1,5 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { join, relative, sep } from 'node:path';
+import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { DownloadManifestSchema, type DownloadManifest } from '../../src/content/schemas/downloads.ts';
 import { DOWNLOADS_DIR } from './downloads-items.ts';
 
@@ -9,6 +9,14 @@ import { DOWNLOADS_DIR } from './downloads-items.ts';
  */
 
 export const MANIFEST_FILE = 'manifest.json';
+
+/** Чи залишається відносний шлях усередині каталогу `public/downloads`. */
+export function isDownloadPathContained(rootDir: string, file: string): boolean {
+  const root = resolve(rootDir);
+  const candidate = resolve(root, file);
+  const within = relative(root, candidate);
+  return within !== '' && within !== '..' && !within.startsWith(`..${sep}`) && !isAbsolute(within);
+}
 
 async function listFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true, recursive: true });
@@ -27,9 +35,19 @@ export async function checkDownloadsDir(rootDir: string): Promise<ManifestCheck>
   } catch (error) {
     return { manifest: null, issues: [`${MANIFEST_FILE} не прочитано: ${error instanceof Error ? error.message : String(error)}`] };
   }
+  const containmentIssues = Array.isArray((raw as { items?: unknown } | null)?.items)
+    ? (raw as { items: unknown[] }).items.flatMap((item) => {
+        if (typeof item !== 'object' || item === null || typeof (item as { path?: unknown }).path !== 'string') return [];
+        const path = (item as { path: string }).path;
+        if (!path.startsWith(`${DOWNLOADS_DIR}/`)) return [];
+        return isDownloadPathContained(rootDir, path.slice(DOWNLOADS_DIR.length + 1))
+          ? []
+          : [`«${typeof (item as { id?: unknown }).id === 'string' ? (item as { id: string }).id : '?'}»: шлях ${path} виходить за межі downloads`];
+      })
+    : [];
   const parsed = DownloadManifestSchema.safeParse(raw);
   if (!parsed.success) {
-    return { manifest: null, issues: parsed.error.issues.map((issue) => `${MANIFEST_FILE}: ${issue.path.join('.')}: ${issue.message}`) };
+    return { manifest: null, issues: [...containmentIssues, ...parsed.error.issues.map((issue) => `${MANIFEST_FILE}: ${issue.path.join('.')}: ${issue.message}`)] };
   }
   const manifest = parsed.data;
   const listed = new Set<string>();
@@ -37,6 +55,10 @@ export async function checkDownloadsDir(rootDir: string): Promise<ManifestCheck>
   for (const item of manifest.items) {
     if (item.path === undefined) continue;
     const file = item.path.slice(DOWNLOADS_DIR.length + 1);
+    if (!isDownloadPathContained(rootDir, file)) {
+      issues.push(`«${item.id}»: шлях ${item.path} виходить за межі downloads`);
+      continue;
+    }
     listed.add(file);
     const info = await stat(join(rootDir, file)).catch(() => null);
     if (info === null) issues.push(`«${item.id}»: немає файлу ${item.path}`);
